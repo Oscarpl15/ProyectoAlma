@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.practicasalma.proyectoalma.controller.MainController"
+            stylesheets="@../css/estilos.css"
+            prefWidth="1024" prefHeight="768">
+
+    <top>
+        <HBox styleClass="header-panel" alignment="CENTER_LEFT" spacing="20">
+            <HBox alignment="CENTER_LEFT" spacing="10" HBox.hgrow="ALWAYS">
+                <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
+                    <image>
+                        <Image url="@../assets/logo.png"/>
+                    </image>
+                </ImageView>
+                <Label text="Fundación Gestión" styleClass="titulo-app"/>
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button text="ALUMNOS" onAction="#mostrarAlumnos" styleClass="boton-menu"/>
+                <Button text="DOCENTES" onAction="#mostrarDocentes" styleClass="boton-menu"/>
+                <Button text="SOCIOS" onAction="#mostrarSocios" styleClass="boton-menu"/>
+            </HBox>
+        </HBox>
+    </top>
+
+    <center>
+        <BorderPane style="-fx-padding: 20;">
+            <center>
+                <TabPane fx:id="tabPrincipal" tabClosingPolicy="UNAVAILABLE"
+                         tabMinHeight="0" tabMaxHeight="0">
+                    <tabs>
+                        <Tab>
+                            <content>
+                                <fx:include source="alumnos-view.fxml"/>
+                            </content>
+                        </Tab>
+
+                        <Tab>
+                            <content>
+                                <Label text="Aquí irá la vista de Docentes"/>
+                            </content>
+                        </Tab>
+
+                        <Tab>
+                            <content>
+                                <Label text="Aquí irá la vista de Socios"/>
+                            </content>
+                        </Tab>
+                    </tabs>
+                </TabPane>
+            </center>
+        </BorderPane>
+    </center>
+</BorderPane>

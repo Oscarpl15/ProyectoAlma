@@ -1,0 +1,76 @@
+/* General */
+.root {
+    -fx-font-family: 'Segoe UI', sans-serif; /* Fuente limpia */
+    -fx-background-color: #F4F6F8; /* Gris muy suave de fondo */
+}
+
+/* Cabecera Superior */
+.header-panel {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-padding: 15;
+}
+
+.titulo-app {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C3E50;
+}
+
+/* Botones del Menú Principal */
+.boton-menu {
+    -fx-background-color: transparent;
+    -fx-text-fill: #7F8C8D;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-border-color: transparent transparent transparent transparent;
+    -fx-border-width: 0 0 3 0; /* Borde solo abajo */
+}
+
+.boton-menu:hover {
+    -fx-text-fill: #3498DB;
+    -fx-background-color: #F0F8FF;
+}
+
+.boton-menu:selected { /* Estado activo simulado */
+    -fx-text-fill: #2980B9;
+    -fx-border-color: #2980B9; /* Subrayado azul */
+}
+
+/* TabPane Invisible */
+.tab-pane .tab-header-area {
+    -fx-visible: false;
+    -fx-max-height: 0;
+}
+.tab-pane {
+    -fx-background-color: transparent;
+}
+
+/* Tablas */
+.table-view {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);
+}
+.table-view .column-header-background {
+    -fx-background-color: #ECF0F1;
+    -fx-background-radius: 5 5 0 0;
+}
+.table-view .column-header .label {
+    -fx-text-fill: #2C3E50;
+    -fx-font-weight: bold;
+}
+
+/* Botón de Acción (Añadir) */
+.boton-accion {
+    -fx-background-color: #3498DB;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+    -fx-padding: 10 20;
+}
+.boton-accion:hover {
+    -fx-background-color: #2980B9;
+}
