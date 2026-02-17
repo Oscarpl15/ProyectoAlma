@@ -38,8 +38,6 @@ public class Launcher extends Application { // No hace falta poner javafx.applic
 
         stage.setTitle("Gestión Fundación - Panel de Control");
 
-        // stage.getIcons().add(new Image(Launcher.class.getResourceAsStream("/assets/logo.png")));
-
         stage.setScene(scene);
         stage.show();
     }

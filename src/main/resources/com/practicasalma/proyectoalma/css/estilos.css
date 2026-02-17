@@ -14,10 +14,10 @@
 .titulo-app {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
-    -fx-text-fill: #2C3E50;
+    -fx-text-fill: #2E5374;
 }
 
-/* Botones del Menú Principal */
+/* Botones del Menú Principal
 .boton-menu {
     -fx-background-color: transparent;
     -fx-text-fill: #7F8C8D;
@@ -25,27 +25,20 @@
     -fx-font-weight: bold;
     -fx-cursor: hand;
     -fx-border-color: transparent transparent transparent transparent;
-    -fx-border-width: 0 0 3 0; /* Borde solo abajo */
+    -fx-border-width: 0 0 3 0;  Borde solo abajo
 }
 
 .boton-menu:hover {
     -fx-text-fill: #3498DB;
     -fx-background-color: #F0F8FF;
-}
+}*/
 
 .boton-menu:selected { /* Estado activo simulado */
     -fx-text-fill: #2980B9;
     -fx-border-color: #2980B9; /* Subrayado azul */
 }
 
-/* TabPane Invisible */
-.tab-pane .tab-header-area {
-    -fx-visible: false;
-    -fx-max-height: 0;
-}
-.tab-pane {
-    -fx-background-color: transparent;
-}
+
 
 /* Tablas */
 .table-view {
@@ -58,19 +51,52 @@
     -fx-background-radius: 5 5 0 0;
 }
 .table-view .column-header .label {
-    -fx-text-fill: #2C3E50;
+    -fx-text-fill: #2E5374;
     -fx-font-weight: bold;
 }
 
 /* Botón de Acción (Añadir) */
 .boton-accion {
-    -fx-background-color: #3498DB;
+    -fx-background-color: #2E5374;
     -fx-text-fill: white;
+    -fx-min-width: 120;
     -fx-font-weight: bold;
     -fx-background-radius: 5;
     -fx-cursor: hand;
     -fx-padding: 10 20;
+
 }
 .boton-accion:hover {
     -fx-background-color: #2980B9;
+}
+
+/* 1. Ocultar la zona de las pestañas (Cabecera) */
+.tab-pane .tab-header-area {
+    -fx-visible: false;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-pref-height: 0;
+    -fx-padding: 0;
+}
+
+/* 2. Ocultar el fondo y los bordes del contenedor principal */
+.tab-pane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-background-radius: 0;
+}
+
+/* 3. Asegurar que el contenido interno no tenga bordes extraños */
+.tab-pane .tab-content-area {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+}
+
+/* 4.Eliminar la "región de cabeceras" por si acaso */
+.tab-pane .headers-region {
+    -fx-visible: false;
+    -fx-max-height: 0;
 }
