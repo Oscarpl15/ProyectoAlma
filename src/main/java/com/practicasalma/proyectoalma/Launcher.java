@@ -29,7 +29,7 @@ public class Launcher extends Application { // No hace falta poner javafx.applic
         Scene scene = new Scene(fxmlLoader.load(), 1024, 768);
 
         // CORRECCIÓN 2: También aquí cambiamos a Launcher.class
-        URL cssUrl = Launcher.class.getResource("/com/practicasalma/proyectoalma//css/estilos.css");
+        URL cssUrl = Launcher.class.getResource("/com/practicasalma/proyectoalma/css/estilos.css");
         if (cssUrl != null) {
             scene.getStylesheets().add(cssUrl.toExternalForm());
         } else {
