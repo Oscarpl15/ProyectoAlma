@@ -11,7 +11,7 @@
             stylesheets="@../css/estilos.css"
             prefWidth="1024" prefHeight="768">
 
-    <top>
+   <!-- <top>
         <HBox styleClass="header-panel" alignment="CENTER_LEFT" spacing="20">
             <HBox alignment="CENTER_LEFT" spacing="10" HBox.hgrow="ALWAYS">
                 <ImageView fitHeight="150" fitWidth="150" preserveRatio="true">
@@ -28,6 +28,24 @@
                 <Button text="SOCIOS" onAction="#mostrarSocios" styleClass="boton-menu"/>
             </HBox>
         </HBox>
+    </top>-->
+    <top>
+        <VBox styleClass="header-panel" alignment="CENTER" spacing="20">
+            <HBox alignment="CENTER_LEFT" spacing="10" HBox.hgrow="ALWAYS">
+                <ImageView  fitHeight="150" fitWidth="150" preserveRatio="true">
+                    <image>
+                        <Image url="@../assets/logo.png"/>
+                    </image>
+                </ImageView>
+                <Label text="Fundación Gestión" styleClass="titulo-app"/>
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER">
+                <Button text="ALUMNOS" onAction="#mostrarAlumnos" styleClass="boton-menu"/>
+                <Button text="DOCENTES" onAction="#mostrarDocentes" styleClass="boton-menu"/>
+                <Button text="SOCIOS" onAction="#mostrarSocios" styleClass="boton-menu"/>
+            </HBox>
+        </VBox>
     </top>
 
     <center>
