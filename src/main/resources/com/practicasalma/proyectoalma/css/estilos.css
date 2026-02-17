@@ -26,12 +26,12 @@
     -fx-cursor: hand;
     -fx-border-color: transparent transparent transparent transparent;
     -fx-border-width: 0 0 3 0;  Borde solo abajo
-}*/
+}
 
 .boton-menu:hover {
     -fx-text-fill: #3498DB;
     -fx-background-color: #F0F8FF;
-}
+}*/
 
 .boton-menu:selected { /* Estado activo simulado */
     -fx-text-fill: #2980B9;
@@ -51,7 +51,7 @@
     -fx-background-radius: 5 5 0 0;
 }
 .table-view .column-header .label {
-    -fx-text-fill: #2C3E50;
+    -fx-text-fill: #2E5374;
     -fx-font-weight: bold;
 }
 
@@ -95,7 +95,7 @@
     -fx-border-width: 0;
 }
 
-/* 4. (El toque final) Eliminar la "región de cabeceras" por si acaso */
+/* 4.Eliminar la "región de cabeceras" por si acaso */
 .tab-pane .headers-region {
     -fx-visible: false;
     -fx-max-height: 0;
