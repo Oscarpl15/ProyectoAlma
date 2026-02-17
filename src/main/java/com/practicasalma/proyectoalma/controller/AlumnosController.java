@@ -13,6 +13,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -76,6 +77,10 @@ public class AlumnosController {
             // APPLICATION_MODAL: Bloquea la interacción con la ventana principal
             // hasta que cierres este pop-up.
             stage.initModality(Modality.APPLICATION_MODAL);
+
+            // Agregamos logo de la fundación a la ventana
+            String rutaIcono = "/com/practicasalma/proyectoalma/assets/logo.png";
+            stage.getIcons().add(new Image(getClass().getResourceAsStream(rutaIcono)));
 
             // 5. Mostrar la ventana
             // showAndWait() espera a que se cierre para continuar la ejecución del código

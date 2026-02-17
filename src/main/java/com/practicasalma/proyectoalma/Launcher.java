@@ -38,6 +38,10 @@ public class Launcher extends Application { // No hace falta poner javafx.applic
 
         stage.setTitle("Gestión Fundación - Panel de Control");
 
+        // Agregamos logo de la fundación a la ventana
+        String rutaIcono = "/com/practicasalma/proyectoalma/assets/logo.png";
+        stage.getIcons().add(new Image(getClass().getResourceAsStream(rutaIcono)));
+        
         stage.setScene(scene);
         stage.show();
     }
