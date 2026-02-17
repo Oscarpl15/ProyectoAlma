@@ -14,7 +14,7 @@
     <top>
         <HBox styleClass="header-panel" alignment="CENTER_LEFT" spacing="20">
             <HBox alignment="CENTER_LEFT" spacing="10" HBox.hgrow="ALWAYS">
-                <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
+                <ImageView fitHeight="150" fitWidth="150" preserveRatio="true">
                     <image>
                         <Image url="@../assets/logo.png"/>
                     </image>
