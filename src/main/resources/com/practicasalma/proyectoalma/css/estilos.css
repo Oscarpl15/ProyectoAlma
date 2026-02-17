@@ -14,10 +14,10 @@
 .titulo-app {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
-    -fx-text-fill: #2C3E50;
+    -fx-text-fill: #2E5374;
 }
 
-/* Botones del Menú Principal */
+/* Botones del Menú Principal
 .boton-menu {
     -fx-background-color: transparent;
     -fx-text-fill: #7F8C8D;
@@ -25,8 +25,8 @@
     -fx-font-weight: bold;
     -fx-cursor: hand;
     -fx-border-color: transparent transparent transparent transparent;
-    -fx-border-width: 0 0 3 0; /* Borde solo abajo */
-}
+    -fx-border-width: 0 0 3 0;  Borde solo abajo
+}*/
 
 .boton-menu:hover {
     -fx-text-fill: #3498DB;
@@ -57,12 +57,14 @@
 
 /* Botón de Acción (Añadir) */
 .boton-accion {
-    -fx-background-color: #3498DB;
+    -fx-background-color: #2E5374;
     -fx-text-fill: white;
+    -fx-min-width: 120;
     -fx-font-weight: bold;
     -fx-background-radius: 5;
     -fx-cursor: hand;
     -fx-padding: 10 20;
+
 }
 .boton-accion:hover {
     -fx-background-color: #2980B9;
