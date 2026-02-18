@@ -18,4 +18,13 @@ public class Alumno {
     public StringProperty nombreProperty() { return nombre; }
     public StringProperty apellidosProperty() { return apellidos; }
     // Getters normales si quieres...
+
+
+    public String getNombre() {
+        return nombre.get();
+    }
+
+    public String getApellidos() {
+        return apellidos.get();
+    }
 }

@@ -93,12 +93,29 @@ public class AlumnosController {
     }
 
     private void abrirFichaAlumno(Alumno alumno) {
-        // Aquí abrirías la ventana con los datos cargados
-        mostrarMensaje("Ficha de Alumno", "Has hecho doble clic en: " + alumno.nombreProperty().get());
-        // PARA LA PRESENTACIÓN:
-        // 1. Crear un nuevo Stage (Ventana)
-        // 2. Cargar el FXML de detalle
-        // 3. Pasar el objeto 'alumno' al controlador de esa nueva ventana
+        try {
+            // 1. Cargar el FXML de la ficha
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/practicasalma/proyectoalma/view/ficha-alumno.fxml"));
+            Parent root = loader.load();
+
+            // 2. OBTENER EL CONTROLADOR DE LA FICHA (¡Importante!)
+            FichaAlumnoController controller = loader.getController();
+
+            // 3. PASARLE EL ALUMNO SELECCIONADO
+            controller.setAlumno(alumno);
+
+            // 4. Mostrar la ventana nueva
+            Stage stage = new Stage();
+            stage.setTitle("Ficha del Alumno: " + alumno.getNombre());
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.WINDOW_MODAL); // Bloquea la ventana de atrás hasta que cierres esta
+            stage.initOwner(tablaAlumnos.getScene().getWindow()); // Dice que esta ventana pertenece a la principal
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error al abrir la ficha: " + e.getMessage());
+        }
     }
 
     private void mostrarMensaje(String titulo, String contenido) {

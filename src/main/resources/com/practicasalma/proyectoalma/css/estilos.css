@@ -17,21 +17,6 @@
     -fx-text-fill: #2E5374;
 }
 
-/* Botones del Menú Principal
-.boton-menu {
-    -fx-background-color: transparent;
-    -fx-text-fill: #7F8C8D;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-cursor: hand;
-    -fx-border-color: transparent transparent transparent transparent;
-    -fx-border-width: 0 0 3 0;  Borde solo abajo
-}
-
-.boton-menu:hover {
-    -fx-text-fill: #3498DB;
-    -fx-background-color: #F0F8FF;
-}*/
 
 .boton-menu:selected { /* Estado activo simulado */
     -fx-text-fill: #2980B9;
@@ -99,4 +84,73 @@
 .tab-pane .headers-region {
     -fx-visible: false;
     -fx-max-height: 0;
+}
+
+/* === ESTILOS PARA LAS FICHAS/DIÁLOGOS === */
+
+/* Fondo gris claro como en la referencia */
+.fondo-ficha {
+    -fx-background-color: #F4F6F8;
+}
+
+/* Título principal (Azul oscuro, grande) */
+.titulo-ficha {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C3E50; /* Mismo azul que usaste en la cabecera principal */
+}
+
+/* Subtítulos de sección */
+.label-seccion {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3498DB;
+}
+
+/* Etiquetas del formulario (Alineadas a la derecha, negrita suave) */
+.label-formulario {
+    -fx-font-weight: bold;
+    -fx-text-fill: #5D6D7E; /* Gris azulado */
+    -fx-font-size: 13px;
+}
+
+/* Estilo del enlace a los padres */
+.link-padres {
+    -fx-text-fill: #3498DB;
+    -fx-font-weight: bold;
+    -fx-underline: false;
+}
+.link-padres:hover {
+    -fx-underline: true;
+    -fx-text-fill: #2980B9;
+}
+
+/* --- BOTONES DEL DIÁLOGO --- */
+
+/* Botón Primario (Guardar) - Azul */
+.boton-primario {
+    -fx-background-color: #3498DB;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+    -fx-padding: 8 20;
+    -fx-cursor: hand;
+}
+.boton-primario:hover {
+    -fx-background-color: #2980B9;
+}
+
+/* Botón Secundario (Cancelar) - Gris */
+.boton-secundario {
+    -fx-background-color: white;
+    -fx-text-fill: #7F8C8D;
+    -fx-border-color: #BDC3C7;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 8 20;
+    -fx-cursor: hand;
+}
+.boton-secundario:hover {
+    -fx-background-color: #ECF0F1;
+    -fx-text-fill: #2C3E50;
 }
