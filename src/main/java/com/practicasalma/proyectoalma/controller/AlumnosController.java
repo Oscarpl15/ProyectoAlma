@@ -9,10 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -24,6 +21,9 @@ public class AlumnosController {
     @FXML private TableView<Alumno> tablaAlumnos;
     @FXML private TableColumn<Alumno, String> colNombre;
     @FXML private TableColumn<Alumno, String> colApellidos;
+
+    @FXML
+    private ComboBox<String> comboCursoFiltro;
 
     // Datos falsos para la presentación
     private ObservableList<Alumno> listaFalsa = FXCollections.observableArrayList(
@@ -40,6 +40,8 @@ public class AlumnosController {
 
         // 2. Meter datos
         tablaAlumnos.setItems(listaFalsa);
+
+        comboCursoFiltro.getSelectionModel().select(0);
 
         // 3. EVENTO DOBLE CLIC (Importante)
         tablaAlumnos.setRowFactory(tv -> {
