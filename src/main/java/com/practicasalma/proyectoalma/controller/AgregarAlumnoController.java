@@ -6,6 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 public class AgregarAlumnoController {
@@ -15,16 +16,19 @@ public class AgregarAlumnoController {
     @FXML
     private TextField txtApellidos;
     @FXML
-    private TextField txtDireccion; // Nuevo campo
+    private TextField txtDireccion;
 
     @FXML
-    private ComboBox<String> comboCurso; // Nuevo campo
+    private ComboBox<String> comboCurso;
 
     // Checkboxes
     @FXML private CheckBox checkAuth1;
     @FXML private CheckBox checkAuth2;
     @FXML private CheckBox checkAuth3;
     @FXML private CheckBox checkAuth4;
+
+    @FXML private ImageView fotoAlumno;
+    private String rutaFotoSeleccionada = null;
 
     @FXML
     private void guardarAlumno(ActionEvent event) {
@@ -53,6 +57,11 @@ public class AgregarAlumnoController {
     @FXML
     private void cancelar(ActionEvent event) {
         cerrarVentana(event);
+    }
+
+    @FXML
+    private void onSeleccionarFotoClick(ActionEvent event) {
+
     }
 
     private void cerrarVentana(ActionEvent event) {
