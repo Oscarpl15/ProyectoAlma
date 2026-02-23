@@ -6,20 +6,17 @@ import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 public class AgregarAlumnoController {
 
-    @FXML
-    private TextField txtNombre;
-    @FXML
-    private TextField txtApellidos;
-    @FXML
-    private TextField txtDireccion;
+    @FXML private TextField txtNombre;
+    @FXML private TextField txtApellidos;
+    @FXML private TextField txtDireccion;
 
-    @FXML
-    private ComboBox<String> comboCurso;
+    @FXML private ComboBox<String> comboCurso;
 
     // Checkboxes
     @FXML private CheckBox checkAuth1;
@@ -28,7 +25,22 @@ public class AgregarAlumnoController {
     @FXML private CheckBox checkAuth4;
 
     @FXML private ImageView fotoAlumno;
-    private String rutaFotoSeleccionada = null;
+    private final String RUTA_DEFECTO_IMAGEN = "/com/practicasalma/proyectoalma/assets/default.png"; // Foto para que sea la por defecto al cargar una imagen
+    private String rutaFotoSeleccionada = null; // Foto seleccionada por el usuario
+
+    @FXML
+    private void initialize() {
+        try {
+
+            String rutaDefault = getClass().getResource(RUTA_DEFECTO_IMAGEN).toExternalForm(); // .toExternalForm transforma automaticamente al formato que necesita iamge
+            Image imagenDefault = new Image(rutaDefault);
+
+            fotoAlumno.setImage(imagenDefault);
+
+        } catch (NullPointerException e) {
+            System.out.println("ERROR: No se encontró la imagen por defecto.");
+        }
+    }
 
     @FXML
     private void guardarAlumno(ActionEvent event) {
