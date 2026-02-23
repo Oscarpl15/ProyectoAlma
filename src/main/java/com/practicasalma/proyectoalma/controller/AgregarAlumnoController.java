@@ -8,7 +8,10 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import java.io.File;
 
 public class AgregarAlumnoController {
 
@@ -73,7 +76,26 @@ public class AgregarAlumnoController {
 
     @FXML
     private void onSeleccionarFotoClick(ActionEvent event) {
+        // Es para que te salga la ventana de seleccionar archivos
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Selecciona foto del alumno");
 
+        // Indicas que extensiones son validos para poder selccionar y te filtre
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Imagen", "*.png", "*.jpg", "*.jpeg"));
+
+        // Sirve para que solo se pueda darle click a la ventana "padre" hasta que seleciones una foto o canceles
+        // y aparte guarda el archivo que hayas seleccionado
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        File archivoSeleccionado = fileChooser.showOpenDialog(stage);
+
+        if (archivoSeleccionado != null) {
+            rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
+
+            Image image = new Image(archivoSeleccionado.toURI().toString());
+            fotoAlumno.setImage(image);
+
+            System.out.println("Ruta de la foto: " + rutaFotoSeleccionada);
+        }
     }
 
     private void cerrarVentana(ActionEvent event) {
