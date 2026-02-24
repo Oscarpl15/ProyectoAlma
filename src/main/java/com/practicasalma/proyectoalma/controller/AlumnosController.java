@@ -9,10 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -24,6 +21,9 @@ public class AlumnosController {
     @FXML private TableView<Alumno> tablaAlumnos;
     @FXML private TableColumn<Alumno, String> colNombre;
     @FXML private TableColumn<Alumno, String> colApellidos;
+
+    @FXML
+    private ComboBox<String> comboCursoFiltro;
 
     // Datos falsos para la presentación
     private ObservableList<Alumno> listaFalsa = FXCollections.observableArrayList(
@@ -40,6 +40,8 @@ public class AlumnosController {
 
         // 2. Meter datos
         tablaAlumnos.setItems(listaFalsa);
+
+        comboCursoFiltro.getSelectionModel().select(0);
 
         // 3. EVENTO DOBLE CLIC (Importante)
         tablaAlumnos.setRowFactory(tv -> {
@@ -93,12 +95,29 @@ public class AlumnosController {
     }
 
     private void abrirFichaAlumno(Alumno alumno) {
-        // Aquí abrirías la ventana con los datos cargados
-        mostrarMensaje("Ficha de Alumno", "Has hecho doble clic en: " + alumno.nombreProperty().get());
-        // PARA LA PRESENTACIÓN:
-        // 1. Crear un nuevo Stage (Ventana)
-        // 2. Cargar el FXML de detalle
-        // 3. Pasar el objeto 'alumno' al controlador de esa nueva ventana
+        try {
+            // 1. Cargar el FXML de la ficha
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/practicasalma/proyectoalma/view/ficha-alumno.fxml"));
+            Parent root = loader.load();
+
+            // 2. OBTENER EL CONTROLADOR DE LA FICHA (¡Importante!)
+            FichaAlumnoController controller = loader.getController();
+
+            // 3. PASARLE EL ALUMNO SELECCIONADO
+            controller.setAlumno(alumno);
+
+            // 4. Mostrar la ventana nueva
+            Stage stage = new Stage();
+            stage.setTitle("Ficha del Alumno: " + alumno.getNombre());
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.WINDOW_MODAL); // Bloquea la ventana de atrás hasta que cierres esta
+            stage.initOwner(tablaAlumnos.getScene().getWindow()); // Dice que esta ventana pertenece a la principal
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error al abrir la ficha: " + e.getMessage());
+        }
     }
 
     private void mostrarMensaje(String titulo, String contenido) {
