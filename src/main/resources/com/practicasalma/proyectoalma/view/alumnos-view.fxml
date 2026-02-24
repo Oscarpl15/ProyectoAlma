@@ -3,14 +3,35 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.practicasalma.proyectoalma.controller.AlumnosController"
       spacing="15">
 
-    <HBox alignment="CENTER_RIGHT">
-        <TextField promptText="Buscar alumno..." prefWidth="250"/>
-    </HBox>
+
+    <BorderPane>
+        <left>
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <ComboBox fx:id="comboCursoFiltro" prefWidth="150">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="2022-2023" />
+                            <String fx:value="2023-2024"/>
+                            <String fx:value="2024-2025"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </HBox>
+        </left>
+        <right>
+            <HBox alignment="CENTER_RIGHT">
+                <TextField promptText="Buscar alumno..." prefWidth="250"/>
+            </HBox>
+        </right>
+    </BorderPane>
+
 
     <TableView fx:id="tablaAlumnos" VBox.vgrow="ALWAYS">
         <columns>

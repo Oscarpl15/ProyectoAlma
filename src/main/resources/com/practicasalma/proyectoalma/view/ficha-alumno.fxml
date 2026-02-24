@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.practicasalma.proyectoalma.controller.FichaAlumnoController"
+            stylesheets="@../css/estilos.css"
+            prefWidth="700" prefHeight="550"
+            styleClass="fondo-ficha">
+
+    <padding>
+        <Insets top="20" right="30" bottom="20" left="30"/>
+    </padding>
+
+    <top>
+        <VBox>
+            <Label text="Ficha del Alumno" styleClass="titulo-ficha"/>
+            <Separator>
+                <VBox.margin><Insets top="10" bottom="20"/></VBox.margin>
+            </Separator>
+        </VBox>
+    </top>
+
+    <center>
+        <GridPane hgap="15" vgap="15">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" minWidth="130"/>
+                <ColumnConstraints hgrow="NEVER" halignment="RIGHT"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+
+            <VBox alignment="TOP_CENTER" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.rowSpan="5">
+                <StackPane style="-fx-border-color: #BDC3C7; -fx-border-width: 1; -fx-background-color: white;">
+                    <ImageView fx:id="imgFoto" fitWidth="120" fitHeight="150" preserveRatio="true">
+                        <image>
+                        </image>
+                    </ImageView>
+                </StackPane>
+                <Button text="Cambiar Foto..." onAction="#seleccionarFoto" style="-fx-font-size: 11px;"/>
+            </VBox>
+
+            <Label text="Nombre:" styleClass="label-formulario" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <TextField fx:id="txtNombre" promptText="Ej: Juan" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+
+            <Label text="Apellidos:" styleClass="label-formulario" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <TextField fx:id="txtApellidos" promptText="Ej: Pérez Gómez" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+
+            <Label text="DNI / NIF:" styleClass="label-formulario" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <HBox spacing="15" alignment="CENTER_LEFT" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                <TextField fx:id="txtDni" promptText="12345678X" prefWidth="120"/>
+                <Label text="Fecha Nac.:" styleClass="label-formulario"/>
+                <DatePicker fx:id="dpFechaNacimiento"/>
+            </HBox>
+
+            <Label text="Dirección:" styleClass="label-formulario" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            <TextField fx:id="txtDireccion" promptText="C/ Ejemplo, 123" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+
+            <Label text="Curso Académico:" styleClass="label-formulario" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+            <HBox spacing="15" alignment="CENTER_LEFT" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                <ComboBox fx:id="cmbCurso" promptText="Seleccionar..." prefWidth="150"/>
+                <CheckBox fx:id="chkActivo" text="Alumno Activo" selected="true"/>
+            </HBox>
+
+            <Separator GridPane.columnSpan="3" GridPane.rowIndex="5">
+                <GridPane.margin><Insets top="10" bottom="10"/></GridPane.margin>
+            </Separator>
+
+            <HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="6" GridPane.columnSpan="3">
+                <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+                </ImageView>
+                <Label text="Unidad Familiar:" style="-fx-font-weight: bold;"/>
+                <Hyperlink fx:id="linkPadres" text="Ver Ficha de Padres / Tutores >" onAction="#abrirFichaPadres" styleClass="link-padres"/>
+            </HBox>
+
+            <Label text="Autorizaciones:" styleClass="label-seccion" GridPane.columnIndex="0" GridPane.rowIndex="7" GridPane.columnSpan="3">
+                <GridPane.margin><Insets top="15"/></GridPane.margin>
+            </Label>
+
+            <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="8" GridPane.columnSpan="3">
+                <GridPane.margin><Insets left="20"/></GridPane.margin>
+                <CheckBox fx:id="chkAuthImagen" text="Autorización uso de imagen (Fotos/Vídeo fundación)"/>
+                <CheckBox fx:id="chkAuthSalidas" text="Autorización salidas extraescolares"/>
+                <CheckBox fx:id="chkAuthRecogida" text="Autorización recogida por terceros"/>
+            </VBox>
+
+        </GridPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="15">
+            <BorderPane.margin><Insets top="30"/></BorderPane.margin>
+            <Button text="Cancelar" onAction="#cerrarVentana" styleClass="boton-secundario"/>
+            <Button fx:id="btnGuardar" text="Guardar Ficha" onAction="#guardarDatos" styleClass="boton-primario"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
