@@ -3,6 +3,7 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.model.Alumno;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
@@ -32,6 +33,8 @@ public class FichaAlumnoController {
     public void initialize() {
         // Cargar el combo de cursos con datos de ejemplo
         cmbCurso.getItems().addAll("2025-2026", "2026-2027", "2027-2028");
+
+
     }
 
     // METODO CLAVE PARA RECIBIR DATOS (Lo usaremos mañana)
@@ -43,6 +46,42 @@ public class FichaAlumnoController {
             txtApellidos.setText(alumno.getApellidos());
             // ... rellenar el resto ...
             btnGuardar.setText("Actualizar Datos");
+
+            // --- CORRECCIÓN DE LA IMAGEN ---
+            String rutaAlumno = alumno.getRutaFoto();
+
+            // 1. Comprobamos que la ruta NO sea nula ni esté vacía
+            if (rutaAlumno != null && !rutaAlumno.trim().isEmpty()) {
+                try {
+                    Image imagenAlumno;
+
+                    // 2. Si la ruta empieza por "/", es nuestra imagen por defecto (recurso interno)
+                    if (rutaAlumno.startsWith("/")) {
+                        String rutaReal = getClass().getResource(rutaAlumno).toExternalForm();
+                        imagenAlumno = new Image(rutaReal);
+                    }
+                    // 3. Si no, es una foto elegida por el usuario (archivo externo del PC)
+                    else {
+                        // Si ya tiene formato URI (file://...), la cargamos directo
+                        if (rutaAlumno.startsWith("file:") || rutaAlumno.startsWith("http")) {
+                            imagenAlumno = new Image(rutaAlumno);
+                        } else {
+                            // Si es una ruta normal de Windows/Mac (ej: C:\fotos\alumno.png), la convertimos
+                            imagenAlumno = new Image(new java.io.File(rutaAlumno).toURI().toString());
+                        }
+                    }
+
+                    // Colocamos la imagen en el visor
+                    imgFoto.setImage(imagenAlumno);
+
+                } catch (NullPointerException e) {
+                    System.out.println("Error: No se encontró la imagen en los recursos internos: " + rutaAlumno);
+                } catch (Exception e) {
+                    System.out.println("Error al cargar la imagen externa: " + rutaAlumno);
+                }
+            } else {
+                System.out.println("El alumno no tiene ninguna ruta de foto guardada.");
+            }
         } else {
             // Estamos CREANDO UNO NUEVO
             btnGuardar.setText("Guardar Nueva Ficha");

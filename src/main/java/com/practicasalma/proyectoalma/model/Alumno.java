@@ -8,6 +8,7 @@ public class Alumno {
     //Esto sirve para que se genere una conexion y cuando se modifique el dato, se actualice en la tabla automaticamente.
     private final StringProperty nombre = new SimpleStringProperty();
     private final StringProperty apellidos = new SimpleStringProperty();
+    private String rutaFoto = "/com/practicasalma/proyectoalma/assets/default.png";
     // Añade DNI, Curso, etc.
 
     public Alumno(String nombre, String apellidos) {
@@ -19,12 +20,19 @@ public class Alumno {
     public StringProperty apellidosProperty() { return apellidos; }
     // Getters normales si quieres...
 
-
     public String getNombre() {
         return nombre.get();
     }
 
     public String getApellidos() {
         return apellidos.get();
+    }
+
+    public String getRutaFoto() {
+        return rutaFoto;
+    }
+
+    public void setRutaFoto(String rutaFoto) {
+        this.rutaFoto = rutaFoto;
     }
 }
