@@ -1,11 +1,16 @@
 package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Alumno;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import java.io.File;
 
 public class FichaAlumnoController {
 
@@ -27,7 +32,8 @@ public class FichaAlumnoController {
 
     @FXML private Button btnGuardar;
 
-    private Alumno alumnoActual; // Para saber si estamos editando uno existente
+    private Alumno alumnoActual;
+    private String rutaFotoSeleccionada = null;// Para saber si estamos editando uno existente
 
     @FXML
     public void initialize() {
@@ -92,9 +98,27 @@ public class FichaAlumnoController {
     // --- ACCIONES DE LOS BOTONES ---
 
     @FXML
-    private void seleccionarFoto() {
+    private void seleccionarFoto(ActionEvent event) {
         System.out.println("Abrir explorador de archivos para buscar foto...");
-        // Aquí usaremos FileChooser más adelante
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Selecciona foto del alumno");
+
+        // Indicas que extensiones son validos para poder selccionar y te filtre
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Imagen", "*.png", "*.jpg", "*.jpeg"));
+
+        // Sirve para que solo se pueda darle click a la ventana "padre" hasta que seleciones una foto o canceles
+        // y aparte guarda el archivo que hayas seleccionado
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        File archivoSeleccionado = fileChooser.showOpenDialog(stage);
+
+        if (archivoSeleccionado != null) {
+            rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
+
+            Image image = new Image(archivoSeleccionado.toURI().toString());
+            imgFoto.setImage(image);
+
+            System.out.println("Ruta de la foto: " + rutaFotoSeleccionada);
+        }
     }
 
     @FXML
