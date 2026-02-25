@@ -8,7 +8,7 @@ public class GestorBBDD {
 
     private static EntityManagerFactory buildEntityManagerFactory() {
         try {
-            // El nombre "ProyectoAlma" debe coincidir EXACTAMENTE con el <persistence-unit name="..."> de tu XML
+            
             return Persistence.createEntityManagerFactory("ProyectoAlma");
         } catch (Throwable ex) {
             System.err.println("Error al inicializar JPA: " + ex);
