@@ -44,7 +44,8 @@ public class FichaAlumnoController {
             // ... rellenar el resto ...
             btnGuardar.setText("Actualizar Datos");
         } else {
-            // Estamos CREANDO UNO NUEVO
+            txtNombre.setText("");
+            txtApellidos.setText("");
             btnGuardar.setText("Guardar Nueva Ficha");
             // Limpiar campos si hiciera falta
         }
