@@ -7,7 +7,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <properties>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:sqlite:bbdd_FundacionAlma.db"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:sqlite:datos/bbdd_FundacionAlma.db"/>
             <property name="jakarta.persistence.jdbc.driver" value="org.sqlite.JDBC"/>
 
             <property name="hibernate.dialect" value="org.hibernate.community.dialect.SQLiteDialect"/>
