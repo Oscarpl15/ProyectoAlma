@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.practicasalma.proyectoalma.controller.DocentesController"
+      spacing="15">
+
+    <HBox alignment="CENTER_RIGHT">
+        <TextField promptText="Buscar docente..." prefWidth="250"/>
+    </HBox>
+
+    <TableView fx:id="tablaDocentes" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colNombre" text="Nombre" prefWidth="200"/>
+            <TableColumn fx:id="colApellidos" text="Apellidos" prefWidth="200"/>
+            <TableColumn fx:id="colDireccion" text="Direccion" prefWidth="200"/>
+            <TableColumn fx:id="colTelefono" text="Telefono" prefWidth="100"/>
+            <TableColumn fx:id="colDni" text="DNI" prefWidth="100"/>
+            <TableColumn fx:id="colCorreo" text="Correo" prefWidth="200"/>
+            <TableColumn fx:id="colAB" text="Alta/Baja" prefWidth="100"/>
+        </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+    </TableView>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Button text="+ AÑADIR DOCENTE" onAction="#nuevoDocente" styleClass="boton-accion"/>
+    </HBox>
+
+</VBox>
