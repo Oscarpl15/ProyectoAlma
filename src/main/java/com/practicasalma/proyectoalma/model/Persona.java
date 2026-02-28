@@ -43,6 +43,14 @@ public abstract class Persona {
         this.fechaAlta = LocalDate.now(); // Autocompleta la fecha de hoy al instanciar
     }
 
+    // Constructor con los campos obligatorios
+    public Persona(String nombre, String apellidos, String direccion) {
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.direccion = direccion;
+        this.fechaAlta = LocalDate.now();
+    }
+
     public Integer getId() { return id; }
 
     public String getNombre() { return nombre; }
