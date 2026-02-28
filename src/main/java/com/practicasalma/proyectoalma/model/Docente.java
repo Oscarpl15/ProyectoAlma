@@ -1,52 +1,60 @@
 package com.practicasalma.proyectoalma.model;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import jakarta.persistence.*;
+import java.time.LocalDate;
 
-public class Docente {
+@Entity
+@Table(name = "docentes")
+public class Docente extends Persona {
 
-    //Esto sirve para que se genere una conexion y cuando se modifique el dato, se actualice en la tabla automaticamente.
-    private String nombre;
-    private String apellidos;
-    private String direccion;
-    private String telefono;
-    private String dni;
-    private String correo;
+    @Column(name = "fecha_nacimiento", nullable = false)
+    private LocalDate fechaNacimiento;
 
-    public Docente() {}
+    // Certificado de Delitos Sexuales
+    @Column(name = "cert_delitos_sexuales", nullable = false)
+    private Boolean autoDelitosSexuales = false;
 
-    public Docente(String nombre, String apellidos, String direccion, String telefono, String dni, String correo) {
-        this.nombre = nombre;
-        this.apellidos = apellidos;
-        this.direccion = direccion;
-        this.telefono = telefono;
-        this.dni = dni;
-        this.correo = correo;
+    @Column(name = "ruta_doc_delitos")
+    private String rutaDocDelitosSexuales;
+
+    // Ley de Protección de Datos
+    @Column(name = "cert_proteccion_datos", nullable = false)
+    private Boolean autoProteccionDatos = false;
+
+    @Column(name = "ruta_doc_leypd")
+    private String rutaDocProteccionDatos;
+
+    // Dato a preguntar si quiere Lidia que se ponga
+    // @Column(name = "titulacion")
+    // private String titulacion;
+
+    // Constructor vacío obligatorio para Hibernate
+    public Docente() {
+        super();
     }
 
-    public String getNombre() {
-        return nombre;
+    // Constructor para instanciar desde el controlador JavaFX
+    public Docente(String nombre, String apellidos, String direccion, String dni,String telefono, String correo, LocalDate fechaNacimiento) {
+        super(nombre, apellidos, direccion);
+        this.setDni(dni);
+        this.setTelefono(telefono);
+        this.setCorreo(correo);
+        this.fechaNacimiento = fechaNacimiento;
     }
 
-    public String getApellidos() {
-        return apellidos;
-    }
+    // Getters y Setters
+    public LocalDate getFechaNacimiento() { return fechaNacimiento; }
+    public void setFechaNacimiento(LocalDate fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
 
-    public String getDireccion() {
-        return direccion;
-    }
+    public Boolean getAutoDelitosSexuales() { return autoDelitosSexuales; }
+    public void setAutoDelitosSexuales(Boolean autoDelitosSexuales) { this.autoDelitosSexuales = autoDelitosSexuales; }
 
-    public String getTelefono() {
-        return telefono;
-    }
+    public String getRutaDocDelitosSexuales() { return rutaDocDelitosSexuales; }
+    public void setRutaDocDelitosSexuales(String rutaDocDelitosSexuales) { this.rutaDocDelitosSexuales = rutaDocDelitosSexuales; }
 
-    public String getDni() {
-        return dni;
-    }
+    public Boolean getAutoProteccionDatos() { return autoProteccionDatos; }
+    public void setAutoProteccionDatos(Boolean autoProteccionDatos) { this.autoProteccionDatos = autoProteccionDatos; }
 
-    public String getCorreo() {
-        return correo;
-    }
-
-    // Getters normales si quieres...
+    public String getRutaDocProteccionDatos() { return rutaDocProteccionDatos; }
+    public void setRutaDocProteccionDatos(String rutaDocProteccionDatos) { this.rutaDocProteccionDatos = rutaDocProteccionDatos; }
 }
