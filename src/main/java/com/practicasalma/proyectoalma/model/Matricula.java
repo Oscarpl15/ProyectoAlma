@@ -12,11 +12,11 @@ public class Matricula {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    // Formato esperado: "2025-2026"
+    // Formato: "2025-2026"
     @Column(name = "anyo_academico", nullable = false)
     private String anyoAcademico;
 
-    // Formato esperado: "3º Primaria"
+    // Formato: "3º Primaria"
     @Column(nullable = false)
     private String curso;
 
@@ -40,7 +40,7 @@ public class Matricula {
         this.anyoAcademico = calcularAnyoAcademico();
     }
 
-    // --- Getters y Setters ---
+    // Getters y Setters
 
     public Integer getId() { return id; }
 
@@ -56,7 +56,7 @@ public class Matricula {
     public Alumno getAlumno() { return alumno; }
     public void setAlumno(Alumno alumno) { this.alumno = alumno; }
 
-    //Método para automatizar el curso académico
+    //Metodo para automatizar el curso academico
     private String calcularAnyoAcademico() {
         LocalDate hoy = LocalDate.now();
         int anyoActual = hoy.getYear();

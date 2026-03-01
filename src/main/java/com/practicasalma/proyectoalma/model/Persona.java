@@ -51,6 +51,8 @@ public abstract class Persona {
         this.fechaAlta = LocalDate.now();
     }
 
+    // Getters y Setters
+
     public Integer getId() { return id; }
 
     public String getNombre() { return nombre; }

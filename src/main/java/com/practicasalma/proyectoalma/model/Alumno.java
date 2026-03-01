@@ -17,21 +17,21 @@ public class Alumno extends Persona {
     @Column(name = "ruta_foto_perfil")
     private String rutaFotoPerfil;
 
-    // 1. Uso de Imagen
+    // Uso de Imagen
     @Column(name = "auto_imagen", nullable = false)
     private Boolean autorizaImagen = false;
 
     @Column(name = "ruta_doc_imagen")
     private String rutaDocImagen;
 
-    // 2. Salidas Extraescolares
+    // Salidas Extraescolares
     @Column(name = "auto_salidas", nullable = false)
     private Boolean autorizaSalidas = false;
 
     @Column(name = "ruta_doc_salidas")
     private String rutaDocSalidas;
 
-    // 3. Recogida por Terceros
+    // Recogida por Terceros
     @Column(name = "auto_irseSolo", nullable = false)
     private Boolean autorizaRecogida = false;
 
@@ -75,7 +75,7 @@ public class Alumno extends Persona {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    // --- Getters y Setters ---
+    //Getters y Setters
 
     public LocalDate getFechaNacimiento() { return fechaNacimiento; }
     public void setFechaNacimiento(LocalDate fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }

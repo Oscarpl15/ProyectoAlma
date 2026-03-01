@@ -25,7 +25,7 @@ public class Tutor extends Persona {
         this.setDni(dni); //Esto solo si fuese obligatorio el dni en tutor, si no lo es lo quitariamos.
     }
 
-    // --- Getters ---
+    // Getters y setters
 
     public List<Alumno> getAlumnos() { return alumnos; }
 
