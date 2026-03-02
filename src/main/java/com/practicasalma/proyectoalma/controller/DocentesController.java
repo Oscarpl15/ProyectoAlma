@@ -18,6 +18,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 public class DocentesController {
 
@@ -31,9 +32,9 @@ public class DocentesController {
 
     // Datos falsos para la presentación
     private ObservableList<Docente> listaFalsa = FXCollections.observableArrayList(
-            new Docente("Sofía", "Díaz Sánchez", "C/ Olivos 13 1B", "612 34 56 78", "09876543E", "sofiadiazsanchez@gmail.com"),
-            new Docente("Daniel", "Gonzalez Fernández", "C/ Flores 5 4D", "698 76 54 32", "01234567G", "danielgonzalezfernandez@gmail.com"),
-            new Docente("Alma", "Perez Domínguez", "C/ Olivos 13 1B", "612 34 56 78", "08642975A", "almaperezdominguez@gmail.com")
+            new Docente("Sofía", "Díaz Sánchez", "C/ Olivos 13 1B", "612 34 56 78", "09876543E", "sofiadiazsanchez@gmail.com", LocalDate.now()),
+            new Docente("Daniel", "Gonzalez Fernández", "C/ Flores 5 4D", "698 76 54 32", "01234567G", "danielgonzalezfernandez@gmail.com",LocalDate.now()),
+            new Docente("Alma", "Perez Domínguez", "C/ Olivos 13 1B", "612 34 56 78", "08642975A", "almaperezdominguez@gmail.com", LocalDate.now())
     );
 
     @FXML
