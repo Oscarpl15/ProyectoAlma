@@ -19,7 +19,7 @@ public class Alumno {
 
     public Alumno(String nombre){
         this.nombre = nombre;
-        this.rutaFoto = rutaFoto;
+        this.rutaFoto = rutaFoto; // Inicializo
     }
 
 
