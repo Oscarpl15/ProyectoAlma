@@ -66,7 +66,7 @@ public class Alumno extends Persona {
 
     // Constructor vacío obligatorio para Hibernate
     public Alumno() {
-        super(); // Llama al constructor de Persona (asigna la fechaAlta)
+        super(); 
     }
 
     //Constructor normal
