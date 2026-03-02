@@ -89,7 +89,8 @@ public class FichaAlumnoController {
                 System.out.println("El alumno no tiene ninguna ruta de foto guardada.");
             }
         } else {
-            // Estamos CREANDO UNO NUEVO
+            txtNombre.setText("");
+            txtApellidos.setText("");
             btnGuardar.setText("Guardar Nueva Ficha");
             // Limpiar campos si hiciera falta
         }

@@ -47,6 +47,6 @@ public class Launcher extends Application { // No hace falta poner javafx.applic
     }
 
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 }

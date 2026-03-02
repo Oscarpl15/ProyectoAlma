@@ -75,7 +75,7 @@
 
                         <Tab>
                             <content>
-                                <Label text="Aquí irá la vista de Docentes" />
+                                <fx:include source="docentes-view.fxml" />
                             </content>
                         </Tab>
 

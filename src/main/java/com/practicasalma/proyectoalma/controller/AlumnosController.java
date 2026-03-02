@@ -3,6 +3,7 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.Launcher;
 
 import com.practicasalma.proyectoalma.model.Alumno;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -35,8 +36,13 @@ public class AlumnosController {
     @FXML
     public void initialize() {
         // 1. Enlazar columnas con el modelo
-        colNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        colApellidos.setCellValueFactory(cellData -> cellData.getValue().apellidosProperty());
+        colNombre.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getNombre())
+        );
+
+        colApellidos.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getApellidos())
+        );
 
         // 2. Meter datos
         tablaAlumnos.setItems(listaFalsa);
