@@ -35,8 +35,8 @@ public class Socio extends Persona {
         super(nombre, apellidos, direccion);
         this.setDni(dni);
         this.tipoEntidad = tipoEntidad;
-        this.cuota = 0.0; // Lo inicializamos a 0 por defecto
-        this.periodicidad = "Ninguna"; // O null, lo que prefieras manejar en la vista
+        this.cuota = 0.0; 
+        this.periodicidad = "Ninguna";
     }
 
     //Constructor para socios con cuota periodica
