@@ -1,5 +1,6 @@
 package com.practicasalma.proyectoalma.model;
 
+import jakarta.persistence.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -18,20 +19,9 @@ public class Alumno {
 
     public Alumno(String nombre){
         this.nombre = nombre;
-    }
-    public Alumno(String nombre, String apellidos) {
-        this.nombre.set(nombre);
-        this.apellidos.set(apellidos);
+        this.rutaFoto = rutaFoto;
     }
 
-
-    public String getNombre() {
-        return nombre.get();
-    }
-
-    public String getApellidos() {
-        return apellidos.get();
-    }
 
     public String getRutaFoto() {
         return rutaFoto;

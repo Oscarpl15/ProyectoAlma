@@ -28,9 +28,9 @@ public class AlumnosController {
 
     // Datos falsos para la presentación
     private ObservableList<Alumno> listaFalsa = FXCollections.observableArrayList(
-            new Alumno("Juan", "Pérez López"),
-            new Alumno("Lucía", "García Martín"),
-            new Alumno("Marcos", "Alonso")
+            new Alumno("Juan"),
+            new Alumno("Lucía"),
+            new Alumno("Marcos")
     );
 
     @FXML
