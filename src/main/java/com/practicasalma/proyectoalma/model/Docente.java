@@ -24,9 +24,7 @@ public class Docente extends Persona {
     @Column(name = "ruta_doc_leypd")
     private String rutaDocProteccionDatos;
 
-    // Dato a preguntar si quiere Lidia que se ponga
-    // @Column(name = "titulacion")
-    // private String titulacion;
+    private String titulacion;
 
     // Constructor vacío obligatorio para Hibernate
     public Docente() {
@@ -57,4 +55,7 @@ public class Docente extends Persona {
 
     public String getRutaDocProteccionDatos() { return rutaDocProteccionDatos; }
     public void setRutaDocProteccionDatos(String rutaDocProteccionDatos) { this.rutaDocProteccionDatos = rutaDocProteccionDatos; }
+
+    public String getTitulacion() {return titulacion;}
+    public void setTitulacion(String titulacion) {this.titulacion = titulacion;}
 }

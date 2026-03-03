@@ -40,43 +40,18 @@ public class Voluntario extends Persona {
     }
 
     // Getters y Setters
-    public LocalDate getFechaNacimiento() {
-        return fechaNacimiento;
-    }
+    public LocalDate getFechaNacimiento() { return fechaNacimiento; }
+    public void setFechaNacimiento(LocalDate fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
 
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
-    }
+    public Boolean getAutoDelitosSexuales() { return autoDelitosSexuales; }
+    public void setAutoDelitosSexuales(Boolean autoDelitosSexuales) { this.autoDelitosSexuales = autoDelitosSexuales; }
 
-    public Boolean getAutoDelitosSexuales() {
-        return autoDelitosSexuales;
-    }
+    public String getRutaDocDelitosSexuales() { return rutaDocDelitosSexuales; }
+    public void setRutaDocDelitosSexuales(String rutaDocDelitosSexuales) { this.rutaDocDelitosSexuales = rutaDocDelitosSexuales; }
 
-    public void setAutoDelitosSexuales(Boolean autoDelitosSexuales) {
-        this.autoDelitosSexuales = autoDelitosSexuales;
-    }
+    public Boolean getAutoProteccionDatos() { return autoProteccionDatos; }
+    public void setAutoProteccionDatos(Boolean autoProteccionDatos) { this.autoProteccionDatos = autoProteccionDatos; }
 
-    public String getRutaDocDelitosSexuales() {
-        return rutaDocDelitosSexuales;
-    }
-
-    public void setRutaDocDelitosSexuales(String rutaDocDelitosSexuales) {
-        this.rutaDocDelitosSexuales = rutaDocDelitosSexuales;
-    }
-
-    public Boolean getAutoProteccionDatos() {
-        return autoProteccionDatos;
-    }
-
-    public void setAutoProteccionDatos(Boolean autoProteccionDatos) {
-        this.autoProteccionDatos = autoProteccionDatos;
-    }
-
-    public String getRutaDocProteccionDatos() {
-        return rutaDocProteccionDatos;
-    }
-
-    public void setRutaDocProteccionDatos(String rutaDocProteccionDatos) {
-        this.rutaDocProteccionDatos = rutaDocProteccionDatos;
-    }
+    public String getRutaDocProteccionDatos() { return rutaDocProteccionDatos; }
+    public void setRutaDocProteccionDatos(String rutaDocProteccionDatos) { this.rutaDocProteccionDatos = rutaDocProteccionDatos; }
 }

@@ -38,6 +38,25 @@ public class Alumno extends Persona {
     @Column(name = "ruta_doc_irseSolo")
     private String rutaDocRecogida;
 
+    //Otros datos
+    @Column(name = "colegio")
+    private String colegio;
+
+    @Column(name = "seguimiento_servicios_sociales")
+    private Boolean seguimientoServiciosSociales = false;
+
+    @Column(name = "seguimiento_saf")
+    private Boolean seguimientoSaf = false;
+
+    // Para el cálculo matemático de la baja automática
+    @Column(name = "num_repeticiones_previas", nullable = false)
+    private Integer numRepeticionesPrevias = 0;
+
+    // Información descriptiva en la ficha del alumno
+    @Column(name = "detalle_cursos_repetidos")
+    private String detalleCursosRepetidos;
+
+
     // Relación Uno a Muchos con Matricula
     // mappedBy indica que la clave foránea está en la clase Matricula (atributo "alumno")
     // cascade = CascadeType.ALL y orphanRemoval = true aseguran que si borras un alumno, se borran sus matrículas
@@ -107,6 +126,15 @@ public class Alumno extends Persona {
 
     public List<Alumno> getFamiliares() { return familiares; }
     public void setFamiliares(List<Alumno> familiares) { this.familiares = familiares; }
+
+    public String getColegio() {return colegio;}
+    public void setColegio(String colegio) {this.colegio = colegio;}
+
+    public Boolean getSeguimientoServiciosSociales() {return seguimientoServiciosSociales;}
+    public void setSeguimientoServiciosSociales(Boolean seguimientoServiciosSociales) {this.seguimientoServiciosSociales = seguimientoServiciosSociales;}
+
+    public Boolean getSeguimientoSaf() {return seguimientoSaf;}
+    public void setSeguimientoSaf(Boolean seguimientoSaf) {this.seguimientoSaf = seguimientoSaf;}
 
     // Métodos para añadir o eliminar tutores o matrículas a un alumno
 
