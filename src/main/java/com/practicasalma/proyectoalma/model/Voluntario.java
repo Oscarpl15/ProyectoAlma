@@ -2,6 +2,8 @@ package com.practicasalma.proyectoalma.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "voluntarios")
@@ -24,6 +26,8 @@ public class Voluntario extends Persona {
     @Column(name = "ruta_doc_leypd")
     private String rutaDocProteccionDatos;
 
+    @OneToMany(mappedBy = "docente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AsignacionPersonal> historialAsignaciones = new ArrayList<>();
 
     // Constructor vacío obligatorio para Hibernate
     public Voluntario() {
@@ -54,4 +58,17 @@ public class Voluntario extends Persona {
 
     public String getRutaDocProteccionDatos() { return rutaDocProteccionDatos; }
     public void setRutaDocProteccionDatos(String rutaDocProteccionDatos) { this.rutaDocProteccionDatos = rutaDocProteccionDatos; }
+
+    public List<AsignacionPersonal> getHistorialAsignaciones() {return historialAsignaciones;}
+
+    //  Metodo añadir y eliminar bisincronizados
+    public void addAsignacion(AsignacionPersonal asignacion) {
+        this.historialAsignaciones.add(asignacion);
+        asignacion.setVoluntario(this);
+    }
+
+    public void removeAsignacion(AsignacionPersonal asignacion) {
+        this.historialAsignaciones.remove(asignacion);
+        asignacion.setVoluntario(null);
+    }
 }
