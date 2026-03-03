@@ -28,6 +28,9 @@ public class Socio extends Persona {
     @OneToMany(mappedBy = "socio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Donacion> donaciones = new ArrayList<>();
 
+    @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PeriodoActividad> periodosActividad = new ArrayList<>();
+
     // Constructor vacío obligatorio para Hibernate
     public Socio() {
         super();
@@ -68,6 +71,8 @@ public class Socio extends Persona {
 
     public List<Donacion> getDonaciones() {return donaciones;}
 
+    public List<PeriodoActividad> getPeriodosActividad() {return periodosActividad;}
+
 
     //  Métodos de sincronización bidireccional
 
@@ -80,5 +85,16 @@ public class Socio extends Persona {
     public void removeDonacion(Donacion donacion) {
         this.donaciones.remove(donacion);
         donacion.setSocio(null);
+    }
+
+    // Metodos para añadir o eliminar un nuevo periodo con sincronización bidireccional
+    public void addPeriodo(PeriodoActividad periodo) {
+        this.periodosActividad.add(periodo);
+        periodo.setSocio(this);
+    }
+
+    public void removePeriodo(PeriodoActividad periodo) {
+        this.periodosActividad.remove(periodo);
+        periodo.setSocio(null);
     }
 }

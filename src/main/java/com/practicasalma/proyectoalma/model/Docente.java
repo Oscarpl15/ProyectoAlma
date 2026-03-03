@@ -31,6 +31,9 @@ public class Docente extends Persona {
     @OneToMany(mappedBy = "docente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AsignacionPersonal> historialAsignaciones = new ArrayList<>();
 
+    @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PeriodoActividad> periodosActividad = new ArrayList<>();
+
 
     // Constructor vacío obligatorio para Hibernate
     public Docente() {
@@ -67,7 +70,9 @@ public class Docente extends Persona {
 
     public List<AsignacionPersonal> getHistorialAsignaciones() {return historialAsignaciones;}
 
-    //  Metodo añadir y eliminar bisincronizados
+    public List<PeriodoActividad> getPeriodosActividad() {return periodosActividad;}
+
+    //  Metodo añadir y eliminar con sincronización bidireccional
     public void addAsignacion(AsignacionPersonal asignacion) {
         this.historialAsignaciones.add(asignacion);
         asignacion.setDocente(this);
@@ -76,5 +81,16 @@ public class Docente extends Persona {
     public void removeAsignacion(AsignacionPersonal asignacion) {
         this.historialAsignaciones.remove(asignacion);
         asignacion.setDocente(null);
+    }
+
+    // Metodos para añadir o eliminar un nuevo periodo con sincronización bidireccional
+    public void addPeriodo(PeriodoActividad periodo) {
+        this.periodosActividad.add(periodo);
+        periodo.setDocente(this);
+    }
+
+    public void removePeriodo(PeriodoActividad periodo) {
+        this.periodosActividad.remove(periodo);
+        periodo.setDocente(null);
     }
 }

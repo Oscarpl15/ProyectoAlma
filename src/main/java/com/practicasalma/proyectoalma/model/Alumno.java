@@ -56,7 +56,6 @@ public class Alumno extends Persona {
     @Column(name = "detalle_cursos_repetidos")
     private String detalleCursosRepetidos;
 
-
     // Relación Uno a Muchos con Matricula
     // mappedBy indica que la clave foránea está en la clase Matricula (atributo "alumno")
     // cascade = CascadeType.ALL y orphanRemoval = true aseguran que si borras un alumno, se borran sus matrículas
@@ -82,6 +81,9 @@ public class Alumno extends Persona {
             inverseJoinColumns = @JoinColumn(name = "familiar_id")
     )
     private List<Alumno> familiares = new ArrayList<>();
+
+    @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PeriodoActividad> periodosActividad = new ArrayList<>();
 
     // Constructor vacío obligatorio para Hibernate
     public Alumno() {
@@ -136,6 +138,8 @@ public class Alumno extends Persona {
     public Boolean getSeguimientoSaf() {return seguimientoSaf;}
     public void setSeguimientoSaf(Boolean seguimientoSaf) {this.seguimientoSaf = seguimientoSaf;}
 
+    public List<PeriodoActividad> getPeriodosActividad() {return periodosActividad;}
+
     // Métodos para añadir o eliminar tutores o matrículas a un alumno
 
     public void addTutor(Tutor tutor) {
@@ -154,6 +158,17 @@ public class Alumno extends Persona {
     public void removeMatricula(Matricula matricula) {
         this.matriculas.remove(matricula);
         matricula.setAlumno(null); // Obligatorio para que Hibernate entienda la desvinculación
+    }
+
+    // Metodos para añadir o eliminar un nuevo periodo con sincronización bidireccional
+    public void addPeriodo(PeriodoActividad periodo) {
+        this.periodosActividad.add(periodo);
+        periodo.setAlumno(this);
+    }
+
+    public void removePeriodo(PeriodoActividad periodo) {
+        this.periodosActividad.remove(periodo);
+        periodo.setAlumno(null);
     }
 
 }
