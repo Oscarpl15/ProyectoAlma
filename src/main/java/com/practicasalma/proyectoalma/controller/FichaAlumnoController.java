@@ -54,7 +54,7 @@ public class FichaAlumnoController {
             btnGuardar.setText("Actualizar Datos");
 
             // --- CORRECCIÓN DE LA IMAGEN ---
-            String rutaAlumno = alumno.getRutaFoto();
+            String rutaAlumno = alumno.getRutaFotoPerfil();
 
             // 1. Comprobamos que la ruta NO sea nula ni esté vacía
             if (rutaAlumno != null && !rutaAlumno.trim().isEmpty()) {

@@ -18,7 +18,7 @@ public class HelloApplication {
 
         em.getTransaction().begin();
 
-        Alumno prueba = new Alumno("Alumno de Prueba");
+        Alumno prueba = new Alumno();
         em.persist(prueba); // Guardamos en la base de datos
 
         em.getTransaction().commit();
