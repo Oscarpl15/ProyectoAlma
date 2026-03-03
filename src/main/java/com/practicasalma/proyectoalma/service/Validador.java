@@ -52,4 +52,17 @@ public class Validador {
 
         return letraProporcionada == letraCalculada;
     }
+
+    public static boolean esEmailValido(String email) {
+
+        if (email == null) {
+            return false;
+        }
+
+        email = email.trim();
+
+        String regexEmail = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+
+        return email.matches(regexEmail);
+    }
 }
