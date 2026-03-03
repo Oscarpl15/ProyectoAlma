@@ -2,6 +2,8 @@ package com.practicasalma.proyectoalma.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "docentes")
@@ -24,9 +26,14 @@ public class Docente extends Persona {
     @Column(name = "ruta_doc_leypd")
     private String rutaDocProteccionDatos;
 
-    // Dato a preguntar si quiere Lidia que se ponga
-    // @Column(name = "titulacion")
-    // private String titulacion;
+    private String titulacion;
+
+    @OneToMany(mappedBy = "docente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AsignacionPersonal> historialAsignaciones = new ArrayList<>();
+
+    @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PeriodoActividad> periodosActividad = new ArrayList<>();
+
 
     // Constructor vacío obligatorio para Hibernate
     public Docente() {
@@ -57,4 +64,33 @@ public class Docente extends Persona {
 
     public String getRutaDocProteccionDatos() { return rutaDocProteccionDatos; }
     public void setRutaDocProteccionDatos(String rutaDocProteccionDatos) { this.rutaDocProteccionDatos = rutaDocProteccionDatos; }
+
+    public String getTitulacion() {return titulacion;}
+    public void setTitulacion(String titulacion) {this.titulacion = titulacion;}
+
+    public List<AsignacionPersonal> getHistorialAsignaciones() {return historialAsignaciones;}
+
+    public List<PeriodoActividad> getPeriodosActividad() {return periodosActividad;}
+
+    //  Metodo añadir y eliminar con sincronización bidireccional
+    public void addAsignacion(AsignacionPersonal asignacion) {
+        this.historialAsignaciones.add(asignacion);
+        asignacion.setDocente(this);
+    }
+
+    public void removeAsignacion(AsignacionPersonal asignacion) {
+        this.historialAsignaciones.remove(asignacion);
+        asignacion.setDocente(null);
+    }
+
+    // Metodos para añadir o eliminar un nuevo periodo con sincronización bidireccional
+    public void addPeriodo(PeriodoActividad periodo) {
+        this.periodosActividad.add(periodo);
+        periodo.setDocente(this);
+    }
+
+    public void removePeriodo(PeriodoActividad periodo) {
+        this.periodosActividad.remove(periodo);
+        periodo.setDocente(null);
+    }
 }

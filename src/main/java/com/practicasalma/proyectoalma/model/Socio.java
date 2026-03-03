@@ -13,6 +13,9 @@ public class Socio extends Persona {
     @Column(name = "tipo_entidad")
     private String tipoEntidad;
 
+    @Column(name = "cuenta_bancaria")
+    private String cuentaBancaria;
+
     @Column(name = "cuota")
     private Double cuota;
 
@@ -24,6 +27,9 @@ public class Socio extends Persona {
     // mappedBy = "socio" le dice a Hibernate que la relación la controla la clase Donacion.
     @OneToMany(mappedBy = "socio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Donacion> donaciones = new ArrayList<>();
+
+    @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PeriodoActividad> periodosActividad = new ArrayList<>();
 
     // Constructor vacío obligatorio para Hibernate
     public Socio() {
@@ -57,6 +63,17 @@ public class Socio extends Persona {
     public String getPeriodicidad() { return periodicidad; }
     public void setPeriodicidad(String periodicidad) { this.periodicidad = periodicidad; }
 
+    public String getTipoEntidad() {return tipoEntidad;}
+    public void setTipoEntidad(String tipoEntidad) {this.tipoEntidad = tipoEntidad;}
+
+    public String getCuentaBancaria() {return cuentaBancaria;}
+    public void setCuentaBancaria(String cuentaBancaria) {this.cuentaBancaria = cuentaBancaria;}
+
+    public List<Donacion> getDonaciones() {return donaciones;}
+
+    public List<PeriodoActividad> getPeriodosActividad() {return periodosActividad;}
+
+
     //  Métodos de sincronización bidireccional
 
     public void addDonacion(Donacion donacion) {
@@ -68,5 +85,16 @@ public class Socio extends Persona {
     public void removeDonacion(Donacion donacion) {
         this.donaciones.remove(donacion);
         donacion.setSocio(null);
+    }
+
+    // Metodos para añadir o eliminar un nuevo periodo con sincronización bidireccional
+    public void addPeriodo(PeriodoActividad periodo) {
+        this.periodosActividad.add(periodo);
+        periodo.setSocio(this);
+    }
+
+    public void removePeriodo(PeriodoActividad periodo) {
+        this.periodosActividad.remove(periodo);
+        periodo.setSocio(null);
     }
 }
