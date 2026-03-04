@@ -42,10 +42,12 @@ public class Alumno extends Persona {
     @Column(name = "colegio")
     private String colegio;
 
-    @Column(name = "seguimiento_servicios_sociales")
+    @Column(name = "seguimiento_servicios_sociales") //check
     private Boolean seguimientoServiciosSociales = false;
 
-    @Column(name = "seguimiento_saf")
+    //añadir persona que deriva a niño a la fundacion
+
+    @Column(name = "seguimiento_saf")  // check
     private Boolean seguimientoSaf = false;
 
     // Para el cálculo matemático de la baja automática
