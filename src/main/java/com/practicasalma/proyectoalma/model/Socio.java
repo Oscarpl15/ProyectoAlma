@@ -49,6 +49,11 @@ public class Socio extends Persona {
         this.periodicidad = periodicidad;
     }
 
+    public Socio(String nombre, String apellidos, String direccion, String dni,  Double cuota) {
+        super(nombre, apellidos, direccion);
+        this.cuota = cuota;
+    }
+
     // Getters y Setters
 
     public Double getCuota() { return cuota; }

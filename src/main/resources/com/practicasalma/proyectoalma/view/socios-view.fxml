@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<VBox prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.practicasalma.proyectoalma.controller.SocioController">
+      <BorderPane>
+         <left>
+            <HBox BorderPane.alignment="CENTER_LEFT" spacing="10">
+                <ComboBox fx:id="comboTipoEntidadFiltro" prefWidth="150.0">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Física"/>
+                            <String fx:value="Empresa"/>
+                            <String fx:value="Asociación"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+                <ComboBox fx:id="comboPeriodicidadFiltro" prefWidth="150.0">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Mensual"/>
+                            <String fx:value="Trimestral"/>
+                            <String fx:value="Anual"/>
+                            <String fx:value="Puntual"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </HBox>
+         </left>
+         <right>
+            <HBox BorderPane.alignment="CENTER_RIGHT">
+                <TextField promptText="Buscar Socio..." prefWidth="250"/>
+            </HBox>
+         </right>
+      </BorderPane>
+
+      <TableView fx:id="tablaSocios" VBox.vgrow="ALWAYS">
+        <columns>
+          <TableColumn fx:id="colNombre" prefWidth="200" text="Nombre" />
+          <TableColumn fx:id="colApellidos" prefWidth="200" text="Apellidos" />
+            <TableColumn fx:id="colDireccion" prefWidth="200" text="Direccion" />
+            <TableColumn fx:id="colDni" prefWidth="100" text="DNI" />
+            <TableColumn fx:id="colTipoEntidad" prefWidth="200" text="Tipo Entidad" />
+            <TableColumn fx:id="colCuota" prefWidth="100" text="Couta" />
+            <TableColumn fx:id="colPeriodicidad" prefWidth="200" text="Periodicidad" />
+        </columns>
+      </TableView>
+
+      <HBox alignment="CENTER_RIGHT" spacing="10">
+          <Button text="+ AÑADIR SOCIO" onAction="#nuevoSocio" styleClass="boton-accion"/>
+      </HBox>
+</VBox>

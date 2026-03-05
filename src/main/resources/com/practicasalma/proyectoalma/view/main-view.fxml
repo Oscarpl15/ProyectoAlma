@@ -81,7 +81,7 @@
 
                         <Tab>
                             <content>
-                                <Label text="Aquí irá la vista de Socios" />
+                                <fx:include source="socios-view.fxml"/>
                             </content>
                         </Tab>
                     </tabs>
