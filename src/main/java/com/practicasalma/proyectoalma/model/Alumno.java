@@ -38,6 +38,26 @@ public class Alumno extends Persona {
     @Column(name = "ruta_doc_irseSolo")
     private String rutaDocRecogida;
 
+    //Otros datos
+    @Column(name = "colegio")
+    private String colegio;
+
+    @Column(name = "seguimiento_servicios_sociales") //check
+    private Boolean seguimientoServiciosSociales = false;
+
+    //añadir persona que deriva a niño a la fundacion
+
+    @Column(name = "seguimiento_saf")  // check
+    private Boolean seguimientoSaf = false;
+
+    // Para el cálculo matemático de la baja automática
+    @Column(name = "num_repeticiones_previas", nullable = false)
+    private Integer numRepeticionesPrevias = 0;
+
+    // Información descriptiva en la ficha del alumno
+    @Column(name = "detalle_cursos_repetidos")
+    private String detalleCursosRepetidos;
+
     // Relación Uno a Muchos con Matricula
     // mappedBy indica que la clave foránea está en la clase Matricula (atributo "alumno")
     // cascade = CascadeType.ALL y orphanRemoval = true aseguran que si borras un alumno, se borran sus matrículas
@@ -63,6 +83,9 @@ public class Alumno extends Persona {
             inverseJoinColumns = @JoinColumn(name = "familiar_id")
     )
     private List<Alumno> familiares = new ArrayList<>();
+
+    @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PeriodoActividad> periodosActividad = new ArrayList<>();
 
     // Constructor vacío obligatorio para Hibernate
     public Alumno() {
@@ -108,6 +131,17 @@ public class Alumno extends Persona {
     public List<Alumno> getFamiliares() { return familiares; }
     public void setFamiliares(List<Alumno> familiares) { this.familiares = familiares; }
 
+    public String getColegio() {return colegio;}
+    public void setColegio(String colegio) {this.colegio = colegio;}
+
+    public Boolean getSeguimientoServiciosSociales() {return seguimientoServiciosSociales;}
+    public void setSeguimientoServiciosSociales(Boolean seguimientoServiciosSociales) {this.seguimientoServiciosSociales = seguimientoServiciosSociales;}
+
+    public Boolean getSeguimientoSaf() {return seguimientoSaf;}
+    public void setSeguimientoSaf(Boolean seguimientoSaf) {this.seguimientoSaf = seguimientoSaf;}
+
+    public List<PeriodoActividad> getPeriodosActividad() {return periodosActividad;}
+
     // Métodos para añadir o eliminar tutores o matrículas a un alumno
 
     public void addTutor(Tutor tutor) {
@@ -126,6 +160,17 @@ public class Alumno extends Persona {
     public void removeMatricula(Matricula matricula) {
         this.matriculas.remove(matricula);
         matricula.setAlumno(null); // Obligatorio para que Hibernate entienda la desvinculación
+    }
+
+    // Metodos para añadir o eliminar un nuevo periodo con sincronización bidireccional
+    public void addPeriodo(PeriodoActividad periodo) {
+        this.periodosActividad.add(periodo);
+        periodo.setAlumno(this);
+    }
+
+    public void removePeriodo(PeriodoActividad periodo) {
+        this.periodosActividad.remove(periodo);
+        periodo.setAlumno(null);
     }
 
 }
