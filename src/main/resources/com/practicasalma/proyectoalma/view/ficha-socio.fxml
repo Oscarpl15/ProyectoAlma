@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="500" prefWidth="700" styleClass="fondo-ficha" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.practicasalma.proyectoalma.controller.FichaSocioController">
+
+    <padding>
+        <Insets bottom="20" left="30" right="30" top="20" />
+    </padding>
+
+    <top>
+        <VBox>
+            <Label styleClass="titulo-ficha" text="Ficha del Socio" />
+            <Separator>
+                <VBox.margin>
+                    <Insets bottom="20" top="10" />
+                </VBox.margin>
+            </Separator>
+        </VBox>
+    </top>
+
+    <center>
+        <GridPane hgap="15" prefHeight="335.0" prefWidth="621.0" vgap="15">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" maxWidth="235.0" minWidth="100.0" prefWidth="125.0" />
+                <ColumnConstraints halignment="LEFT" hgrow="NEVER" maxWidth="501.0" minWidth="318.0" prefWidth="394.0" />
+                <ColumnConstraints hgrow="ALWAYS" maxWidth="167.0" minWidth="5.0" prefWidth="91.0" />
+            </columnConstraints>
+
+            <Label styleClass="label-formulario" text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <TextField fx:id="txtNombre" promptText="Ej: Juan" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+            <Label styleClass="label-formulario" text="Apellidos:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <TextField fx:id="txtApellidos" promptText="Ej: Pérez Gómez" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+            <Label styleClass="label-formulario" text="DNI / NIF:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+
+            <TextField fx:id="txtDni" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="120" promptText="12345678X" />
+
+            <Label styleClass="label-formulario" text="Dirección:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <TextField fx:id="txtDireccion" promptText="C/ Ejemplo, 123" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+            <Label styleClass="label-formulario" text="Cuota: " GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+            <TextField fx:id="txtCuota" promptText="0.0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+            <Label styleClass="label-formulario" text="Tipo Entidad:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+            <ComboBox fx:id="cmbTipoEntidad" prefWidth="150" promptText="Seleccionar..." GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+            <Label styleClass="label-formulario" text="Periodicidad:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+            <ComboBox fx:id="cmbPeriodicidad" prefWidth="150" promptText="Seleccionar..." GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
+
+        </GridPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="15">
+            <BorderPane.margin><Insets top="30" /></BorderPane.margin>
+            <Button onAction="#cancelar" styleClass="boton-secundario" text="Cancelar" />
+            <Button fx:id="btnGuardar" onAction="#guardar" styleClass="boton-primario" text="Guardar Ficha" />
+        </HBox>
+    </bottom>
+
+</BorderPane>

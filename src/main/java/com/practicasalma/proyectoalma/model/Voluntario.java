@@ -2,6 +2,8 @@ package com.practicasalma.proyectoalma.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "voluntarios")
@@ -24,6 +26,11 @@ public class Voluntario extends Persona {
     @Column(name = "ruta_doc_leypd")
     private String rutaDocProteccionDatos;
 
+    @OneToMany(mappedBy = "docente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AsignacionPersonal> historialAsignaciones = new ArrayList<>();
+
+    @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PeriodoActividad> periodosActividad = new ArrayList<>();
 
     // Constructor vacío obligatorio para Hibernate
     public Voluntario() {
@@ -40,43 +47,44 @@ public class Voluntario extends Persona {
     }
 
     // Getters y Setters
-    public LocalDate getFechaNacimiento() {
-        return fechaNacimiento;
+    public LocalDate getFechaNacimiento() { return fechaNacimiento; }
+    public void setFechaNacimiento(LocalDate fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
+
+    public Boolean getAutoDelitosSexuales() { return autoDelitosSexuales; }
+    public void setAutoDelitosSexuales(Boolean autoDelitosSexuales) { this.autoDelitosSexuales = autoDelitosSexuales; }
+
+    public String getRutaDocDelitosSexuales() { return rutaDocDelitosSexuales; }
+    public void setRutaDocDelitosSexuales(String rutaDocDelitosSexuales) { this.rutaDocDelitosSexuales = rutaDocDelitosSexuales; }
+
+    public Boolean getAutoProteccionDatos() { return autoProteccionDatos; }
+    public void setAutoProteccionDatos(Boolean autoProteccionDatos) { this.autoProteccionDatos = autoProteccionDatos; }
+
+    public String getRutaDocProteccionDatos() { return rutaDocProteccionDatos; }
+    public void setRutaDocProteccionDatos(String rutaDocProteccionDatos) { this.rutaDocProteccionDatos = rutaDocProteccionDatos; }
+
+    public List<AsignacionPersonal> getHistorialAsignaciones() {return historialAsignaciones;}
+
+    public List<PeriodoActividad> getPeriodosActividad() {return periodosActividad;}
+
+    //  Metodo añadir y eliminar con sincronización bidireccional
+    public void addAsignacion(AsignacionPersonal asignacion) {
+        this.historialAsignaciones.add(asignacion);
+        asignacion.setVoluntario(this);
     }
 
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
+    public void removeAsignacion(AsignacionPersonal asignacion) {
+        this.historialAsignaciones.remove(asignacion);
+        asignacion.setVoluntario(null);
     }
 
-    public Boolean getAutoDelitosSexuales() {
-        return autoDelitosSexuales;
+    // Metodos para añadir o eliminar un nuevo periodo con sincronización bidireccional
+    public void addPeriodo(PeriodoActividad periodo) {
+        this.periodosActividad.add(periodo);
+        periodo.setVoluntario(this);
     }
 
-    public void setAutoDelitosSexuales(Boolean autoDelitosSexuales) {
-        this.autoDelitosSexuales = autoDelitosSexuales;
-    }
-
-    public String getRutaDocDelitosSexuales() {
-        return rutaDocDelitosSexuales;
-    }
-
-    public void setRutaDocDelitosSexuales(String rutaDocDelitosSexuales) {
-        this.rutaDocDelitosSexuales = rutaDocDelitosSexuales;
-    }
-
-    public Boolean getAutoProteccionDatos() {
-        return autoProteccionDatos;
-    }
-
-    public void setAutoProteccionDatos(Boolean autoProteccionDatos) {
-        this.autoProteccionDatos = autoProteccionDatos;
-    }
-
-    public String getRutaDocProteccionDatos() {
-        return rutaDocProteccionDatos;
-    }
-
-    public void setRutaDocProteccionDatos(String rutaDocProteccionDatos) {
-        this.rutaDocProteccionDatos = rutaDocProteccionDatos;
+    public void removePeriodo(PeriodoActividad periodo) {
+        this.periodosActividad.remove(periodo);
+        periodo.setVoluntario(null);
     }
 }
