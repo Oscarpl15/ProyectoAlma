@@ -22,7 +22,7 @@ public class Tutor extends Persona {
     // Constructor para instanciar desde el controlador JavaFX
     public Tutor(String nombre, String apellidos, String direccion, String dni) {
         super(nombre, apellidos, direccion);
-        this.setDni(dni); //Esto solo si fuese obligatorio el dni en tutor, si no lo es lo quitariamos.
+        this.setDocumentoIdentidad(dni); //Esto solo si fuese obligatorio el dni en tutor, si no lo es lo quitariamos.
     }
 
     // Getters y setters

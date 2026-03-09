@@ -23,6 +23,9 @@ public class Matricula {
     @Column(name = "es_repeticion", nullable = false)
     private Boolean esRepeticion = false;
 
+    @Column(name = "grupo_asignado")
+    private String grupoAsignado; // Guardará "G1 Lunes", "G2 Martes", etc.
+
     // Relación Muchos a Uno con Alumno
     // FetchType.LAZY optimiza la memoria: no hace una consulta extra para traer todos los
     // datos del alumno a menos que llames explícitamente a matricula.getAlumno()

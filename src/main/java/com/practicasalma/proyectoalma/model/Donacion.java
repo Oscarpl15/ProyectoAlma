@@ -17,6 +17,9 @@ public class Donacion {
     @Column(nullable = false)
     private Double importe;
 
+    @Column(name = "forma_donacion")
+    private String formaDonacion; // Ej: "Domiciliación", "Transferencia", "Efectivo"
+
     // Para diferenciar si es el pago de su cuota habitual o un extra
     @Column(name = "es_puntual", nullable = false)
     private Boolean esPuntual = false;
@@ -50,4 +53,7 @@ public class Donacion {
 
     public Socio getSocio() { return socio; }
     public void setSocio(Socio socio) { this.socio = socio; }
+
+    public String getFormaDonacion() {return formaDonacion;}
+    public void setFormaDonacion(String formaDonacion) {this.formaDonacion = formaDonacion;}
 }
