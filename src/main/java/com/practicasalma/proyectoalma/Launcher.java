@@ -1,5 +1,6 @@
 package com.practicasalma.proyectoalma;
 
+import atlantafx.base.theme.PrimerLight;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -13,6 +14,8 @@ public class Launcher extends Application { // No hace falta poner javafx.applic
 
     @Override
     public void start(Stage stage) throws IOException {
+
+        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet()); //Estilos atlantaFX
 
         // CORRECCIÓN 1: Usamos Launcher.class en lugar de Application.class
         // Esto le dice a Java: "Busca en MIS carpetas"
