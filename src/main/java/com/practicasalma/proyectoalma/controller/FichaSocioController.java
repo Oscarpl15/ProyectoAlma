@@ -34,7 +34,7 @@ public class FichaSocioController {
 
             txtNombre.setText(socio.getNombre());
             txtApellidos.setText(socio.getApellidos());
-            txtDni.setText(socio.getDni());
+            txtDni.setText(socio.getDocumentoIdentidad());
             txtDireccion.setText(socio.getDireccion());
             txtCuota.setText(String.valueOf(socio.getCuota()));
 
