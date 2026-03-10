@@ -24,12 +24,14 @@ public class SocioController {
     @FXML private TableView<Socio> tablaSocios;
     @FXML private TableColumn<Socio, String> colNombre;
     @FXML private TableColumn<Socio, String> colApellidos;
-    @FXML private TableColumn<Socio, String> colDireccion;
     @FXML private TableColumn<Socio, String> colDni;
+    @FXML private TableColumn<Socio, String> colTipoEntidad;
+    @FXML private TableColumn<Socio, String> colPeriodicidad;
     @FXML private TableColumn<Socio, Double> colCuota;
 
     @FXML private ComboBox<String> comboTipoEntidadFiltro;
     @FXML private ComboBox<String> comboPeriodicidadFiltro;
+
 
     private ObservableList<Socio> listaFalsa = FXCollections.observableArrayList(
             new Socio("Asociación Vecinos", "Centro", "Calle Mayor 1", "G12345678", "Persona"),
@@ -38,11 +40,14 @@ public class SocioController {
 
     @FXML
     public void initialize(){
-
         colNombre.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNombre()));
         colApellidos.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getApellidos()));
-        colDireccion.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDireccion()));
         colDni.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDocumentoIdentidad()));
+
+        // Estas dos asumen que tienes los getters en tu modelo Socio. Si no, coméntalas de momento.
+        colTipoEntidad.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTipoEntidad()));
+        colPeriodicidad.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPeriodicidad()));
+
         colCuota.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getCuota()).asObject());
 
         tablaSocios.setItems(listaFalsa);

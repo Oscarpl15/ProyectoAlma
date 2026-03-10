@@ -64,38 +64,104 @@
 }
 
 /* Tablas */
-/* COMENTADO: AtlantaFX tiene un diseño de tablas espectacular por defecto. Si dejamos esto, se verá raro.
-.table-view {
-    -fx-background-color: white;
-    -fx-background-radius: 5;
-    -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);
+
+/* 1. La tabla en sí: Bordes redondeados y sombra suave */
+.table-view,
+.table-view .viewport{
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-color: #BDC3C7;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 15, 0, 0, 5);
+    -fx-background-color: transparent; /* Permite ver bordes limpios */
 }
+
+/* 2. El fondo de la cabecera (Azul corporativo y redondeado arriba) */
 .table-view .column-header-background {
-    -fx-background-color: #ECF0F1;
-    -fx-background-radius: 5 5 0 0;
+    -fx-background-color: rgba(46, 83, 116, 0.9);
+    -fx-background-radius: 9px 9px 0 0; /* Redondea solo las esquinas superiores */
+    -fx-padding: 0; /* Quita márgenes raros */
 }
+
+/* 3. Las celdas de la cabecera (Separadores blancos semitransparentes) */
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(255, 255, 255, 0.25); /* Línea vertical suave */
+    -fx-border-width: 0 1px 0 0; /* Borde solo a la derecha */
+    -fx-padding: 10px 5px; /* Más aire arriba y abajo */
+}
+
+/* 4. EL SEPARADOR HORIZONTAL DE LAS SUBCOLUMNAS (Autorizaciones) */
+/* Esto le pone una línea arriba a las subcolumnas para separarlas del título padre */
+.table-view .nested-column-header > .column-header {
+    -fx-border-color: rgba(255, 255, 255, 0.25);
+    -fx-border-width: 1px 1px 0 0; /* Borde arriba y a la derecha */
+}
+
+/* 5. El texto de la cabecera (Centrado y blanco) */
 .table-view .column-header .label {
-    -fx-text-fill: #2E5374;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-font-size: 15px;
+}
+
+/* 6. Esquina superior derecha (El hueco vacío para que no salga gris) */
+.table-view .filler,
+.table-view .column-header-background .show-hide-columns-button {
+    -fx-background-color: rgba(46, 83, 116, 0.9);
+    -fx-background-radius: 0 9px 0 0;
+}
+
+/* 7. Las celdas de los datos (Cuadrícula limpia y centrada) */
+.table-view .table-cell {
+    -fx-alignment: center; /* Todo el texto de la tabla bien centrado */
+    -fx-border-color: #EAEDED; /* Gris muy muy claro para la cuadrícula */
+    -fx-border-width: 0 1px 1px 0; /* Abajo y a la derecha */
+    -fx-font-size: 13px;
+    -fx-padding: 0 10px;
+}
+
+/* 8. Filas con efecto cebra sutil */
+.table-view .table-row-cell {
+    -fx-background-color: rgba(255, 255, 255, 0.5);
+    -fx-cell-size: 40px;
+
+    -fx-min-height: 40px;
+    -fx-pref-height: 40px;
+    -fx-max-height: 40px;
+}
+.table-view .table-row-cell:odd {
+    -fx-background-color: rgba(255, 255, 255, 0.75); /* Gris casi blanco para diferenciar */
+}
+
+/* 9. Fila seleccionada (Azul muy clarito) */
+.table-view .table-row-cell:selected {
+    -fx-background-color: #E3F2FD;
+}
+.table-view .table-row-cell:selected .table-cell {
+    -fx-text-fill: #2E5374; /* Texto en tu azul para que destaque */
     -fx-font-weight: bold;
 }
-*/
 
 /* Botón de Acción (Añadir) */
-/* COMENTADO: AtlantaFX formatea los botones de forma nativa. Más adelante les pondremos su clase "accent".
 .boton-accion {
-    -fx-background-color: #2E5374;
+    -fx-background-color: #2E5374; /* Tu azul corporativo */
     -fx-text-fill: white;
-    -fx-min-width: 120;
     -fx-font-weight: bold;
-    -fx-background-radius: 5;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 15px;
     -fx-cursor: hand;
-    -fx-padding: 10 20;
+}
 
-}
+/* Solo el efecto Hover que te gustó (Gris oscuro + un poquito más grande) */
 .boton-accion:hover {
-    -fx-background-color: #2980B9;
+    -fx-background-color: #3C4248;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
-*/
+
+
 
 /* === ESTRUCTURAL: PESTAÑAS (MANTENIDO) === */
 /* 1. Ocultar la zona de las pestañas (Cabecera) */

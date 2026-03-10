@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.Launcher;
 import com.practicasalma.proyectoalma.model.Docente;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,12 +26,16 @@ public class DocentesController {
     @FXML private TableView<Docente> tablaDocentes;
     @FXML private TableColumn<Docente, String> colNombre;
     @FXML private TableColumn<Docente, String> colApellidos;
-    @FXML private TableColumn<Docente, String> colDireccion;
     @FXML private TableColumn<Docente, String> colTelefono;
     @FXML private TableColumn<Docente, String> colDni;
     @FXML private TableColumn<Docente, String> colCorreo;
 
-    // Datos falsos para la presentación
+    // Las nuevas columnas de documentación y estado
+    @FXML private TableColumn<Docente, Boolean> colDelitos;
+    @FXML private TableColumn<Docente, Boolean> colProtDatos;
+    @FXML private TableColumn<Docente, String> colAB;
+
+    // Datos falsos para la presentación (Mantenemos los tuyos)
     private ObservableList<Docente> listaFalsa = FXCollections.observableArrayList(
             new Docente("Sofía", "Díaz Sánchez", "C/ Olivos 13 1B", "612 34 56 78", "09876543E", "sofiadiazsanchez@gmail.com", LocalDate.now()),
             new Docente("Daniel", "Gonzalez Fernández", "C/ Flores 5 4D", "698 76 54 32", "01234567G", "danielgonzalezfernandez@gmail.com",LocalDate.now()),
@@ -39,18 +44,22 @@ public class DocentesController {
 
     @FXML
     public void initialize() {
-        // 1. Enlazar columnas con el modelo
+        // 1. Enlazar columnas con el modelo (Hemos quitado la de dirección)
         colNombre.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNombre()));
         colApellidos.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getApellidos()));
-        colDireccion.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDireccion()));
         colTelefono.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTelefono()));
         colDni.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDocumentoIdentidad()));
         colCorreo.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCorreo()));
 
+        // Enlazamos los booleanos nuevos (Asumiendo que hiciste los getters en el modelo Docente)
+        // Si aún no los tienes en el modelo, comenta estas dos líneas para que no de error
+        colDelitos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoDelitosSexuales() != null ? cellData.getValue().getAutoDelitosSexuales() : false));
+        colProtDatos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoProteccionDatos() != null ? cellData.getValue().getAutoProteccionDatos() : false));
+
         // 2. Meter datos
         tablaDocentes.setItems(listaFalsa);
 
-        // 3. EVENTO DOBLE CLIC (Importante)
+        // 3. EVENTO DOBLE CLIC
         tablaDocentes.setRowFactory(tv -> {
             TableRow<Docente> row = new TableRow<>();
             row.setOnMouseClicked(event -> {

@@ -40,7 +40,16 @@
                                 <Insets right="20.0" />
                             </HBox.margin>
                         </Button>
-                        <Button onAction="#mostrarDocentes" styleClass="boton-menu" text="DOCENTES" />
+                        <Button onAction="#mostrarDocentes" styleClass="boton-menu" text="DOCENTES" >
+                            <HBox.margin>
+                                <Insets right="10.0" />
+                            </HBox.margin>
+                        </Button>
+                        <Button onAction="#mostrarVoluntarios" styleClass="boton-menu" text="VOLUNTARIOS" >
+                            <HBox.margin>
+                                <Insets left="10.0" />
+                            </HBox.margin>
+                        </Button>
                         <Button onAction="#mostrarSocios" styleClass="boton-menu" text="SOCIOS">
                             <HBox.margin>
                                 <Insets left="20.0" />
@@ -58,6 +67,7 @@
                         <tabs>
                             <Tab><content><fx:include source="alumnos-view.fxml" /></content></Tab>
                             <Tab><content><fx:include source="docentes-view.fxml" /></content></Tab>
+                            <Tab><content><fx:include source="voluntarios-view.fxml" /></content></Tab>
                             <Tab><content><fx:include source="socios-view.fxml"/></content></Tab>
                         </tabs>
                     </TabPane>

@@ -34,9 +34,18 @@ public class MainController {
     }
 
     @FXML
-    protected void mostrarSocios() {
+    protected void mostrarVoluntarios() {
         // Selecciona la tercera pestaña (Índice 2)
         tabPrincipal.getSelectionModel().select(2);
+        System.out.println("Navegando a Voluntarios...");
+    }
+
+    @FXML
+    protected void mostrarSocios() {
+        // Selecciona la tercera pestaña (Índice 2)
+        tabPrincipal.getSelectionModel().select(3);
         System.out.println("Navegando a Socios...");
     }
+
+
 }
