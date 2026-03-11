@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 public class HelloApplication {
 
@@ -18,7 +19,7 @@ public class HelloApplication {
 
         em.getTransaction().begin();
 
-        Alumno prueba = new Alumno();
+        Alumno prueba = new Alumno("Juan", "Pérez López", "avenida jajaja", LocalDate.now());
         em.persist(prueba); // Guardamos en la base de datos
 
         em.getTransaction().commit();

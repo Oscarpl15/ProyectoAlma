@@ -5,88 +5,112 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
-
 <?import javafx.scene.image.ImageView?>
+
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.practicasalma.proyectoalma.controller.AgregarAlumnoController"
-            prefHeight="500.0" prefWidth="450.0"
-            style="-fx-background-color: #f4f4f4;">
+            prefWidth="800.0"
+            style="-fx-background-color: white;" stylesheets="@../css/estilos.css">
 
-   <VBox spacing="20.0" AnchorPane.topAnchor="20.0" AnchorPane.bottomAnchor="20.0"
-         AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
+    <VBox spacing="20.0" AnchorPane.topAnchor="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
 
-      <Label text="Añadir Nuevo Alumno"
-             style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #407093;"/>
+        <VBox spacing="5">
+            <Label text="Añadir Nuevo Alumno" styleClass="title-2" style="-fx-text-fill: #2E5374; -fx-font-weight: bold;"/>
+            <Label text="Rellena los datos personales y marca las autorizaciones correspondientes." style="-fx-text-fill: gray;"/>
+        </VBox>
 
-      <GridPane vgap="15.0" hgap="10.0">
-         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="ALWAYS" minWidth="200.0" prefWidth="250.0" />
-         </columnConstraints>
+        <GridPane vgap="15.0" hgap="15.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" minWidth="90.0" halignment="RIGHT"/>
+                <ColumnConstraints hgrow="ALWAYS" prefWidth="200.0" />
+                <ColumnConstraints hgrow="NEVER" minWidth="90.0" halignment="RIGHT"/>
+                <ColumnConstraints hgrow="ALWAYS" prefWidth="200.0" />
+            </columnConstraints>
 
-         <Label text="Nombre:" GridPane.rowIndex="0" style="-fx-font-weight: bold;"/>
-         <TextField fx:id="txtNombre" promptText="Ej: Javier" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+            <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+            <TextField fx:id="txtNombre" promptText="Ej: Javier" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-         <Label text="Apellidos:" GridPane.rowIndex="1" style="-fx-font-weight: bold;"/>
-         <TextField fx:id="txtApellidos" promptText="Ej: García Pérez" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="Apellidos:" GridPane.rowIndex="0" GridPane.columnIndex="2" style="-fx-font-weight: bold;"/>
+            <TextField fx:id="txtApellidos" promptText="Ej: García Pérez" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
 
-         <Label text="Dirección:" GridPane.rowIndex="2" style="-fx-font-weight: bold;"/>
-         <TextField fx:id="txtDireccion" promptText="C/ Ejemplo 123" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <Label text="DNI/NIE:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+            <TextField fx:id="txtDni" promptText="Ej: 12345678A" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-         <Label text="Curso:" GridPane.rowIndex="3" style="-fx-font-weight: bold;"/>
-         <ComboBox fx:id="comboCurso" promptText="Seleccione curso" GridPane.rowIndex="3" GridPane.columnIndex="1" maxWidth="Infinity">
-            <items>
-               <FXCollections fx:factory="observableArrayList">
-                  <String fx:value="3 años"/>
-                  <String fx:value="4 años"/>
-                  <String fx:value="5 años"/>
-                  <String fx:value="1º Primaria"/>
-                  <String fx:value="2º Primaria"/>
-                  <String fx:value="3º Primaria"/>
-                  <String fx:value="4º Primaria"/>
-                  <String fx:value="5º Primaria"/>
-                  <String fx:value="6º Primaria"/>
-               </FXCollections>
-            </items>
-         </ComboBox>
-      </GridPane>
+            <Label text="Fecha Nac.:" GridPane.rowIndex="1" GridPane.columnIndex="2" style="-fx-font-weight: bold;"/>
+            <DatePicker fx:id="dpFechaNacimiento" prefWidth="300" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
 
-      <Separator />
+            <Label text="Teléfono:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+            <TextField fx:id="txtTelefono" promptText="Ej: 600 123 456" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-      <HBox spacing="20.0">
+            <Label text="Dirección:" GridPane.rowIndex="2" GridPane.columnIndex="2" style="-fx-font-weight: bold;"/>
+            <TextField fx:id="txtDireccion" promptText="C/ Ejemplo 123" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
 
-         <VBox spacing="10.0" HBox.hgrow="ALWAYS">
-            <Label text="Autorizaciones:" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #407093;"/>
-            <CheckBox fx:id="checkAuth1" text="Ejemplo Autorización 1"/>
-            <CheckBox fx:id="checkAuth2" text="Ejemplo Autorización 2"/>
-            <CheckBox fx:id="checkAuth3" text="Ejemplo Autorización 3"/>
-            <CheckBox fx:id="checkAuth4" text="Ejemplo Autorización 4"/>
-         </VBox>
+            <Label text="Colegio:" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+            <TextField fx:id="txtColegio" promptText="Opcional" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-         <VBox alignment="CENTER" spacing="10.0">
-            <StackPane prefHeight="120.0" prefWidth="100.0" style="-fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-color: #e9ecef; -fx-background-radius: 5;">
-               <children>
-                  <Label text="Sin foto" style="-fx-text-fill: #999999;" />
-                  <ImageView fx:id="fotoAlumno" fitHeight="115.0" fitWidth="95.0" preserveRatio="true" />
-               </children>
-            </StackPane>
+            <Label text="Curso:" GridPane.rowIndex="3" GridPane.columnIndex="2" style="-fx-font-weight: bold;"/>
+            <ComboBox fx:id="comboCurso" promptText="Seleccione curso" GridPane.rowIndex="3" GridPane.columnIndex="3" maxWidth="Infinity">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="3 años"/>
+                        <String fx:value="4 años"/>
+                        <String fx:value="5 años"/>
+                        <String fx:value="1º Primaria"/>
+                        <String fx:value="2º Primaria"/>
+                        <String fx:value="3º Primaria"/>
+                        <String fx:value="4º Primaria"/>
+                        <String fx:value="5º Primaria"/>
+                        <String fx:value="6º Primaria"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+        </GridPane>
 
-            <Button text="Añadir Foto" onAction="#onSeleccionarFotoClick"
-                    style="-fx-background-color: white; -fx-border-color: #407093; -fx-border-radius: 3; -fx-text-fill: #407093; -fx-cursor: hand;" />
-         </VBox>
+        <Separator />
 
-      </HBox>
+        <HBox spacing="30.0">
+            <VBox spacing="15.0" HBox.hgrow="ALWAYS">
 
-      <Region VBox.vgrow="ALWAYS" />
+                <VBox spacing="8">
+                    <Label text="Autorizaciones Legales" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2E5374;"/>
+                    <FlowPane hgap="15" vgap="10">
+                        <CheckBox fx:id="chkAutoDatos" text="Prot. Datos"/>
+                        <CheckBox fx:id="chkAutoImagen" text="Uso Imagen"/>
+                        <CheckBox fx:id="chkAutoActividades" text="Actividades"/>
+                        <CheckBox fx:id="chkAutoComunicaciones" text="Comunicaciones"/>
+                        <CheckBox fx:id="chkAutoIrseSolo" text="Autoriza Irse Solo"/>
+                    </FlowPane>
+                </VBox>
 
-      <HBox spacing="15.0" alignment="CENTER_RIGHT">
-         <Button text="Cancelar" onAction="#cancelar"
-                 style="-fx-background-color: transparent; -fx-text-fill: #666666; -fx-border-color: #999999; -fx-border-radius: 3;"/>
+                <VBox spacing="8">
+                    <Label text="Seguimiento / Derivación" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2E5374;"/>
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <CheckBox fx:id="chkSS" text="Servicios Sociales"/>
+                        <CheckBox fx:id="chkSAF" text="SAF"/>
+                        <TextField fx:id="txtDerivado" promptText="Derivado por (Nombre)" prefWidth="200"/>
+                    </HBox>
+                </VBox>
 
-         <Button text="Guardar Alumno" onAction="#guardarAlumno"
-                 style="-fx-background-color: #407093; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 3; -fx-cursor: hand;"/>
-      </HBox>
+            </VBox>
 
-   </VBox>
+            <VBox alignment="CENTER" spacing="10.0">
+                <StackPane prefHeight="140.0" prefWidth="120.0" style="-fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-color: #f8f9fa; -fx-background-radius: 5;">
+                    <children>
+                        <Label text="Sin foto" style="-fx-text-fill: #999999;" />
+                        <ImageView fx:id="fotoAlumno" fitHeight="135.0" fitWidth="115.0" preserveRatio="true" />
+                    </children>
+                </StackPane>
+                <Button text="Añadir Foto" onAction="#onSeleccionarFotoClick" style="-fx-background-color: transparent; -fx-border-color: #2E5374; -fx-border-radius: 6; -fx-text-fill: #2E5374; -fx-cursor: hand;" />
+            </VBox>
+        </HBox>
+
+        <Region VBox.vgrow="ALWAYS" />
+
+        <HBox spacing="15.0" alignment="CENTER_RIGHT">
+            <Button text="Cancelar" onAction="#cancelar" style="-fx-background-color: transparent; -fx-text-fill: #666666; -fx-border-color: #999999; -fx-border-radius: 6; -fx-cursor: hand; -fx-padding: 8 15;"/>
+            <Button text="GUARDAR ALUMNO" onAction="#guardarAlumno" styleClass="boton-accion"/>
+        </HBox>
+
+    </VBox>
 </AnchorPane>

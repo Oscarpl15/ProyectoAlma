@@ -31,7 +31,7 @@ public class Docente extends Persona {
     @OneToMany(mappedBy = "docente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AsignacionPersonal> historialAsignaciones = new ArrayList<>();
 
-    @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "docente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PeriodoActividad> periodosActividad = new ArrayList<>();
 
 
