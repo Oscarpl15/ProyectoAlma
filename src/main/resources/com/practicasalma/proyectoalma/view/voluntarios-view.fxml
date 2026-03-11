@@ -4,18 +4,18 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.practicasalma.proyectoalma.controller.DocentesController"
+      fx:controller="com.practicasalma.proyectoalma.controller.VoluntariosController"
       spacing="15" style="-fx-padding: 20;">
 
     <BorderPane>
         <right>
             <HBox alignment="CENTER_RIGHT">
-                <TextField promptText="Buscar docente..." prefWidth="250"/>
+                <TextField promptText="Buscar voluntario..." prefWidth="250"/>
             </HBox>
         </right>
     </BorderPane>
 
-    <TableView fx:id="tablaDocentes" VBox.vgrow="ALWAYS" styleClass="striped, bordered">
+    <TableView fx:id="tablaVoluntarios" VBox.vgrow="ALWAYS" styleClass="striped, bordered">
         <columns>
             <TableColumn fx:id="colNombre" text="Nombre" prefWidth="150" reorderable="false"/>
             <TableColumn fx:id="colApellidos" text="Apellidos" prefWidth="200" reorderable="false"/>
@@ -37,7 +37,7 @@
     </TableView>
 
     <HBox alignment="CENTER_RIGHT" spacing="10">
-        <Button text="+ AÑADIR DOCENTE" onAction="#nuevoDocente" styleClass="boton-accion"/>
+        <Button text="+ AÑADIR VOLUNTARIO" onAction="#nuevoVoluntario" styleClass="boton-accion"/>
     </HBox>
 
 </VBox>

@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -12,34 +13,43 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.time.LocalDate;
 
 public class AgregarAlumnoController {
 
+    // Datos Personales
     @FXML private TextField txtNombre;
     @FXML private TextField txtApellidos;
+    @FXML private TextField txtDni;
+    @FXML private DatePicker dpFechaNacimiento;
+    @FXML private TextField txtTelefono;
     @FXML private TextField txtDireccion;
 
+    // Datos Escolares / Sociales
+    @FXML private TextField txtColegio;
     @FXML private ComboBox<String> comboCurso;
+    @FXML private TextField txtDerivado;
+    @FXML private CheckBox chkSS;
+    @FXML private CheckBox chkSAF;
 
-    // Checkboxes
-    @FXML private CheckBox checkAuth1;
-    @FXML private CheckBox checkAuth2;
-    @FXML private CheckBox checkAuth3;
-    @FXML private CheckBox checkAuth4;
+    // Autorizaciones Legales
+    @FXML private CheckBox chkAutoDatos;
+    @FXML private CheckBox chkAutoImagen;
+    @FXML private CheckBox chkAutoActividades;
+    @FXML private CheckBox chkAutoComunicaciones;
+    @FXML private CheckBox chkAutoIrseSolo;
 
+    // Foto (Tu lógica original)
     @FXML private ImageView fotoAlumno;
-    private final String RUTA_DEFECTO_IMAGEN = "/com/practicasalma/proyectoalma/assets/default.png"; // Foto para que sea la por defecto al cargar una imagen
-    private String rutaFotoSeleccionada = null; // Foto seleccionada por el usuario
+    private final String RUTA_DEFECTO_IMAGEN = "/com/practicasalma/proyectoalma/assets/default.png";
+    private String rutaFotoSeleccionada = null;
 
     @FXML
     private void initialize() {
         try {
-
-            String rutaDefault = getClass().getResource(RUTA_DEFECTO_IMAGEN).toExternalForm(); // .toExternalForm transforma automaticamente al formato que necesita iamge
+            String rutaDefault = getClass().getResource(RUTA_DEFECTO_IMAGEN).toExternalForm();
             Image imagenDefault = new Image(rutaDefault);
-
             fotoAlumno.setImage(imagenDefault);
-
         } catch (NullPointerException e) {
             System.out.println("ERROR: No se encontró la imagen por defecto.");
         }
@@ -47,25 +57,29 @@ public class AgregarAlumnoController {
 
     @FXML
     private void guardarAlumno(ActionEvent event) {
-        // Recuperar los datos
+        // Recuperar los datos principales
         String nombre = txtNombre.getText();
         String apellidos = txtApellidos.getText();
-        String direccion = txtDireccion.getText();
         String curso = comboCurso.getValue();
-
-        // Ejemplo de cómo ver si un check está marcado
-        boolean tieneAuth1 = checkAuth1.isSelected();
+        LocalDate fechaNac = dpFechaNacimiento.getValue();
 
         // Validacion simple
-        if (nombre.isEmpty() || curso == null) {
+        if (nombre == null || nombre.trim().isEmpty() || curso == null) {
             System.out.println("Por favor rellena al menos nombre y curso");
             return;
         }
 
-        System.out.println("Guardando: " + nombre + " " + apellidos + " - Curso: " + curso);
-        System.out.println("Dirección: " + direccion);
+        System.out.println("--- GUARDANDO NUEVO ALUMNO ---");
+        System.out.println("Nombre: " + nombre + " " + apellidos);
+        System.out.println("DNI: " + txtDni.getText());
+        System.out.println("Curso: " + curso + " | Colegio: " + txtColegio.getText());
 
-        // Cierra la ventana
+        // Comprobar Autorizaciones
+        System.out.println("Auto. Irse Solo: " + chkAutoIrseSolo.isSelected());
+        System.out.println("Seguimiento SS: " + chkSS.isSelected() + " | Derivado por: " + txtDerivado.getText());
+
+        // Aquí más adelante llamaremos a BBDD para hacer el INSERT real.
+
         cerrarVentana(event);
     }
 

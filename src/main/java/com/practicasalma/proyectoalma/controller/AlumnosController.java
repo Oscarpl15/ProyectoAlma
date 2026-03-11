@@ -23,9 +23,18 @@ public class AlumnosController {
     @FXML private TableView<Alumno> tablaAlumnos;
     @FXML private TableColumn<Alumno, String> colNombre;
     @FXML private TableColumn<Alumno, String> colApellidos;
+    @FXML private TableColumn<Alumno, String> colTelefono;
+    @FXML private TableColumn<Alumno, String> colGrupo;
 
-    @FXML
-    private ComboBox<String> comboCursoFiltro;
+    // Autorizaciones (Fíjate que uso autoIrseSolo como acordamos para la base de datos)
+    @FXML private TableColumn<Alumno, Boolean> colAutoDatos;
+    @FXML private TableColumn<Alumno, Boolean> colAutoActividades;
+    @FXML private TableColumn<Alumno, Boolean> colAutoComunicaciones;
+    @FXML private TableColumn<Alumno, Boolean> colAutoImagen;
+    @FXML private TableColumn<Alumno, Boolean> colAutoIrseSolo;
+
+    @FXML private ComboBox<String> comboCursoFiltro;
+    @FXML private ComboBox<String> comboGrupoFiltro;
 
     // Datos falsos para la presentación
     private ObservableList<Alumno> listaFalsa = FXCollections.observableArrayList(
@@ -36,18 +45,28 @@ public class AlumnosController {
 
     @FXML
     public void initialize() {
-        // 1. Enlazar columnas con el modelo
-        colNombre.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getNombre())
-        );
+        colNombre.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNombre()));
+        colApellidos.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getApellidos()));
 
-        colApellidos.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getApellidos())
-        );
+        // Dejo estas comentadas hasta que conectemos los booleanos reales para los ticks
+        colTelefono.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTelefono()));
+        colGrupo.setCellValueFactory(cellData -> new SimpleStringProperty("Sin grupo"));
 
-        // 2. Meter datos
+        /* CONCEPTO: Así se hará con datos reales
+        colGrupo.setCellValueFactory(cellData -> {
+            Alumno alumno = cellData.getValue();
+            // 1. Buscamos la matrícula de este año (suponiendo que tienes un método así)
+            Matricula matriculaActiva = alumno.obtenerMatriculaActiva();
+
+            // 2. Si tiene matrícula, mostramos el grupo. Si no, mostramos "Sin matricular"
+            if (matriculaActiva != null && matriculaActiva.getGrupoAsignado() != null) {
+                return new SimpleStringProperty(matriculaActiva.getGrupoAsignado());
+            } else {
+                return new SimpleStringProperty("Sin grupo");
+            }
+        });*/
+
         tablaAlumnos.setItems(listaFalsa);
-
         comboCursoFiltro.getSelectionModel().select(0);
 
         // 3. EVENTO DOBLE CLIC (Importante)
