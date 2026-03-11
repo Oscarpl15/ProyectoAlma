@@ -17,26 +17,24 @@ public class Alumno extends Persona {
     @Column(name = "ruta_foto_perfil")
     private String rutaFotoPerfil;
 
-    // Uso de Imagen
-    @Column(name = "auto_imagen", nullable = false)
+    @Column(name = "auto_uso_datos")
+    private Boolean autorizaUsoDatos = false;
+
+    @Column(name = "auto_actividades")
+    private Boolean autorizaActividades = false;
+
+    @Column(name = "auto_comunicaciones")
+    private Boolean autorizaComunicaciones = false;
+
+    @Column(name = "auto_imagen")
     private Boolean autorizaImagen = false;
 
-    @Column(name = "ruta_doc_imagen")
-    private String rutaDocImagen;
+    @Column(name = "auto_irse_solo")
+    private Boolean autorizaIrseSolo = false;
 
-    // Salidas Extraescolares
-    @Column(name = "auto_salidas", nullable = false)
-    private Boolean autorizaSalidas = false;
+    @Column(name = "ruta_doc_autoriza")
+    private String rutaDocAutoriza;
 
-    @Column(name = "ruta_doc_salidas")
-    private String rutaDocSalidas;
-
-    // Recogida por Terceros
-    @Column(name = "auto_irseSolo", nullable = false)
-    private Boolean autorizaRecogida = false;
-
-    @Column(name = "ruta_doc_irseSolo")
-    private String rutaDocRecogida;
 
     //Otros datos
     @Column(name = "colegio")
@@ -45,7 +43,8 @@ public class Alumno extends Persona {
     @Column(name = "seguimiento_servicios_sociales") //check
     private Boolean seguimientoServiciosSociales = false;
 
-    //añadir persona que deriva a niño a la fundacion
+    @Column(name = "derivado_por")
+    private String derivadoPor;
 
     @Column(name = "seguimiento_saf")  // check
     private Boolean seguimientoSaf = false;
@@ -87,6 +86,9 @@ public class Alumno extends Persona {
     @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PeriodoActividad> periodosActividad = new ArrayList<>();
 
+    @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PersonaAutorizada> autorizadaRecoger = new ArrayList<>();
+
     // Constructor vacío obligatorio para Hibernate
     public Alumno() {
         super(); 
@@ -109,20 +111,29 @@ public class Alumno extends Persona {
     public Boolean getAutorizaImagen() { return autorizaImagen; }
     public void setAutorizaImagen(Boolean autorizaImagen) { this.autorizaImagen = autorizaImagen; }
 
-    public String getRutaDocImagen() { return rutaDocImagen; }
-    public void setRutaDocImagen(String rutaDocImagen) { this.rutaDocImagen = rutaDocImagen; }
+    public Boolean getAutorizaUsoDatos() {return autorizaUsoDatos;}
+    public void setAutorizaUsoDatos(Boolean autorizaUsoDatos) {this.autorizaUsoDatos = autorizaUsoDatos;}
 
-    public Boolean getAutorizaSalidas() { return autorizaSalidas; }
-    public void setAutorizaSalidas(Boolean autorizaSalidas) { this.autorizaSalidas = autorizaSalidas; }
+    public Boolean getAutorizaActividades() {return autorizaActividades;}
+    public void setAutorizaActividades(Boolean autorizaActividades) {this.autorizaActividades = autorizaActividades;}
 
-    public String getRutaDocSalidas() { return rutaDocSalidas; }
-    public void setRutaDocSalidas(String rutaDocSalidas) { this.rutaDocSalidas = rutaDocSalidas; }
+    public Boolean getAutorizaComunicaciones() {return autorizaComunicaciones;}
+    public void setAutorizaComunicaciones(Boolean autorizaComunicaciones) {this.autorizaComunicaciones = autorizaComunicaciones;}
 
-    public Boolean getAutorizaRecogida() { return autorizaRecogida; }
-    public void setAutorizaRecogida(Boolean autorizaRecogida) { this.autorizaRecogida = autorizaRecogida; }
+    public Boolean getAutorizaIrseSolo() {return autorizaIrseSolo;}
+    public void setAutorizaIrseSolo(Boolean autorizaIrseSolo) {this.autorizaIrseSolo = autorizaIrseSolo;}
 
-    public String getRutaDocRecogida() {return rutaDocRecogida;}
-    public void setRutaDocRecogida(String rutaDocRecogida) { this.rutaDocRecogida = rutaDocRecogida; }
+    public String getRutaDocAutoriza() {return rutaDocAutoriza;}
+    public void setRutaDocAutoriza(String rutaDocAutoriza) {this.rutaDocAutoriza = rutaDocAutoriza;}
+
+    public String getDerivadoPor() {return derivadoPor;}
+    public void setDerivadoPor(String derivadoPor) {this.derivadoPor = derivadoPor;}
+
+    public Integer getNumRepeticionesPrevias() {return numRepeticionesPrevias;}
+    public void setNumRepeticionesPrevias(Integer numRepeticionesPrevias) {this.numRepeticionesPrevias = numRepeticionesPrevias;}
+
+    public String getDetalleCursosRepetidos() {return detalleCursosRepetidos;}
+    public void setDetalleCursosRepetidos(String detalleCursosRepetidos) {this.detalleCursosRepetidos = detalleCursosRepetidos;}
 
     public List<Matricula> getMatriculas() { return matriculas; }
 
@@ -141,6 +152,8 @@ public class Alumno extends Persona {
     public void setSeguimientoSaf(Boolean seguimientoSaf) {this.seguimientoSaf = seguimientoSaf;}
 
     public List<PeriodoActividad> getPeriodosActividad() {return periodosActividad;}
+
+    public List<PersonaAutorizada> getAutorizadaRecoger() {return autorizadaRecoger;}
 
     // Métodos para añadir o eliminar tutores o matrículas a un alumno
 

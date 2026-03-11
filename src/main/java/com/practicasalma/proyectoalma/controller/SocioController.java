@@ -32,8 +32,8 @@ public class SocioController {
     @FXML private ComboBox<String> comboPeriodicidadFiltro;
 
     private ObservableList<Socio> listaFalsa = FXCollections.observableArrayList(
-            new Socio("Asociación Vecinos", "Centro", "Calle Mayor 1", "G12345678", 50.0),
-            new Socio("Juan", "Pérez García", "Av. Libertad 20", "12345678Z",  10.0)
+            new Socio("Asociación Vecinos", "Centro", "Calle Mayor 1", "G12345678", "Persona"),
+            new Socio("Juan", "Pérez García", "Av. Libertad 20", "12345678Z",  "Persona")
     );
 
     @FXML
@@ -42,7 +42,7 @@ public class SocioController {
         colNombre.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNombre()));
         colApellidos.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getApellidos()));
         colDireccion.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDireccion()));
-        colDni.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDni()));
+        colDni.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDocumentoIdentidad()));
         colCuota.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getCuota()).asObject());
 
         tablaSocios.setItems(listaFalsa);

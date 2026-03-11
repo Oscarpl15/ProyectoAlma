@@ -40,7 +40,7 @@ public class Voluntario extends Persona {
     // Constructor para instanciar desde el controlador JavaFX
     public Voluntario(String nombre, String apellidos, String direccion, String dni, String telefono, String correo, LocalDate fechaNacimiento) {
         super(nombre, apellidos, direccion);
-        this.setDni(dni);
+        this.setDocumentoIdentidad(dni);
         this.setTelefono(telefono);
         this.setCorreo(correo);
         this.fechaNacimiento = fechaNacimiento;

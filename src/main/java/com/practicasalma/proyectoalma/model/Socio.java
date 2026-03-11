@@ -16,12 +16,19 @@ public class Socio extends Persona {
     @Column(name = "cuenta_bancaria")
     private String cuentaBancaria;
 
+    @Column(name = "codigo_bic")
+    private String codigoBic;
+
+    @Column(name = "tipo_banco")
+    private String tipoBanco; // Ej: "Caja Rural", "Santander"
+
     @Column(name = "cuota")
     private Double cuota;
 
     // "Puntual", "Mensual", "Trimestral", "Anual"
     @Column(name = "periodicidad")
     private String periodicidad;
+
 
     // Relación Uno a Muchos: Un socio puede tener un historial de muchas donaciones.
     // mappedBy = "socio" le dice a Hibernate que la relación la controla la clase Donacion.
@@ -39,7 +46,7 @@ public class Socio extends Persona {
     // Constructor para socios ESPORÁDICOS (sin cuota fija ni periodicidad)
     public Socio(String nombre, String apellidos, String direccion, String dni, String tipoEntidad) {
         super(nombre, apellidos, direccion);
-        this.setDni(dni);
+        this.setDocumentoIdentidad(dni);
         this.tipoEntidad = tipoEntidad;
         this.cuota = 0.0; 
         this.periodicidad = "Ninguna";
@@ -49,16 +56,10 @@ public class Socio extends Persona {
     public Socio(String nombre, String apellidos, String direccion, String dni,
                  String tipoEntidad, Double cuotaFija, String periodicidad) {
         super(nombre, apellidos, direccion);
-        this.setDni(dni); // El DNI sigue siendo obligatorio
+        this.setDocumentoIdentidad(dni); // El DNI sigue siendo obligatorio
         this.tipoEntidad = tipoEntidad;
         this.cuota = cuotaFija;
         this.periodicidad = periodicidad;
-    }
-
-    public Socio(String nombre, String apellidos, String direccion, String dni,  Double cuota) {
-        super(nombre, apellidos, direccion);
-        this.setDni(dni);
-        this.cuota = cuota;
     }
 
     // Getters y Setters
@@ -74,6 +75,12 @@ public class Socio extends Persona {
 
     public String getCuentaBancaria() {return cuentaBancaria;}
     public void setCuentaBancaria(String cuentaBancaria) {this.cuentaBancaria = cuentaBancaria;}
+
+    public String getCodigoBic() {return codigoBic;}
+    public void setCodigoBic(String codigoBic) {this.codigoBic = codigoBic;}
+
+    public String getTipoBanco() {return tipoBanco;}
+    public void setTipoBanco(String tipoBanco) {this.tipoBanco = tipoBanco;}
 
     public List<Donacion> getDonaciones() {return donaciones;}
 

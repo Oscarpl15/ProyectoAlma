@@ -22,11 +22,18 @@ public abstract class Persona {
     @Column(nullable = false)
     private String apellidos;
 
-    // Opcional, pero si existe, no puede haber dos DNIs iguales en la misma tabla
-    @Column(unique = true)
-    private String dni;
+    @Column(name = "documento_identidad", unique = true)
+    private String documentoIdentidad; // Sirve para DNI, NIE o Pasaporte
+
+    @Column(name = "tipo_documento")
+    private String tipoDocumento; // "DNI", "NIE", "Pasaporte"
 
     private String direccion;
+    private String ciudad;
+
+    @Column(name = "codigo_postal")
+    private String codigoPostal;
+
     private String telefono;
     private String correo;
 
@@ -63,9 +70,6 @@ public abstract class Persona {
     public String getApellidos() { return apellidos; }
     public void setApellidos(String apellidos) { this.apellidos = apellidos; }
 
-    public String getDni() { return dni; }
-    public void setDni(String dni) { this.dni = dni; }
-
     public String getDireccion() { return direccion; }
     public void setDireccion(String direccion) { this.direccion = direccion; }
 
@@ -81,4 +85,16 @@ public abstract class Persona {
 
     public Boolean getActivo() { return activo; }
     public void setActivo(Boolean activo) { this.activo = activo; }
+
+    public String getDocumentoIdentidad() {return documentoIdentidad;}
+    public void setDocumentoIdentidad(String documentoIdentidad) {this.documentoIdentidad = documentoIdentidad;}
+
+    public String getTipoDocumento() {return tipoDocumento;}
+    public void setTipoDocumento(String tipoDocumento) {this.tipoDocumento = tipoDocumento;}
+
+    public String getCiudad() {return ciudad;}
+    public void setCiudad(String ciudad) {this.ciudad = ciudad;}
+
+    public String getCodigoPostal() {return codigoPostal;}
+    public void setCodigoPostal(String codigoPostal) {this.codigoPostal = codigoPostal;}
 }
