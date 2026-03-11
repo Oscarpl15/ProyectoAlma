@@ -1,4 +1,4 @@
-package com.practicasalma.proyectoalma.service;
+package com.practicasalma.proyectoalma.dao;
 
 // En esta clase se añadiran los validadores de formatos
 public class Validador {
