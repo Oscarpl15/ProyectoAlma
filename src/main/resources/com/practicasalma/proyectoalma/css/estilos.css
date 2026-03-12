@@ -1,60 +1,169 @@
 /* General */
+/* COMENTADO: AtlantaFX ya define su propia tipografía moderna (Inter/Segoe) y colores de fondo.
 .root {
-    -fx-font-family: 'Segoe UI', sans-serif; /* Fuente limpia */
-    -fx-background-color: #F4F6F8; /* Gris muy suave de fondo */
+    -fx-font-family: 'Segoe UI', sans-serif;
+    -fx-background-color: #F4F6F8;
+}
+*/
+
+/* Sobrescribir el color Accent (Azul) de AtlantaFX por el corporativo */
+.root {
+    -color-accent-emphasis: #2E5374; /* azul principal */
+    -color-accent-fg: #ffffff;
+}
+
+/* --- ESTILO PERSONALIZADO PARA TUS BOTONES DEL MENÚ --- */
+.boton-menu {
+    -fx-background-color: #2E5374; /* Tu azul corporativo base */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 25px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+}
+
+/* Al pasar el ratón (Gris oscuro apagado + tamaño) */
+.boton-menu:hover {
+    -fx-background-color: #3C4248;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* Al hacer clic (Pressed) o al quedarse seleccionado con el teclado (Focused) */
+.boton-menu:pressed,
+.boton-menu:focused {
+    -fx-background-color: #2B3035; /* Más oscuro */
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    /* ESTA LÍNEA ES LA CLAVE: Mata el anillo azul brillante de AtlantaFX */
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
 
 /* Cabecera Superior */
+/* MANTENIDO: Es estructural y da sombra a tu caja superior personalizada */
 .header-panel {
     -fx-background-color: white;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);
     -fx-padding: 15;
 }
 
+/* MANTENIDO: Para mantener el color corporativo en el nombre de la fundación */
 .titulo-app {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-text-fill: #2E5374;
 }
 
-
+/* MANTENIDO: Para el efecto del menú lateral */
 .boton-menu:selected { /* Estado activo simulado */
     -fx-text-fill: #2980B9;
     -fx-border-color: #2980B9; /* Subrayado azul */
 }
 
-
-
 /* Tablas */
-.table-view {
-    -fx-background-color: white;
-    -fx-background-radius: 5;
-    -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);
+
+/* 1. La tabla en sí: Bordes redondeados y sombra suave */
+.table-view,
+.table-view .viewport{
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-color: #BDC3C7;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 15, 0, 0, 5);
+    -fx-background-color: transparent; /* Permite ver bordes limpios */
 }
+
+/* 2. El fondo de la cabecera (Azul corporativo y redondeado arriba) */
 .table-view .column-header-background {
-    -fx-background-color: #ECF0F1;
-    -fx-background-radius: 5 5 0 0;
+    -fx-background-color: rgba(46, 83, 116, 0.9);
+    -fx-background-radius: 9px 9px 0 0; /* Redondea solo las esquinas superiores */
+    -fx-padding: 0; /* Quita márgenes raros */
 }
+
+/* 3. Las celdas de la cabecera (Separadores blancos semitransparentes) */
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(255, 255, 255, 0.25); /* Línea vertical suave */
+    -fx-border-width: 0 1px 0 0; /* Borde solo a la derecha */
+    -fx-padding: 10px 5px; /* Más aire arriba y abajo */
+}
+
+/* 4. EL SEPARADOR HORIZONTAL DE LAS SUBCOLUMNAS (Autorizaciones) */
+/* Esto le pone una línea arriba a las subcolumnas para separarlas del título padre */
+.table-view .nested-column-header > .column-header {
+    -fx-border-color: rgba(255, 255, 255, 0.25);
+    -fx-border-width: 1px 1px 0 0; /* Borde arriba y a la derecha */
+}
+
+/* 5. El texto de la cabecera (Centrado y blanco) */
 .table-view .column-header .label {
-    -fx-text-fill: #2E5374;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-font-size: 15px;
+}
+
+/* 6. Esquina superior derecha (El hueco vacío para que no salga gris) */
+.table-view .filler,
+.table-view .column-header-background .show-hide-columns-button {
+    -fx-background-color: rgba(46, 83, 116, 0.9);
+    -fx-background-radius: 0 9px 0 0;
+}
+
+/* 7. Las celdas de los datos (Cuadrícula limpia y centrada) */
+.table-view .table-cell {
+    -fx-alignment: center; /* Todo el texto de la tabla bien centrado */
+    -fx-border-color: #EAEDED; /* Gris muy muy claro para la cuadrícula */
+    -fx-border-width: 0 1px 1px 0; /* Abajo y a la derecha */
+    -fx-font-size: 13px;
+    -fx-padding: 0 10px;
+}
+
+/* 8. Filas con efecto cebra sutil */
+.table-view .table-row-cell {
+    -fx-background-color: rgba(255, 255, 255, 0.5);
+    -fx-cell-size: 40px;
+
+    -fx-min-height: 40px;
+    -fx-pref-height: 40px;
+    -fx-max-height: 40px;
+}
+.table-view .table-row-cell:odd {
+    -fx-background-color: rgba(255, 255, 255, 0.75); /* Gris casi blanco para diferenciar */
+}
+
+/* 9. Fila seleccionada (Azul muy clarito) */
+.table-view .table-row-cell:selected {
+    -fx-background-color: #E3F2FD;
+}
+.table-view .table-row-cell:selected .table-cell {
+    -fx-text-fill: #2E5374; /* Texto en tu azul para que destaque */
     -fx-font-weight: bold;
 }
 
 /* Botón de Acción (Añadir) */
 .boton-accion {
-    -fx-background-color: #2E5374;
+    -fx-background-color: #2E5374; /* Tu azul corporativo */
     -fx-text-fill: white;
-    -fx-min-width: 120;
     -fx-font-weight: bold;
-    -fx-background-radius: 5;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 15px;
     -fx-cursor: hand;
-    -fx-padding: 10 20;
-
 }
+
+/* Solo el efecto Hover que te gustó (Gris oscuro + un poquito más grande) */
 .boton-accion:hover {
-    -fx-background-color: #2980B9;
+    -fx-background-color: #3C4248;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
+
+
+/* === ESTRUCTURAL: PESTAÑAS (MANTENIDO) === */
 /* 1. Ocultar la zona de las pestañas (Cabecera) */
 .tab-pane .tab-header-area {
     -fx-visible: false;
@@ -88,33 +197,29 @@
 
 /* === ESTILOS PARA LAS FICHAS/DIÁLOGOS === */
 
-/* Fondo gris claro como en la referencia */
+/* COMENTADOS: AtlantaFX formatea textos, enlaces y fondos automáticamente con consistencia.
 .fondo-ficha {
     -fx-background-color: #F4F6F8;
 }
 
-/* Título principal (Azul oscuro, grande) */
 .titulo-ficha {
     -fx-font-size: 22px;
     -fx-font-weight: bold;
-    -fx-text-fill: #2C3E50; /* Mismo azul que usaste en la cabecera principal */
+    -fx-text-fill: #2C3E50;
 }
 
-/* Subtítulos de sección */
 .label-seccion {
     -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-text-fill: #3498DB;
 }
 
-/* Etiquetas del formulario (Alineadas a la derecha, negrita suave) */
 .label-formulario {
     -fx-font-weight: bold;
-    -fx-text-fill: #5D6D7E; /* Gris azulado */
+    -fx-text-fill: #5D6D7E;
     -fx-font-size: 13px;
 }
 
-/* Estilo del enlace a los padres */
 .link-padres {
     -fx-text-fill: #3498DB;
     -fx-font-weight: bold;
@@ -124,10 +229,10 @@
     -fx-underline: true;
     -fx-text-fill: #2980B9;
 }
+*/
 
 /* --- BOTONES DEL DIÁLOGO --- */
-
-/* Botón Primario (Guardar) - Azul */
+/* COMENTADOS: Usaremos las clases nativas de AtlantaFX para que los botones tengan hover, sombras y animaciones fluidas.
 .boton-primario {
     -fx-background-color: #3498DB;
     -fx-text-fill: white;
@@ -140,7 +245,6 @@
     -fx-background-color: #2980B9;
 }
 
-/* Botón Secundario (Cancelar) - Gris */
 .boton-secundario {
     -fx-background-color: white;
     -fx-text-fill: #7F8C8D;
@@ -154,3 +258,4 @@
     -fx-background-color: #ECF0F1;
     -fx-text-fill: #2C3E50;
 }
+*/

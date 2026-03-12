@@ -26,10 +26,10 @@ public class Voluntario extends Persona {
     @Column(name = "ruta_doc_leypd")
     private String rutaDocProteccionDatos;
 
-    @OneToMany(mappedBy = "docente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "voluntario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AsignacionPersonal> historialAsignaciones = new ArrayList<>();
 
-    @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "voluntario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PeriodoActividad> periodosActividad = new ArrayList<>();
 
     // Constructor vacío obligatorio para Hibernate
