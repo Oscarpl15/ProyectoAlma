@@ -3,6 +3,7 @@ package com.practicasalma.proyectoalma.dao;
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.model.Socio;
 import com.practicasalma.proyectoalma.util.GestorBBDD;
+import com.practicasalma.proyectoalma.util.UtilFecha;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -58,7 +59,7 @@ public class Filtrados {
         }
 
         String grupoNormalizado = grupo.trim().toLowerCase(Locale.ROOT);
-        String cursoActual = calcularCursoAcademicoActual();
+        String cursoActual = UtilFecha.calcularCursoAcademico();
 
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -80,18 +81,6 @@ public class Filtrados {
             System.err.println("Error al filtrar alumnos por grupo del curso actual: " + e.getMessage());
             return List.of();
         }
-    }
-
-    private String calcularCursoAcademicoActual() {
-        LocalDate hoy = LocalDate.now();
-        int anyoActual = hoy.getYear();
-        int mesActual = hoy.getMonthValue();
-
-        if (mesActual >= 6) {
-            return anyoActual + "-" + (anyoActual + 1);
-        }
-
-        return (anyoActual - 1) + "-" + anyoActual;
     }
 }
 
