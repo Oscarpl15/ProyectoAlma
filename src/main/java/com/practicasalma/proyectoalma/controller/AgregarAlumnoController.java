@@ -107,7 +107,6 @@ public class AgregarAlumnoController {
         try {
             alumnoService.matricularNuevoAlumno(alumno, curso);
 
-            // Si llegamos aquí, todo salió bien
             mostrarMensaje("Éxito", "Alumno guardado correctamente.", Alert.AlertType.INFORMATION);
             cerrarVentana(event);
 
