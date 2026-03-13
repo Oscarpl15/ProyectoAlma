@@ -53,9 +53,9 @@
             <ComboBox fx:id="comboCurso" promptText="Seleccione curso" GridPane.rowIndex="3" GridPane.columnIndex="3" maxWidth="Infinity">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="3 años"/>
-                        <String fx:value="4 años"/>
-                        <String fx:value="5 años"/>
+                        <String fx:value="1º Infantil"/>
+                        <String fx:value="2º Infantil"/>
+                        <String fx:value="3º Infantil"/>
                         <String fx:value="1º Primaria"/>
                         <String fx:value="2º Primaria"/>
                         <String fx:value="3º Primaria"/>

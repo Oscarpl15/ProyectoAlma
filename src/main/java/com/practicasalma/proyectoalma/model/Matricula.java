@@ -1,5 +1,6 @@
 package com.practicasalma.proyectoalma.model;
 
+import com.practicasalma.proyectoalma.util.UtilFecha;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -40,7 +41,7 @@ public class Matricula {
     public Matricula(String curso, Alumno alumno) {
         this.curso = curso;
         this.alumno = alumno;
-        this.anyoAcademico = calcularAnyoAcademico();
+        this.anyoAcademico = UtilFecha.calcularCursoAcademico();
     }
 
     // Getters y Setters
@@ -59,18 +60,4 @@ public class Matricula {
     public Alumno getAlumno() { return alumno; }
     public void setAlumno(Alumno alumno) { this.alumno = alumno; }
 
-    //Metodo para automatizar el curso academico
-    private String calcularAnyoAcademico() {
-        LocalDate hoy = LocalDate.now();
-        int anyoActual = hoy.getYear();
-        int mesActual = hoy.getMonthValue();
-
-        if (mesActual >= 6) {
-            // De junio (6) a diciembre (12)
-            return anyoActual + "-" + (anyoActual + 1);
-        } else {
-            // De enero (1) a mayo (5)
-            return (anyoActual - 1) + "-" + anyoActual;
-        }
-    }
 }

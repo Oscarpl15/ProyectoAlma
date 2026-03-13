@@ -1,9 +1,9 @@
-package com.practicasalma.proyectoalma.dao;
+package com.practicasalma.proyectoalma.util;
 
 // En esta clase se añadiran los validadores de formatos
 public class Validador {
 
-    public boolean esDni(String dni) {
+    public static boolean esDni(String dni) {
 
         if (dni == null) {
             return false;
@@ -26,7 +26,7 @@ public class Validador {
         return letraProporcionada == letraCalculada;
     }
 
-    public boolean esNie(String nie) {
+    public static boolean esNie(String nie) {
 
         if (nie == null) {
             return false;
