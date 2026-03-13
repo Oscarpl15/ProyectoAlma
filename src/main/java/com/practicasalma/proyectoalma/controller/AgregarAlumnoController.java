@@ -1,8 +1,13 @@
 package com.practicasalma.proyectoalma.controller;
 
+import com.practicasalma.proyectoalma.model.Alumno;
+import com.practicasalma.proyectoalma.model.Matricula;
+import com.practicasalma.proyectoalma.util.GestorBBDD;
+import jakarta.persistence.EntityManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -57,30 +62,70 @@ public class AgregarAlumnoController {
 
     @FXML
     private void guardarAlumno(ActionEvent event) {
-        // Recuperar los datos principales
-        String nombre = txtNombre.getText();
-        String apellidos = txtApellidos.getText();
+        String nombre = limpiarTexto(txtNombre.getText());
+        String apellidos = limpiarTexto(txtApellidos.getText());
         String curso = comboCurso.getValue();
         LocalDate fechaNac = dpFechaNacimiento.getValue();
 
-        // Validacion simple
-        if (nombre == null || nombre.trim().isEmpty() || curso == null) {
-            System.out.println("Por favor rellena al menos nombre y curso");
+        if (nombre == null || apellidos == null || fechaNac == null || curso == null || curso.trim().isEmpty()) {
+            mostrarMensaje("Datos incompletos", "Nombre, apellidos, fecha de nacimiento y curso son obligatorios.", Alert.AlertType.WARNING);
             return;
         }
 
-        System.out.println("--- GUARDANDO NUEVO ALUMNO ---");
-        System.out.println("Nombre: " + nombre + " " + apellidos);
-        System.out.println("DNI: " + txtDni.getText());
-        System.out.println("Curso: " + curso + " | Colegio: " + txtColegio.getText());
+        EntityManager em = null;
 
-        // Comprobar Autorizaciones
-        System.out.println("Auto. Irse Solo: " + chkAutoIrseSolo.isSelected());
-        System.out.println("Seguimiento SS: " + chkSS.isSelected() + " | Derivado por: " + txtDerivado.getText());
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
 
-        // Aquí más adelante llamaremos a BBDD para hacer el INSERT real.
+            Alumno alumno = new Alumno(nombre, apellidos, limpiarTexto(txtDireccion.getText()), fechaNac);
 
-        cerrarVentana(event);
+            alumno.setTelefono(limpiarTexto(txtTelefono.getText()));
+            alumno.setColegio(limpiarTexto(txtColegio.getText()));
+            alumno.setDerivadoPor(limpiarTexto(txtDerivado.getText()));
+            alumno.setRutaFotoPerfil(rutaFotoSeleccionada);
+
+            String dni = limpiarTexto(txtDni.getText());
+            if (dni != null) {
+                alumno.setDocumentoIdentidad(dni);
+            }
+
+            alumno.setAutorizaUsoDatos(chkAutoDatos.isSelected());
+            alumno.setAutorizaImagen(chkAutoImagen.isSelected());
+            alumno.setAutorizaActividades(chkAutoActividades.isSelected());
+            alumno.setAutorizaComunicaciones(chkAutoComunicaciones.isSelected());
+            alumno.setAutorizaIrseSolo(chkAutoIrseSolo.isSelected());
+
+            alumno.setSeguimientoServiciosSociales(chkSS.isSelected());
+            alumno.setSeguimientoSaf(chkSAF.isSelected());
+
+            Matricula matricula = new Matricula(curso.trim(), alumno);
+            alumno.addMatricula(matricula);
+
+            em.persist(alumno);
+            em.getTransaction().commit();
+
+            cerrarVentana(event);
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            System.err.println("Error al guardar alumno: " + e.getMessage());
+            mostrarMensaje("Error", "No se pudo guardar el alumno. Revisa los datos e inténtalo de nuevo.", Alert.AlertType.ERROR);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
+    private String limpiarTexto(String valor) {
+        if (valor == null) {
+            return null;
+        }
+
+        String limpio = valor.trim();
+        return limpio.isEmpty() ? null : limpio;
     }
 
     @FXML
@@ -116,5 +161,13 @@ public class AgregarAlumnoController {
         Node source = (Node) event.getSource();
         Stage stage = (Stage) source.getScene().getWindow();
         stage.close();
+    }
+
+    private void mostrarMensaje(String titulo, String contenido, Alert.AlertType tipo) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(contenido);
+        alert.showAndWait();
     }
 }
