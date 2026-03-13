@@ -4,6 +4,7 @@ import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.model.Matricula;
 import com.practicasalma.proyectoalma.service.AlumnoService;
 import com.practicasalma.proyectoalma.util.GestorBBDD;
+import com.practicasalma.proyectoalma.util.Validador;
 import jakarta.persistence.EntityManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -65,26 +66,33 @@ public class AgregarAlumnoController {
 
     @FXML
     private void guardarAlumno(ActionEvent event) {
-        // 1. Recoger datos UI
+        // Recoger datos UI
         String nombre = limpiarTexto(txtNombre.getText());
         String apellidos = limpiarTexto(txtApellidos.getText());
         String curso = comboCurso.getValue();
         LocalDate fechaNac = dpFechaNacimiento.getValue();
+        String dni = limpiarTexto(txtDni.getText());
 
-        // 2. Validación Rápida de Interfaz
+        // Validación Rápida de Interfaz
         if (nombre == null || apellidos == null || fechaNac == null || curso == null || curso.trim().isEmpty()) {
             mostrarMensaje("Datos incompletos", "Nombre, apellidos, fecha de nacimiento y curso son obligatorios.", Alert.AlertType.WARNING);
             return;
         }
 
-        // 3. Empaquetar los datos en el Modelo
+        if (dni != null) {
+            if (!Validador.esDni(dni) && !Validador.esNie(dni)) {
+                mostrarMensaje("Formato Incorrecto", "El DNI/NIE introducido no es válido. Revisa las letras y números.", Alert.AlertType.WARNING);
+                return; // Cortamos la ejecución, no seguimos guardando
+            }
+        }
+
+        // Empaquetar los datos en el Modelo
         Alumno alumno = new Alumno(nombre, apellidos, limpiarTexto(txtDireccion.getText()), fechaNac);
         alumno.setTelefono(limpiarTexto(txtTelefono.getText()));
         alumno.setColegio(limpiarTexto(txtColegio.getText()));
         alumno.setDerivadoPor(limpiarTexto(txtDerivado.getText()));
         alumno.setRutaFotoPerfil(rutaFotoSeleccionada);
 
-        String dni = limpiarTexto(txtDni.getText());
         if (dni != null) alumno.setDocumentoIdentidad(dni);
 
         alumno.setAutorizaUsoDatos(chkAutoDatos.isSelected());
@@ -95,7 +103,7 @@ public class AgregarAlumnoController {
         alumno.setSeguimientoServiciosSociales(chkSS.isSelected());
         alumno.setSeguimientoSaf(chkSAF.isSelected());
 
-        // 4. Delegar la responsabilidad al Servicio
+        // Delegar la responsabilidad al Servicio
         try {
             alumnoService.matricularNuevoAlumno(alumno, curso);
 
