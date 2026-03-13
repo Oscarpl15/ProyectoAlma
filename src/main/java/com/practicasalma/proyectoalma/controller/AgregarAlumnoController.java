@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.model.Matricula;
+import com.practicasalma.proyectoalma.service.AlumnoService;
 import com.practicasalma.proyectoalma.util.GestorBBDD;
 import jakarta.persistence.EntityManager;
 import javafx.event.ActionEvent;
@@ -49,12 +50,14 @@ public class AgregarAlumnoController {
     private final String RUTA_DEFECTO_IMAGEN = "/com/practicasalma/proyectoalma/assets/default.png";
     private String rutaFotoSeleccionada = null;
 
+    // Instanciamos el servicio
+    private final AlumnoService alumnoService = new AlumnoService();
+
     @FXML
     private void initialize() {
         try {
             String rutaDefault = getClass().getResource(RUTA_DEFECTO_IMAGEN).toExternalForm();
-            Image imagenDefault = new Image(rutaDefault);
-            fotoAlumno.setImage(imagenDefault);
+            fotoAlumno.setImage(new Image(rutaDefault));
         } catch (NullPointerException e) {
             System.out.println("ERROR: No se encontró la imagen por defecto.");
         }
@@ -62,60 +65,48 @@ public class AgregarAlumnoController {
 
     @FXML
     private void guardarAlumno(ActionEvent event) {
+        // 1. Recoger datos UI
         String nombre = limpiarTexto(txtNombre.getText());
         String apellidos = limpiarTexto(txtApellidos.getText());
         String curso = comboCurso.getValue();
         LocalDate fechaNac = dpFechaNacimiento.getValue();
 
+        // 2. Validación Rápida de Interfaz
         if (nombre == null || apellidos == null || fechaNac == null || curso == null || curso.trim().isEmpty()) {
             mostrarMensaje("Datos incompletos", "Nombre, apellidos, fecha de nacimiento y curso son obligatorios.", Alert.AlertType.WARNING);
             return;
         }
 
-        EntityManager em = null;
+        // 3. Empaquetar los datos en el Modelo
+        Alumno alumno = new Alumno(nombre, apellidos, limpiarTexto(txtDireccion.getText()), fechaNac);
+        alumno.setTelefono(limpiarTexto(txtTelefono.getText()));
+        alumno.setColegio(limpiarTexto(txtColegio.getText()));
+        alumno.setDerivadoPor(limpiarTexto(txtDerivado.getText()));
+        alumno.setRutaFotoPerfil(rutaFotoSeleccionada);
 
+        String dni = limpiarTexto(txtDni.getText());
+        if (dni != null) alumno.setDocumentoIdentidad(dni);
+
+        alumno.setAutorizaUsoDatos(chkAutoDatos.isSelected());
+        alumno.setAutorizaImagen(chkAutoImagen.isSelected());
+        alumno.setAutorizaActividades(chkAutoActividades.isSelected());
+        alumno.setAutorizaComunicaciones(chkAutoComunicaciones.isSelected());
+        alumno.setAutorizaIrseSolo(chkAutoIrseSolo.isSelected());
+        alumno.setSeguimientoServiciosSociales(chkSS.isSelected());
+        alumno.setSeguimientoSaf(chkSAF.isSelected());
+
+        // 4. Delegar la responsabilidad al Servicio
         try {
-            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
-            em.getTransaction().begin();
+            alumnoService.matricularNuevoAlumno(alumno, curso);
 
-            Alumno alumno = new Alumno(nombre, apellidos, limpiarTexto(txtDireccion.getText()), fechaNac);
-
-            alumno.setTelefono(limpiarTexto(txtTelefono.getText()));
-            alumno.setColegio(limpiarTexto(txtColegio.getText()));
-            alumno.setDerivadoPor(limpiarTexto(txtDerivado.getText()));
-            alumno.setRutaFotoPerfil(rutaFotoSeleccionada);
-
-            String dni = limpiarTexto(txtDni.getText());
-            if (dni != null) {
-                alumno.setDocumentoIdentidad(dni);
-            }
-
-            alumno.setAutorizaUsoDatos(chkAutoDatos.isSelected());
-            alumno.setAutorizaImagen(chkAutoImagen.isSelected());
-            alumno.setAutorizaActividades(chkAutoActividades.isSelected());
-            alumno.setAutorizaComunicaciones(chkAutoComunicaciones.isSelected());
-            alumno.setAutorizaIrseSolo(chkAutoIrseSolo.isSelected());
-
-            alumno.setSeguimientoServiciosSociales(chkSS.isSelected());
-            alumno.setSeguimientoSaf(chkSAF.isSelected());
-
-            Matricula matricula = new Matricula(curso.trim(), alumno);
-            alumno.addMatricula(matricula);
-
-            em.persist(alumno);
-            em.getTransaction().commit();
-
+            // Si llegamos aquí, todo salió bien
+            mostrarMensaje("Éxito", "Alumno guardado correctamente.", Alert.AlertType.INFORMATION);
             cerrarVentana(event);
+
         } catch (Exception e) {
-            if (em != null && em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            System.err.println("Error al guardar alumno: " + e.getMessage());
-            mostrarMensaje("Error", "No se pudo guardar el alumno. Revisa los datos e inténtalo de nuevo.", Alert.AlertType.ERROR);
-        } finally {
-            if (em != null) {
-                em.close();
-            }
+            // Si el servicio o el DAO fallan, capturamos el error aquí
+            System.err.println("Error en el proceso de guardado: " + e.getMessage());
+            mostrarMensaje("Error", "No se pudo guardar el alumno: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -149,9 +140,7 @@ public class AgregarAlumnoController {
 
         if (archivoSeleccionado != null) {
             rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
-
-            Image image = new Image(archivoSeleccionado.toURI().toString());
-            fotoAlumno.setImage(image);
+            fotoAlumno.setImage(new Image(archivoSeleccionado.toURI().toString()));
 
             System.out.println("Ruta de la foto: " + rutaFotoSeleccionada);
         }
