@@ -1,5 +1,6 @@
 package com.practicasalma.proyectoalma.model;
 
+import com.practicasalma.proyectoalma.util.UtilFecha;
 import jakarta.persistence.*;
 
 @Entity
@@ -30,16 +31,16 @@ public class AsignacionPersonal {
     public AsignacionPersonal() {}
 
     // Constructor para cuando se asigna a un DOCENTE
-    public AsignacionPersonal(String anyoAcademico, String grupoAsignado, Docente docente) {
-        this.anyoAcademico = anyoAcademico;
+    public AsignacionPersonal( String grupoAsignado, Docente docente) {
+        this.anyoAcademico = UtilFecha.calcularCursoAcademico();
         this.grupoAsignado = grupoAsignado;
         this.docente = docente;
         this.voluntario = null; // Nos aseguramos de que el otro quede vacío
     }
 
     // Constructor para cuando se asigna a un VOLUNTARIO
-    public AsignacionPersonal(String anyoAcademico, String grupoAsignado, Voluntario voluntario) {
-        this.anyoAcademico = anyoAcademico;
+    public AsignacionPersonal( String grupoAsignado, Voluntario voluntario) {
+        this.anyoAcademico = UtilFecha.calcularCursoAcademico();
         this.grupoAsignado = grupoAsignado;
         this.voluntario = voluntario;
         this.docente = null;
