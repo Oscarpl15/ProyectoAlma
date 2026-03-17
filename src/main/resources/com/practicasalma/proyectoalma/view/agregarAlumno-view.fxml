@@ -65,6 +65,19 @@
                     </FXCollections>
                 </items>
             </ComboBox>
+
+            <Label text="Grupo:" GridPane.rowIndex="4" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+            <ComboBox fx:id="comboGrupo" promptText="Seleccione grupo" GridPane.rowIndex="4" GridPane.columnIndex="1" maxWidth="Infinity">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="g1 lunes/miercoles"/>
+                        <String fx:value="g2 lunes/miercoles"/>
+                        <String fx:value="g1 martes/jueves"/>
+                        <String fx:value="g2 martes/jueves"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+
         </GridPane>
 
         <Separator />

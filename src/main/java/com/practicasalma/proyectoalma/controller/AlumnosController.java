@@ -1,8 +1,9 @@
 package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.Launcher;
-
 import com.practicasalma.proyectoalma.model.Alumno;
+import com.practicasalma.proyectoalma.service.AlumnoService;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,7 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.util.List;
 
 public class AlumnosController {
 
@@ -26,7 +27,6 @@ public class AlumnosController {
     @FXML private TableColumn<Alumno, String> colTelefono;
     @FXML private TableColumn<Alumno, String> colGrupo;
 
-    // Autorizaciones (Fíjate que uso autoIrseSolo como acordamos para la base de datos)
     @FXML private TableColumn<Alumno, Boolean> colAutoDatos;
     @FXML private TableColumn<Alumno, Boolean> colAutoActividades;
     @FXML private TableColumn<Alumno, Boolean> colAutoComunicaciones;
@@ -36,121 +36,118 @@ public class AlumnosController {
     @FXML private ComboBox<String> comboCursoFiltro;
     @FXML private ComboBox<String> comboGrupoFiltro;
 
-    // Datos falsos para la presentación
-    private ObservableList<Alumno> listaFalsa = FXCollections.observableArrayList(
-            new Alumno("Juan", "Pérez López", "avenida jajaja", LocalDate.now()),
-            new Alumno("Lucía", "García Martín", "avenida jajaja", LocalDate.now()),
-            new Alumno("Marcos", "Alonso", "avenida jajaja", LocalDate.now())
-    );
+    // APLICANDO LA ARQUITECTURA: Llamamos al Service
+    private final AlumnoService alumnoService = new AlumnoService();
 
     @FXML
     public void initialize() {
         colNombre.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNombre()));
         colApellidos.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getApellidos()));
-
-        // Dejo estas comentadas hasta que conectemos los booleanos reales para los ticks
-        colTelefono.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTelefono()));
-        colGrupo.setCellValueFactory(cellData -> new SimpleStringProperty("Sin grupo"));
-
-        /* CONCEPTO: Así se hará con datos reales
+        colTelefono.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTelefono() != null ? cellData.getValue().getTelefono() : ""));
         colGrupo.setCellValueFactory(cellData -> {
             Alumno alumno = cellData.getValue();
-            // 1. Buscamos la matrícula de este año (suponiendo que tienes un método así)
-            Matricula matriculaActiva = alumno.obtenerMatriculaActiva();
-
-            // 2. Si tiene matrícula, mostramos el grupo. Si no, mostramos "Sin matricular"
-            if (matriculaActiva != null && matriculaActiva.getGrupoAsignado() != null) {
-                return new SimpleStringProperty(matriculaActiva.getGrupoAsignado());
-            } else {
-                return new SimpleStringProperty("Sin grupo");
+            // Si el alumno tiene matrículas, cogemos el curso de la primera (la actual)
+            if (alumno.getMatriculas() != null && !alumno.getMatriculas().isEmpty()) {
+                String curso = alumno.getMatriculas().get(0).getGrupoAsignado();
+                return new SimpleStringProperty(curso != null ? curso : "Sin curso");
             }
-        });*/
+            return new SimpleStringProperty("Sin matricular");
+        });
 
-        tablaAlumnos.setItems(listaFalsa);
+        configurarColumnaBooleana(colAutoDatos, alumno -> alumno.getAutorizaUsoDatos());
+        configurarColumnaBooleana(colAutoActividades, alumno -> alumno.getAutorizaActividades());
+        configurarColumnaBooleana(colAutoComunicaciones, alumno -> alumno.getAutorizaComunicaciones());
+        configurarColumnaBooleana(colAutoImagen, alumno -> alumno.getAutorizaImagen());
+        configurarColumnaBooleana(colAutoIrseSolo, alumno -> alumno.getAutorizaIrseSolo());
+
         comboCursoFiltro.getSelectionModel().select(0);
 
-        // 3. EVENTO DOBLE CLIC (Importante)
         tablaAlumnos.setRowFactory(tv -> {
             TableRow<Alumno> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     Alumno alumnoSeleccionado = row.getItem();
                     abrirFichaAlumno(alumnoSeleccionado);
                 }
             });
-            return row ;
+            return row;
         });
+
+        cargarAlumnosEnTabla();
+    }
+
+    private void configurarColumnaBooleana(TableColumn<Alumno, Boolean> columna, java.util.function.Function<Alumno, Boolean> extractor) {
+        columna.setCellValueFactory(cellData -> {
+            Boolean valor = extractor.apply(cellData.getValue());
+            return new SimpleObjectProperty<>(valor != null ? valor : false);
+        });
+
+        columna.setCellFactory(tc -> new TableCell<>() {
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item ? "✓" : "✗");
+                    setStyle("-fx-alignment: CENTER; " + (item ? "-fx-text-fill: green;" : "-fx-text-fill: red;"));
+                }
+            }
+        });
+    }
+
+    public void cargarAlumnosEnTabla() {
+        List<Alumno> listaBD = alumnoService.obtenerTodos();
+        ObservableList<Alumno> listaObservable = FXCollections.observableArrayList(listaBD);
+        tablaAlumnos.setItems(listaObservable);
     }
 
     @FXML
     private void nuevoAlumno() {
         try {
-            // 1. Cargar la vista del Pop-up
             FXMLLoader loader = new FXMLLoader(Launcher.class.getResource("view/agregarAlumno-view.fxml"));
             Parent root = loader.load();
-
-            // 2. Crear la escena
             Scene scene = new Scene(root);
-
-            // 3. Crear un NUEVO escenario (Stage) para el pop-up
             Stage stage = new Stage();
-
-            // Título de la ventanita
             stage.setTitle("Agregar alumno");
-
-            // Asignar la escena
             stage.setScene(scene);
-
-            // 4. Configurar la modalidad (IMPORTANTE para efecto pop-up)
-            // APPLICATION_MODAL: Bloquea la interacción con la ventana principal
-            // hasta que cierres este pop-up.
             stage.initModality(Modality.APPLICATION_MODAL);
 
-            // Agregamos logo de la fundación a la ventana
             String rutaIcono = "/com/practicasalma/proyectoalma/assets/logo.png";
-            stage.getIcons().add(new Image(getClass().getResourceAsStream(rutaIcono)));
+            try {
+                stage.getIcons().add(new Image(getClass().getResourceAsStream(rutaIcono)));
+            } catch (Exception ignored) {}
 
-            // 5. Mostrar la ventana
-            // showAndWait() espera a que se cierre para continuar la ejecución del código
             stage.showAndWait();
+
+            // Refresco automático al cerrar la ventana de añadir
+            cargarAlumnosEnTabla();
 
         } catch (IOException e) {
             System.err.println("Error al abrir el pop-up: " + e.getMessage());
             e.printStackTrace();
-        };
+        }
     }
 
     private void abrirFichaAlumno(Alumno alumno) {
         try {
-            // 1. Cargar el FXML de la ficha
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/practicasalma/proyectoalma/view/ficha-alumno.fxml"));
             Parent root = loader.load();
 
-            // 2. OBTENER EL CONTROLADOR DE LA FICHA (¡Importante!)
             FichaAlumnoController controller = loader.getController();
-
-            // 3. PASARLE EL ALUMNO SELECCIONADO
             controller.setAlumno(alumno);
 
-            // 4. Mostrar la ventana nueva
             Stage stage = new Stage();
             stage.setTitle("Ficha del Alumno: " + alumno.getNombre());
             stage.setScene(new Scene(root));
-            stage.initModality(Modality.WINDOW_MODAL); // Bloquea la ventana de atrás hasta que cierres esta
-            stage.initOwner(tablaAlumnos.getScene().getWindow()); // Dice que esta ventana pertenece a la principal
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(tablaAlumnos.getScene().getWindow());
             stage.show();
 
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error al abrir la ficha: " + e.getMessage());
         }
-    }
-
-    private void mostrarMensaje(String titulo, String contenido) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(contenido);
-        alert.showAndWait();
     }
 }

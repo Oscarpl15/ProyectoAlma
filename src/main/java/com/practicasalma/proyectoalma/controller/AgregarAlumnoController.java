@@ -32,6 +32,7 @@ public class AgregarAlumnoController {
     // Datos Escolares / Sociales
     @FXML private TextField txtColegio;
     @FXML private ComboBox<String> comboCurso;
+    @FXML private ComboBox<String> comboGrupo;
     @FXML private TextField txtDerivado;
     @FXML private CheckBox chkSS;
     @FXML private CheckBox chkSAF;
@@ -67,6 +68,7 @@ public class AgregarAlumnoController {
         String nombre = limpiarTexto(txtNombre.getText());
         String apellidos = limpiarTexto(txtApellidos.getText());
         String curso = comboCurso.getValue();
+        String grupo = comboGrupo.getValue();
         String cursoNormalizado = limpiarTexto(curso);
         LocalDate fechaNac = dpFechaNacimiento.getValue();
         String dni = limpiarTexto(txtDni.getText());
@@ -114,7 +116,7 @@ public class AgregarAlumnoController {
 
         // Delegar la responsabilidad al Servicio
         try {
-            alumnoService.matricularNuevoAlumno(alumno, cursoNormalizado);
+            alumnoService.matricularNuevoAlumno(alumno, cursoNormalizado, grupo);
 
             mostrarMensaje("Éxito", "Alumno guardado correctamente.", Alert.AlertType.INFORMATION);
             cerrarVentana(event);

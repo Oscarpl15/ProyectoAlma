@@ -16,7 +16,7 @@
 
     <ImageView fitHeight="768.0" fitWidth="1024.0" opacity="0.25" preserveRatio="false">
         <image>
-            <Image url="@../assets/logo.png" />
+            <Image url="@../assets/Fondo1.png" />
         </image>
     </ImageView>
 
