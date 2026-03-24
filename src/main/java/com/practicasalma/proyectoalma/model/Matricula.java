@@ -57,6 +57,9 @@ public class Matricula {
     public Boolean getEsRepeticion() { return esRepeticion; }
     public void setEsRepeticion(Boolean esRepeticion) { this.esRepeticion = esRepeticion; }
 
+    public String getGrupoAsignado() {return grupoAsignado;}
+    public void setGrupoAsignado(String grupoAsignado) {this.grupoAsignado = grupoAsignado;}
+
     public Alumno getAlumno() { return alumno; }
     public void setAlumno(Alumno alumno) { this.alumno = alumno; }
 

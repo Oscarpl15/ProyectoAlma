@@ -12,6 +12,10 @@
     -color-accent-fg: #ffffff;
 }
 
+#mainLayout {
+    -fx-background-color: rgba(255, 255, 255, 0.7); /* Blanco sutil */
+}
+
 /* --- ESTILO PERSONALIZADO PARA TUS BOTONES DEL MENÚ --- */
 .boton-menu {
     -fx-background-color: #2E5374; /* Tu azul corporativo base */
@@ -42,11 +46,19 @@
     -fx-faint-focus-color: transparent;
 }
 
+/* MANTENIDO: Para el efecto del menú */
+.boton-menu:selected {
+    -fx-background-color: #2B3035;
+    -fx-text-fill: white;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
 /* Cabecera Superior */
 /* MANTENIDO: Es estructural y da sombra a tu caja superior personalizada */
 .header-panel {
-    -fx-background-color: white;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-background-color: transparent;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.06), 8, 0, 0, 1);
     -fx-padding: 15;
 }
 
@@ -57,92 +69,104 @@
     -fx-text-fill: #2E5374;
 }
 
-/* MANTENIDO: Para el efecto del menú lateral */
-.boton-menu:selected { /* Estado activo simulado */
-    -fx-text-fill: #2980B9;
-    -fx-border-color: #2980B9; /* Subrayado azul */
-}
-
 /* Tablas */
 
-/* 1. La tabla en sí: Bordes redondeados y sombra suave */
-.table-view,
-.table-view .viewport{
+/* 1. La tabla principal (Bordes, sombra y redondeo general) */
+.table-view {
     -fx-background-radius: 10px;
     -fx-border-radius: 10px;
     -fx-border-color: #BDC3C7;
     -fx-border-width: 1px;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 15, 0, 0, 5);
-    -fx-background-color: transparent; /* Permite ver bordes limpios */
+    -fx-background-color: transparent;
 }
 
-/* 2. El fondo de la cabecera (Azul corporativo y redondeado arriba) */
+/* 2. Cabecera superior (Azul corporativo redondeado arriba) */
 .table-view .column-header-background {
     -fx-background-color: rgba(46, 83, 116, 0.9);
-    -fx-background-radius: 9px 9px 0 0; /* Redondea solo las esquinas superiores */
-    -fx-padding: 0; /* Quita márgenes raros */
+    -fx-background-radius: 9px 9px 0 0;
+    -fx-padding: 0;
 }
 
-/* 3. Las celdas de la cabecera (Separadores blancos semitransparentes) */
-.table-view .column-header {
-    -fx-background-color: transparent;
-    -fx-border-color: rgba(255, 255, 255, 0.25); /* Línea vertical suave */
-    -fx-border-width: 0 1px 0 0; /* Borde solo a la derecha */
-    -fx-padding: 10px 5px; /* Más aire arriba y abajo */
-}
-
-/* 4. EL SEPARADOR HORIZONTAL DE LAS SUBCOLUMNAS (Autorizaciones) */
-/* Esto le pone una línea arriba a las subcolumnas para separarlas del título padre */
-.table-view .nested-column-header > .column-header {
-    -fx-border-color: rgba(255, 255, 255, 0.25);
-    -fx-border-width: 1px 1px 0 0; /* Borde arriba y a la derecha */
-}
-
-/* 5. El texto de la cabecera (Centrado y blanco) */
-.table-view .column-header .label {
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-alignment: center;
-    -fx-font-size: 15px;
-}
-
-/* 6. Esquina superior derecha (El hueco vacío para que no salga gris) */
+/* 3. El hueco de la esquina superior derecha (Para que no salga cuadrado y gris) */
 .table-view .filler,
 .table-view .column-header-background .show-hide-columns-button {
     -fx-background-color: rgba(46, 83, 116, 0.9);
     -fx-background-radius: 0 9px 0 0;
 }
 
-/* 7. Las celdas de los datos (Cuadrícula limpia y centrada) */
-.table-view .table-cell {
-    -fx-alignment: center; /* Todo el texto de la tabla bien centrado */
-    -fx-border-color: #EAEDED; /* Gris muy muy claro para la cuadrícula */
-    -fx-border-width: 0 1px 1px 0; /* Abajo y a la derecha */
-    -fx-font-size: 13px;
-    -fx-padding: 0 10px;
+/* 4. Textos y separadores de la cabecera */
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(255, 255, 255, 0.25);
+    -fx-border-width: 0 1px 0 0;
+    -fx-padding: 10px 5px;
+}
+.table-view .nested-column-header > .column-header {
+    -fx-border-color: rgba(255, 255, 255, 0.25);
+    -fx-border-width: 1px 1px 0 0;
+}
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-font-size: 15px;
+}
+/* Quitar la línea blanca derecha a la última columna para que no pise la curva final */
+.table-view .column-header:last-visible {
+    -fx-border-width: 0;
 }
 
-/* 8. Filas con efecto cebra sutil */
-.table-view .table-row-cell {
-    -fx-background-color: rgba(255, 255, 255, 0.5);
-    -fx-cell-size: 40px;
+/* Si la última columna es una subcolumna, le mantenemos la línea de arriba pero le quitamos la de la derecha */
+.table-view .nested-column-header > .column-header:last-visible {
+    -fx-border-width: 1px 0 0 0;
+}
 
+/* Quitar la línea blanca derecha a la última columna autorizaciones */
+.table-view .column-header.sin-borde-derecho {
+    -fx-border-width: 0;
+}
+
+/* 5. Celdas y cuadrícula (Cristal) */
+.table-view .table-cell {
+    -fx-alignment: center;
+    -fx-border-color: rgba(234, 237, 237, 0.5);
+    -fx-border-width: 0 1px 1px 0;
+    -fx-font-size: 13px;
+    -fx-padding: 0 10px;
+    -fx-background-color: transparent;
+}
+
+/* 6. Filas y efecto cebra semitransparente */
+.table-view .table-row-cell {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+    -fx-cell-size: 40px;
     -fx-min-height: 40px;
     -fx-pref-height: 40px;
     -fx-max-height: 40px;
 }
 .table-view .table-row-cell:odd {
-    -fx-background-color: rgba(255, 255, 255, 0.75); /* Gris casi blanco para diferenciar */
+    -fx-background-color: rgba(255, 255, 255, 0.5);
 }
-
-/* 9. Fila seleccionada (Azul muy clarito) */
 .table-view .table-row-cell:selected {
     -fx-background-color: #E3F2FD;
 }
 .table-view .table-row-cell:selected .table-cell {
-    -fx-text-fill: #2E5374; /* Texto en tu azul para que destaque */
+    -fx-text-fill: #2E5374;
     -fx-font-weight: bold;
 }
+
+/* 7. SCROLL INTERNO: Transparente para no manchar y redondeado abajo */
+.table-view .virtual-flow,
+.table-view .virtual-flow .viewport {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0 0 10px 10px;
+}
+
+.table-view .table-row-cell:last-child {
+    -fx-background-radius: 0 0 10 10;
+}
+
 
 /* Botón de Acción (Añadir) */
 .boton-accion {
@@ -191,8 +215,18 @@
 
 /* 4.Eliminar la "región de cabeceras" por si acaso */
 .tab-pane .headers-region {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
     -fx-visible: false;
     -fx-max-height: 0;
+}
+
+.logo-fundacion {
+    /* Mezcla la imagen "multiplicando" los colores. El blanco desaparece sutilmente */
+    -fx-blend-mode: multiply;
+    /* Bajar un pelín la opacidad si el logo resalta demasiado */
+    -fx-opacity: 0.9;
 }
 
 /* === ESTILOS PARA LAS FICHAS/DIÁLOGOS === */

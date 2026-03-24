@@ -14,130 +14,96 @@ import java.io.File;
 
 public class FichaAlumnoController {
 
-    // --- Inyección de elementos del FXML ---
     @FXML private ImageView imgFoto;
     @FXML private TextField txtNombre;
     @FXML private TextField txtApellidos;
     @FXML private TextField txtDni;
     @FXML private DatePicker dpFechaNacimiento;
     @FXML private TextField txtDireccion;
-    @FXML private ComboBox<String> cmbCurso;
-    @FXML private CheckBox chkActivo;
-    @FXML private Hyperlink linkPadres;
+    @FXML private TextField txtTelefono;
+    @FXML private TextField txtColegio;
+    @FXML private TextField txtDerivado;
 
-    // Checkboxes de autorizaciones
-    @FXML private CheckBox chkAuthImagen;
-    @FXML private CheckBox chkAuthSalidas;
-    @FXML private CheckBox chkAuthRecogida;
+    @FXML private CheckBox chkAutoDatos;
+    @FXML private CheckBox chkAutoImagen;
+    @FXML private CheckBox chkAutoActividades;
+    @FXML private CheckBox chkAutoComunicaciones;
+    @FXML private CheckBox chkAutoIrseSolo;
 
     @FXML private Button btnGuardar;
 
     private Alumno alumnoActual;
-    private String rutaFotoSeleccionada = null;// Para saber si estamos editando uno existente
+    private String rutaFotoSeleccionada = null;
 
     @FXML
     public void initialize() {
-        // Cargar el combo de cursos con datos de ejemplo
-        cmbCurso.getItems().addAll("2025-2026", "2026-2027", "2027-2028");
-
-
+        // Inicialización básica
     }
 
-    // METODO CLAVE PARA RECIBIR DATOS (Lo usaremos mañana)
     public void setAlumno(Alumno alumno) {
         this.alumnoActual = alumno;
         if (alumno != null) {
-            // Estamos EDITANDO: Rellenar campos
-            txtNombre.setText(alumno.getNombre());
-            txtApellidos.setText(alumno.getApellidos());
-            // ... rellenar el resto ...
-            btnGuardar.setText("Actualizar Datos");
+            txtNombre.setText(alumno.getNombre() != null ? alumno.getNombre() : "");
+            txtApellidos.setText(alumno.getApellidos() != null ? alumno.getApellidos() : "");
+            txtDni.setText(alumno.getDocumentoIdentidad() != null ? alumno.getDocumentoIdentidad() : "");
+            txtDireccion.setText(alumno.getDireccion() != null ? alumno.getDireccion() : "");
+            txtTelefono.setText(alumno.getTelefono() != null ? alumno.getTelefono() : "");
+            txtColegio.setText(alumno.getColegio() != null ? alumno.getColegio() : "");
+            txtDerivado.setText(alumno.getDerivadoPor() != null ? alumno.getDerivadoPor() : "");
+            dpFechaNacimiento.setValue(alumno.getFechaNacimiento());
 
-            // --- CORRECCIÓN DE LA IMAGEN ---
+            chkAutoDatos.setSelected(Boolean.TRUE.equals(alumno.getAutorizaUsoDatos()));
+            chkAutoImagen.setSelected(Boolean.TRUE.equals(alumno.getAutorizaImagen()));
+            chkAutoActividades.setSelected(Boolean.TRUE.equals(alumno.getAutorizaActividades()));
+            chkAutoComunicaciones.setSelected(Boolean.TRUE.equals(alumno.getAutorizaComunicaciones()));
+            chkAutoIrseSolo.setSelected(Boolean.TRUE.equals(alumno.getAutorizaIrseSolo()));
+
             String rutaAlumno = alumno.getRutaFotoPerfil();
-
-            // 1. Comprobamos que la ruta NO sea nula ni esté vacía
             if (rutaAlumno != null && !rutaAlumno.trim().isEmpty()) {
                 try {
-                    Image imagenAlumno;
-
-                    // 2. Si la ruta empieza por "/", es nuestra imagen por defecto (recurso interno)
                     if (rutaAlumno.startsWith("/")) {
-                        String rutaReal = getClass().getResource(rutaAlumno).toExternalForm();
-                        imagenAlumno = new Image(rutaReal);
+                        imgFoto.setImage(new Image(getClass().getResource(rutaAlumno).toExternalForm()));
+                    } else if (rutaAlumno.startsWith("file:") || rutaAlumno.startsWith("http")) {
+                        imgFoto.setImage(new Image(rutaAlumno));
+                    } else {
+                        imgFoto.setImage(new Image(new File(rutaAlumno).toURI().toString()));
                     }
-                    // 3. Si no, es una foto elegida por el usuario (archivo externo del PC)
-                    else {
-                        // Si ya tiene formato URI (file://...), la cargamos directo
-                        if (rutaAlumno.startsWith("file:") || rutaAlumno.startsWith("http")) {
-                            imagenAlumno = new Image(rutaAlumno);
-                        } else {
-                            // Si es una ruta normal de Windows/Mac (ej: C:\fotos\alumno.png), la convertimos
-                            imagenAlumno = new Image(new java.io.File(rutaAlumno).toURI().toString());
-                        }
-                    }
-
-                    // Colocamos la imagen en el visor
-                    imgFoto.setImage(imagenAlumno);
-
-                } catch (NullPointerException e) {
-                    System.out.println("Error: No se encontró la imagen en los recursos internos: " + rutaAlumno);
                 } catch (Exception e) {
-                    System.out.println("Error al cargar la imagen externa: " + rutaAlumno);
+                    System.out.println("Error al cargar la imagen: " + rutaAlumno);
                 }
             } else {
-                System.out.println("El alumno no tiene ninguna ruta de foto guardada.");
+                try {
+                    imgFoto.setImage(new Image(getClass().getResource("/com/practicasalma/proyectoalma/assets/default.png").toExternalForm()));
+                } catch (Exception e) {
+                    System.out.println("No se encontró imagen por defecto.");
+                }
             }
-        } else {
-            txtNombre.setText("");
-            txtApellidos.setText("");
-            btnGuardar.setText("Guardar Nueva Ficha");
-            // Limpiar campos si hiciera falta
         }
     }
 
-    // --- ACCIONES DE LOS BOTONES ---
-
     @FXML
     private void seleccionarFoto(ActionEvent event) {
-        System.out.println("Abrir explorador de archivos para buscar foto...");
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Selecciona foto del alumno");
-
-        // Indicas que extensiones son validos para poder selccionar y te filtre
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Imagen", "*.png", "*.jpg", "*.jpeg"));
 
-        // Sirve para que solo se pueda darle click a la ventana "padre" hasta que seleciones una foto o canceles
-        // y aparte guarda el archivo que hayas seleccionado
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         File archivoSeleccionado = fileChooser.showOpenDialog(stage);
 
         if (archivoSeleccionado != null) {
             rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
-
-            Image image = new Image(archivoSeleccionado.toURI().toString());
-            imgFoto.setImage(image);
-
-            System.out.println("Ruta de la foto: " + rutaFotoSeleccionada);
+            imgFoto.setImage(new Image(archivoSeleccionado.toURI().toString()));
         }
-    }
-
-    @FXML
-    private void abrirFichaPadres() {
-        System.out.println("Navegando a la ficha de los padres...");
-        // Aquí abriremos la otra ventana emergente más adelante
     }
 
     @FXML
     private void guardarDatos() {
         System.out.println("Guardando datos del formulario...");
-        // Aquí irá la lógica de validar y llamar al Service/DAO
         cerrarVentana();
     }
 
     @FXML
     private void cerrarVentana() {
-        // Obtener la ventana actual y cerrarla
         Stage stage = (Stage) btnGuardar.getScene().getWindow();
         stage.close();
     }
