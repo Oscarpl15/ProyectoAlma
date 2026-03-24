@@ -50,13 +50,13 @@
             <TableColumn fx:id="colTelefono" text="Teléfono" prefWidth="110" reorderable="false"/>
             <TableColumn fx:id="colGrupo" text="Grupo" prefWidth="90" reorderable="false"/>
 
-            <TableColumn text="Autorizaciones" reorderable="false">
+            <TableColumn text="Autorizaciones" reorderable="false" styleClass="sin-borde-derecho">
                 <columns>
                     <TableColumn fx:id="colAutoDatos" text="Datos" prefWidth="60" reorderable="false"/>
                     <TableColumn fx:id="colAutoActividades" text="Activ." prefWidth="60" reorderable="false"/>
                     <TableColumn fx:id="colAutoComunicaciones" text="Com." prefWidth="60" reorderable="false"/>
                     <TableColumn fx:id="colAutoImagen" text="Imagen" prefWidth="65" reorderable="false"/>
-                    <TableColumn fx:id="colAutoIrseSolo" text="Irse Solo" prefWidth="75" reorderable="false"/>
+                    <TableColumn fx:id="colAutoIrseSolo" text="Irse Solo" prefWidth="75" reorderable="false" styleClass="sin-borde-derecho"/>
                 </columns>
             </TableColumn>
         </columns>
