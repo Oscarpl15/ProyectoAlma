@@ -42,6 +42,14 @@
     -fx-faint-focus-color: transparent;
 }
 
+/* MANTENIDO: Para el efecto del menú */
+.boton-menu:selected {
+    -fx-background-color: #2B3035; 
+    -fx-text-fill: white;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
 /* Cabecera Superior */
 /* MANTENIDO: Es estructural y da sombra a tu caja superior personalizada */
 .header-panel {
@@ -55,12 +63,6 @@
     -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-text-fill: #2E5374;
-}
-
-/* MANTENIDO: Para el efecto del menú lateral */
-.boton-menu:selected { /* Estado activo simulado */
-    -fx-text-fill: #2980B9;
-    -fx-border-color: #2980B9; /* Subrayado azul */
 }
 
 /* Tablas */

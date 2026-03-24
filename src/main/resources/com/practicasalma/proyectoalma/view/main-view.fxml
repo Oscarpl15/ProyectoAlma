@@ -12,6 +12,8 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.ToggleButton?>
 <StackPane prefHeight="768" prefWidth="1024" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.practicasalma.proyectoalma.controller.MainController">
 
     <ImageView fitHeight="768.0" fitWidth="1024.0" opacity="0.25" preserveRatio="false">
@@ -34,27 +36,32 @@
                     <HBox alignment="CENTER">
                         <Label styleClass="title-1, titulo-app" text="Fundación Gestión" />
                     </HBox>
+
+                    <fx:define>
+                        <ToggleGroup fx:id="menuGroup"/>
+                    </fx:define>
+
                     <HBox alignment="BOTTOM_CENTER" spacing="10">
-                        <Button onAction="#mostrarAlumnos" styleClass="boton-menu" text="ALUMNOS">
+                        <ToggleButton onAction="#mostrarAlumnos" styleClass="boton-menu" text="ALUMNOS" toggleGroup="$menuGroup" selected="true">
                             <HBox.margin>
                                 <Insets right="20.0" />
                             </HBox.margin>
-                        </Button>
-                        <Button onAction="#mostrarDocentes" styleClass="boton-menu" text="DOCENTES" >
+                        </ToggleButton>
+                        <ToggleButton onAction="#mostrarDocentes" styleClass="boton-menu" text="DOCENTES" toggleGroup="$menuGroup">
                             <HBox.margin>
                                 <Insets right="10.0" />
                             </HBox.margin>
-                        </Button>
-                        <Button onAction="#mostrarVoluntarios" styleClass="boton-menu" text="VOLUNTARIOS" >
+                        </ToggleButton>
+                        <ToggleButton onAction="#mostrarVoluntarios" styleClass="boton-menu" text="VOLUNTARIOS" toggleGroup="$menuGroup">
                             <HBox.margin>
                                 <Insets left="10.0" />
                             </HBox.margin>
-                        </Button>
-                        <Button onAction="#mostrarSocios" styleClass="boton-menu" text="SOCIOS">
+                        </ToggleButton>
+                        <ToggleButton onAction="#mostrarSocios" styleClass="boton-menu" text="SOCIOS" toggleGroup="$menuGroup">
                             <HBox.margin>
                                 <Insets left="20.0" />
                             </HBox.margin>
-                        </Button>
+                        </ToggleButton>
                     </HBox>
                 </VBox>
             </StackPane>
