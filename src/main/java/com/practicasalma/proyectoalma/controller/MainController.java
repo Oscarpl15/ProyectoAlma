@@ -3,14 +3,22 @@ package com.practicasalma.proyectoalma.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 
 public class MainController {
 
     @FXML
     private TabPane tabPrincipal; // Se conecta con el fx:id del FXML
 
+    @FXML private StackPane rootPane;
+    @FXML private ImageView imgFondo;
+
     @FXML
     public void initialize() {
+        // Hace que la imagen persiga dinámicamente el ancho y alto de la ventana
+        imgFondo.fitWidthProperty().bind(rootPane.widthProperty());
+        imgFondo.fitHeightProperty().bind(rootPane.heightProperty());
         // Opcional: Asegurarnos de que arranca en la pestaña 0
         if (tabPrincipal != null) {
             tabPrincipal.getSelectionModel().select(0);

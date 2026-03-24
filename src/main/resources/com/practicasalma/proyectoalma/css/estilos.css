@@ -12,6 +12,10 @@
     -color-accent-fg: #ffffff;
 }
 
+#mainLayout {
+    -fx-background-color: rgba(255, 255, 255, 0.7); /* Blanco sutil */
+}
+
 /* --- ESTILO PERSONALIZADO PARA TUS BOTONES DEL MENÚ --- */
 .boton-menu {
     -fx-background-color: #2E5374; /* Tu azul corporativo base */
@@ -44,7 +48,7 @@
 
 /* MANTENIDO: Para el efecto del menú */
 .boton-menu:selected {
-    -fx-background-color: #2B3035; 
+    -fx-background-color: #2B3035;
     -fx-text-fill: white;
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
@@ -53,8 +57,8 @@
 /* Cabecera Superior */
 /* MANTENIDO: Es estructural y da sombra a tu caja superior personalizada */
 .header-panel {
-    -fx-background-color: white;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-background-color: transparent;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.06), 8, 0, 0, 1);
     -fx-padding: 15;
 }
 
@@ -193,8 +197,18 @@
 
 /* 4.Eliminar la "región de cabeceras" por si acaso */
 .tab-pane .headers-region {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
     -fx-visible: false;
     -fx-max-height: 0;
+}
+
+.logo-fundacion {
+    /* Mezcla la imagen "multiplicando" los colores. El blanco desaparece sutilmente */
+    -fx-blend-mode: multiply;
+    /* Bajar un pelín la opacidad si el logo resalta demasiado */
+    -fx-opacity: 0.9;
 }
 
 /* === ESTILOS PARA LAS FICHAS/DIÁLOGOS === */
