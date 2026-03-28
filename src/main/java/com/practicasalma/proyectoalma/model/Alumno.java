@@ -43,11 +43,26 @@ public class Alumno extends Persona {
     @Column(name = "seguimiento_servicios_sociales") //check
     private Boolean seguimientoServiciosSociales = false;
 
-    @Column(name = "derivado_por")
-    private String derivadoPor;
-
     @Column(name = "seguimiento_saf")  // check
     private Boolean seguimientoSaf = false;
+
+    @Column(name = "derivacion_ss")
+    private Boolean derivacionSS = false;
+
+    @Column(name = "derivacion_saf")
+    private Boolean derivacionSaf = false;
+
+    @Column(name = "derivacion_eoep")
+    private Boolean derivacionEoep = false;
+
+    @Column(name = "derivacion_colegio")
+    private Boolean derivacionColegio = false;
+
+    @Column(name = "derivacion_otro")
+    private Boolean derivacionOtro = false;
+
+    @Column(name = "derivado_por")
+    private String derivadoPor;
 
     // Para el cálculo matemático de la baja automática
     @Column(name = "num_repeticiones_previas", nullable = false)
@@ -126,9 +141,6 @@ public class Alumno extends Persona {
     public String getRutaDocAutoriza() {return rutaDocAutoriza;}
     public void setRutaDocAutoriza(String rutaDocAutoriza) {this.rutaDocAutoriza = rutaDocAutoriza;}
 
-    public String getDerivadoPor() {return derivadoPor;}
-    public void setDerivadoPor(String derivadoPor) {this.derivadoPor = derivadoPor;}
-
     public Integer getNumRepeticionesPrevias() {return numRepeticionesPrevias;}
     public void setNumRepeticionesPrevias(Integer numRepeticionesPrevias) {this.numRepeticionesPrevias = numRepeticionesPrevias;}
 
@@ -150,6 +162,24 @@ public class Alumno extends Persona {
 
     public Boolean getSeguimientoSaf() {return seguimientoSaf;}
     public void setSeguimientoSaf(Boolean seguimientoSaf) {this.seguimientoSaf = seguimientoSaf;}
+
+    public Boolean getDerivacionSS() {return derivacionSS;}
+    public void setDerivacionSS(Boolean derivacionSS) {this.derivacionSS = derivacionSS;}
+
+    public Boolean getDerivacionSaf() {return derivacionSaf;}
+    public void setDerivacionSaf(Boolean derivacionSaf) {this.derivacionSaf = derivacionSaf;}
+
+    public Boolean getDerivacionEoep() {return derivacionEoep;}
+    public void setDerivacionEoep(Boolean derivacionEoep) {this.derivacionEoep = derivacionEoep;}
+
+    public Boolean getDerivacionColegio() {return derivacionColegio;}
+    public void setDerivacionColegio(Boolean derivacionColegio) {this.derivacionColegio = derivacionColegio;}
+
+    public Boolean getDerivacionOtro() {return derivacionOtro;}
+    public void setDerivacionOtro(Boolean derivacionOtro) {this.derivacionOtro = derivacionOtro;}
+
+    public String getDerivadoPor() {return derivadoPor;}
+    public void setDerivadoPor(String derivadoPor) {this.derivadoPor = derivadoPor;}
 
     public List<PeriodoActividad> getPeriodosActividad() {return periodosActividad;}
 
