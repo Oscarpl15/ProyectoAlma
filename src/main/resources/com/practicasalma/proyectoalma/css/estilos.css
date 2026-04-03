@@ -296,3 +296,101 @@
 .boton-cancelar:hover {
     -fx-background-color: #f2f2f2;
 }
+
+/* ESTILOS ESPECÍFICOS PARA FICHAS (Solo Lectura / Edición) */
+
+/* Paddings estructurales */
+.padding-cabecera-ficha {
+    -fx-padding: 20px 20px 10px 20px;
+}
+.padding-cuerpo-ficha {
+    -fx-padding: 10px 20px 20px 20px;
+}
+.padding-pie-ficha {
+    -fx-padding: 10px 20px 20px 20px;
+}
+
+/* Panel izquierdo (Foto y checkboxes) */
+.panel-lateral-ficha {
+    -fx-background-color: #f0f4f8; /* Gris azulado muy suave */
+    -fx-padding: 20px;
+    -fx-background-radius: 8px;
+    -fx-pref-width: 250px;
+}
+
+/* Enlaces (Como Cambiar Foto) */
+.boton-enlace {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2E5374;
+    -fx-cursor: hand;
+    -fx-underline: true;
+}
+
+/* Texto gris de relleno para áreas sin datos aún */
+.texto-placeholder {
+    -fx-text-fill: gray;
+}
+
+/* MAGIA: Aspecto de los campos en modo "Solo lectura" vs "Edición" */
+/* 1. Estado Base (Cuando se está editando) */
+.campo-lectura {
+    -fx-background-color: white;
+    -fx-border-width: 1px;
+    -fx-border-color: #BDC3C7;
+    -fx-border-radius: 4px;
+}
+
+/* 2. Estado de Solo Lectura (Cuando setEditable(false) o setDisable(true)) */
+.campo-lectura:readonly,
+.campo-lectura:disabled {
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 1px 0; /* Solo una fina línea debajo */
+    -fx-border-color: #e0e0e0;
+    -fx-opacity: 1; /* Para que el texto no se vuelva gris apagado */
+    -fx-text-fill: #333333;
+}
+
+.campo-lectura:editable {
+    /* Cuando se puede editar, recupera el aspecto de TextField de AtlantaFX */
+    -fx-background-color: white;
+    -fx-border-width: 1px;
+    -fx-border-color: #BDC3C7;
+    -fx-border-radius: 4px;
+}
+
+/* Botón verde para Guardar y destacar en modo edición */
+.boton-guardar-exito {
+    -fx-background-color: #27ae60;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 15px;
+    -fx-cursor: hand;
+}
+
+.boton-guardar-exito:hover {
+    -fx-background-color: #2ecc71;
+}
+
+/* ESTADO DE CHECKBOXES EN MODO LECTURA */
+
+/* 1. Cuando el check es TRUE (Verde) */
+.check-lectura-true:disabled {
+    -fx-opacity: 1; /* Quitamos el efecto "apagado" por defecto */
+    -fx-text-fill: #27ae60; /* Verde éxito */
+    -fx-font-weight: bold;
+}
+
+/* 2. Cuando el check es FALSE (Rojo) */
+.check-lectura-false:disabled {
+    -fx-opacity: 1;
+    -fx-text-fill: #e74c3c; /* Rojo error */
+    -fx-font-weight: bold;
+}
+
+/* 3. Ocultamos el cuadradito original del CheckBox en ambos casos */
+.check-lectura-true:disabled .box,
+.check-lectura-false:disabled .box {
+    visibility: hidden;
+    -fx-padding: 0;
+}
