@@ -229,67 +229,70 @@
     -fx-opacity: 0.9;
 }
 
-/* === ESTILOS PARA LAS FICHAS/DIÁLOGOS === */
+/*  VENTANAS DE FORMULARIOS (Agregar / Fichas) */
 
-/* COMENTADOS: AtlantaFX formatea textos, enlaces y fondos automáticamente con consistencia.
-.fondo-ficha {
-    -fx-background-color: #F4F6F8;
+.fondo-blanco {
+    -fx-background-color: white;
 }
 
-.titulo-ficha {
+.titulo-ventana {
     -fx-font-size: 22px;
+    -fx-text-fill: #2E5374;
     -fx-font-weight: bold;
-    -fx-text-fill: #2C3E50;
 }
 
-.label-seccion {
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #3498DB;
-}
-
-.label-formulario {
-    -fx-font-weight: bold;
-    -fx-text-fill: #5D6D7E;
+.subtitulo-ventana {
+    -fx-text-fill: gray;
     -fx-font-size: 13px;
 }
 
-.link-padres {
-    -fx-text-fill: #3498DB;
+.etiqueta-campo {
     -fx-font-weight: bold;
-    -fx-underline: false;
-}
-.link-padres:hover {
-    -fx-underline: true;
-    -fx-text-fill: #2980B9;
-}
-*/
-
-/* --- BOTONES DEL DIÁLOGO --- */
-/* COMENTADOS: Usaremos las clases nativas de AtlantaFX para que los botones tengan hover, sombras y animaciones fluidas.
-.boton-primario {
-    -fx-background-color: #3498DB;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-background-radius: 4;
-    -fx-padding: 8 20;
-    -fx-cursor: hand;
-}
-.boton-primario:hover {
-    -fx-background-color: #2980B9;
+    -fx-text-fill: #333333;
 }
 
+.titulo-seccion {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2E5374;
+}
+
+/* Caja contenedora de la foto de perfil */
+.caja-foto {
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 5px;
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 5px;
+}
+
+.texto-sin-foto {
+    -fx-text-fill: #999999;
+}
+
+/* Botón outline para acciones secundarias (como Añadir foto) */
 .boton-secundario {
-    -fx-background-color: white;
-    -fx-text-fill: #7F8C8D;
-    -fx-border-color: #BDC3C7;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-    -fx-padding: 8 20;
+    -fx-background-color: transparent;
+    -fx-border-color: #2E5374;
+    -fx-border-radius: 6px;
+    -fx-text-fill: #2E5374;
     -fx-cursor: hand;
+    -fx-padding: 6px 12px;
 }
+
 .boton-secundario:hover {
-    -fx-background-color: #ECF0F1;
-    -fx-text-fill: #2C3E50;
+    -fx-background-color: #E3F2FD; /* Azul clarito corporativo */
 }
-*/
+
+/* Botón outline en gris para cancelar y salir */
+.boton-cancelar {
+    -fx-background-color: transparent;
+    -fx-text-fill: #666666;
+    -fx-border-color: #999999;
+    -fx-border-radius: 6px;
+    -fx-cursor: hand;
+    -fx-padding: 8px 15px;
+}
+
+.boton-cancelar:hover {
+    -fx-background-color: #f2f2f2;
+}

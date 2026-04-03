@@ -33,9 +33,18 @@ public class AgregarAlumnoController {
     @FXML private TextField txtColegio;
     @FXML private ComboBox<String> comboCurso;
     @FXML private ComboBox<String> comboGrupo;
+
+    // Seguimiento
+    @FXML private CheckBox chkSeguimientoSS;
+    @FXML private CheckBox chkSeguimientoSAF;
+
+    // Derivación
+    @FXML private CheckBox chkDerivacionSS;
+    @FXML private CheckBox chkDerivacionSAF;
+    @FXML private CheckBox chkDerivacionEOEP;
+    @FXML private CheckBox chkDerivacionColegio;
+    @FXML private CheckBox chkDerivacionOtro;
     @FXML private TextField txtDerivado;
-    @FXML private CheckBox chkSS;
-    @FXML private CheckBox chkSAF;
 
     // Autorizaciones Legales
     @FXML private CheckBox chkAutoDatos;
@@ -111,8 +120,18 @@ public class AgregarAlumnoController {
         alumno.setAutorizaActividades(chkAutoActividades.isSelected());
         alumno.setAutorizaComunicaciones(chkAutoComunicaciones.isSelected());
         alumno.setAutorizaIrseSolo(chkAutoIrseSolo.isSelected());
-        alumno.setSeguimientoServiciosSociales(chkSS.isSelected());
-        alumno.setSeguimientoSaf(chkSAF.isSelected());
+        // Guardar Seguimiento
+        alumno.setSeguimientoServiciosSociales(chkSeguimientoSS.isSelected());
+        alumno.setSeguimientoSaf(chkSeguimientoSAF.isSelected());
+
+        // Guardar Derivación
+        alumno.setDerivacionSS(chkDerivacionSS.isSelected());
+        alumno.setDerivacionSaf(chkDerivacionSAF.isSelected());
+        alumno.setDerivacionEoep(chkDerivacionEOEP.isSelected());
+        alumno.setDerivacionColegio(chkDerivacionColegio.isSelected());
+        alumno.setDerivacionOtro(chkDerivacionOtro.isSelected());
+
+        alumno.setDerivadoPor(limpiarTexto(txtDerivado.getText()));
 
         // Delegar la responsabilidad al Servicio
         try {
