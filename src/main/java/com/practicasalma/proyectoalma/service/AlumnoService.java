@@ -27,6 +27,11 @@ public class AlumnoService {
         alumnoDAO.guardar(alumno);
     }
 
+    public void actualizarAlumno(Alumno alumno) throws Exception {
+        // Aquí en el futuro podríamos meter reglas de negocio si hiciesen falta
+        alumnoDAO.actualizar(alumno);
+    }
+
     public List<Alumno> obtenerTodos() {
         return alumnoDAO.obtenerTodos();
     }

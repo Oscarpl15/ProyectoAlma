@@ -33,6 +33,29 @@ public class AlumnoDAO {
             }
         }
     }
+
+    public void actualizar(Alumno alumno) throws Exception {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+
+            // MERGE es el comando mágico de Hibernate para hacer un UPDATE
+            em.merge(alumno);
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new Exception("Error técnico al actualizar en BBDD: " + e.getMessage());
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
     public List<Alumno> obtenerTodos() {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();

@@ -1,6 +1,7 @@
 package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Alumno;
+import com.practicasalma.proyectoalma.service.AlumnoService;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -23,7 +25,6 @@ public class FichaAlumnoController {
     @FXML private TextField txtDireccion;
     @FXML private TextField txtTelefono;
     @FXML private TextField txtColegio;
-    @FXML private TextField txtDerivado;
 
     @FXML private CheckBox chkAutoDatos;
     @FXML private CheckBox chkAutoImagen;
@@ -38,12 +39,41 @@ public class FichaAlumnoController {
     @FXML private Button btnCancelarEdicion;
     @FXML private Button btnCerrar;
 
+    // Curso y Grupo
+    @FXML private TextField txtCurso;
+    @FXML private TextField txtGrupoLectura;
+    @FXML private ComboBox<String> comboGrupo;
+
+    // Seguimiento y Derivación (Lectura)
+    @FXML private VBox boxSeguimientoLectura;
+    @FXML private Label lblSeguimientoValor;
+    @FXML private Label lblDerivacionValor;
+
+    // Seguimiento y Derivación (Edición)
+    @FXML private VBox boxSeguimientoEdicion;
+    @FXML private CheckBox chkSeguimientoSS;
+    @FXML private CheckBox chkSeguimientoSAF;
+    @FXML private CheckBox chkDerivacionSS;
+    @FXML private CheckBox chkDerivacionSAF;
+    @FXML private CheckBox chkDerivacionEOEP;
+    @FXML private CheckBox chkDerivacionColegio;
+    @FXML private CheckBox chkDerivacionOtro;
+    @FXML private TextField txtDerivado;
+
     private Alumno alumnoActual;
     private String rutaFotoSeleccionada = null;
 
+    // Servicio para conectar con la BBDD
+    private final AlumnoService alumnoService = new AlumnoService();
+
     @FXML
     public void initialize() {
-        // Nada aquí, lo delegamos a setAlumno que es quien recibe los datos reales
+        comboGrupo.getItems().addAll(
+                "g1 lunes/miercoles",
+                "g2 lunes/miercoles",
+                "g1 martes/jueves",
+                "g2 martes/jueves"
+        );
     }
 
     public void setAlumno(Alumno alumno) {
@@ -71,6 +101,32 @@ public class FichaAlumnoController {
             chkAutoActividades.setSelected(Boolean.TRUE.equals(alumnoActual.getAutorizaActividades()));
             chkAutoComunicaciones.setSelected(Boolean.TRUE.equals(alumnoActual.getAutorizaComunicaciones()));
             chkAutoIrseSolo.setSelected(Boolean.TRUE.equals(alumnoActual.getAutorizaIrseSolo()));
+
+            // --- CARGAR CURSO Y GRUPO DESDE MATRÍCULA ---
+            // Buscamos la última matrícula activa (asumimos la última de la lista)
+            if (alumnoActual.getMatriculas() != null && !alumnoActual.getMatriculas().isEmpty()) {
+                var ultimaMatricula = alumnoActual.getMatriculas().get(alumnoActual.getMatriculas().size() - 1);
+                txtCurso.setText(ultimaMatricula.getCurso() != null ? ultimaMatricula.getCurso() : "Sin curso");
+                txtGrupoLectura.setText(ultimaMatricula.getGrupoAsignado() != null ? ultimaMatricula.getGrupoAsignado() : "Sin grupo");
+                comboGrupo.setValue(ultimaMatricula.getGrupoAsignado());
+            } else {
+                txtCurso.setText("Sin matricular");
+                txtGrupoLectura.setText("Sin grupo");
+                comboGrupo.setValue(null);
+            }
+
+            // --- CARGAR SEGUIMIENTO Y DERIVACIÓN (Checkboxes) ---
+            chkSeguimientoSS.setSelected(Boolean.TRUE.equals(alumnoActual.getSeguimientoServiciosSociales()));
+            chkSeguimientoSAF.setSelected(Boolean.TRUE.equals(alumnoActual.getSeguimientoSaf()));
+            chkDerivacionSS.setSelected(Boolean.TRUE.equals(alumnoActual.getDerivacionSS()));
+            chkDerivacionSAF.setSelected(Boolean.TRUE.equals(alumnoActual.getDerivacionSaf()));
+            chkDerivacionEOEP.setSelected(Boolean.TRUE.equals(alumnoActual.getDerivacionEoep()));
+            chkDerivacionColegio.setSelected(Boolean.TRUE.equals(alumnoActual.getDerivacionColegio()));
+            chkDerivacionOtro.setSelected(Boolean.TRUE.equals(alumnoActual.getDerivacionOtro()));
+            txtDerivado.setText(alumnoActual.getDerivadoPor() != null ? alumnoActual.getDerivadoPor() : "");
+
+            // Generar el texto bonito para el Modo Lectura
+            actualizarTextosSeguimiento();
 
             String rutaAlumno = alumnoActual.getRutaFotoPerfil();
             if (rutaAlumno != null && !rutaAlumno.trim().isEmpty()) {
@@ -134,7 +190,27 @@ public class FichaAlumnoController {
         actualizarVistaCheckbox(chkAutoComunicaciones, "Comunicaciones", editable);
         actualizarVistaCheckbox(chkAutoIrseSolo, "Autoriza Irse Solo", editable);
 
+        // Truco visual para el Grupo (Intercambiar Textfield por Combo)
+        txtGrupoLectura.setVisible(!editable);
+        txtGrupoLectura.setManaged(!editable);
+        comboGrupo.setVisible(editable);
+        comboGrupo.setManaged(editable);
+
+        // Truco visual para Seguimiento/Derivación
+        boxSeguimientoLectura.setVisible(!editable);
+        boxSeguimientoLectura.setManaged(!editable);
+        boxSeguimientoEdicion.setVisible(editable);
+        boxSeguimientoEdicion.setManaged(editable);
+
         if (!editable) {
+            // Al volver a modo lectura, actualizamos los textos resumen por si ha cambiado algún check
+            actualizarTextosSeguimiento();
+
+            // Sincronizamos el texto de lectura del grupo con lo que se haya elegido en el desplegable
+            if (comboGrupo.getValue() != null) {
+                txtGrupoLectura.setText(comboGrupo.getValue());
+            }
+
             Platform.runLater(() -> btnEditar.requestFocus());
         }
     }
@@ -173,9 +249,67 @@ public class FichaAlumnoController {
 
     @FXML
     private void guardarDatos() {
-        System.out.println("Guardando datos del formulario en BD...");
-        // Aquí llamaremos al AlumnoService para hacer el update real en base de datos.
-        cambiarModoEdicion(false);
+        try {
+            // 1. Recoger datos de los TextFields y DatePicker
+            alumnoActual.setNombre(txtNombre.getText());
+            alumnoActual.setApellidos(txtApellidos.getText());
+            alumnoActual.setDocumentoIdentidad(txtDni.getText());
+            alumnoActual.setDireccion(txtDireccion.getText());
+            alumnoActual.setTelefono(txtTelefono.getText());
+            alumnoActual.setColegio(txtColegio.getText());
+            alumnoActual.setFechaNacimiento(dpFechaNacimiento.getValue());
+            alumnoActual.setDerivadoPor(txtDerivado.getText());
+
+            // 2. Recoger Autorizaciones
+            alumnoActual.setAutorizaUsoDatos(chkAutoDatos.isSelected());
+            alumnoActual.setAutorizaImagen(chkAutoImagen.isSelected());
+            alumnoActual.setAutorizaActividades(chkAutoActividades.isSelected());
+            alumnoActual.setAutorizaComunicaciones(chkAutoComunicaciones.isSelected());
+            alumnoActual.setAutorizaIrseSolo(chkAutoIrseSolo.isSelected());
+
+            // 3. Recoger Seguimiento y Derivación
+            alumnoActual.setSeguimientoServiciosSociales(chkSeguimientoSS.isSelected());
+            alumnoActual.setSeguimientoSaf(chkSeguimientoSAF.isSelected());
+
+            alumnoActual.setDerivacionSS(chkDerivacionSS.isSelected());
+            alumnoActual.setDerivacionSaf(chkDerivacionSAF.isSelected());
+            alumnoActual.setDerivacionEoep(chkDerivacionEOEP.isSelected());
+            alumnoActual.setDerivacionColegio(chkDerivacionColegio.isSelected());
+            alumnoActual.setDerivacionOtro(chkDerivacionOtro.isSelected());
+
+            // 4. Si se cambió la foto, actualizamos la ruta
+            if (rutaFotoSeleccionada != null) {
+                alumnoActual.setRutaFotoPerfil(rutaFotoSeleccionada);
+            }
+
+            // 5. Actualizar la matrícula (Grupo)
+            if (alumnoActual.getMatriculas() != null && !alumnoActual.getMatriculas().isEmpty()) {
+                var ultimaMatricula = alumnoActual.getMatriculas().get(alumnoActual.getMatriculas().size() - 1);
+                if (comboGrupo.getValue() != null) {
+                    ultimaMatricula.setGrupoAsignado(comboGrupo.getValue());
+                }
+            }
+
+            // --- ¡GUARDAMOS EN BASE DE DATOS! ---
+            alumnoService.actualizarAlumno(alumnoActual);
+
+            // Volvemos al modo lectura
+            cambiarModoEdicion(false);
+
+            // Avisamos al usuario
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Éxito");
+            alert.setHeaderText(null);
+            alert.setContentText("Los datos de " + alumnoActual.getNombre() + " se han actualizado correctamente.");
+            alert.showAndWait();
+
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("No se han podido guardar los cambios");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     @FXML
@@ -191,6 +325,37 @@ public class FichaAlumnoController {
             rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
             imgFoto.setImage(new Image(archivoSeleccionado.toURI().toString()));
         }
+    }
+
+    private void actualizarTextosSeguimiento() {
+        // Texto de Seguimiento
+        java.util.List<String> seg = new java.util.ArrayList<>();
+        if (chkSeguimientoSS.isSelected()) seg.add("Servicios Sociales");
+        if (chkSeguimientoSAF.isSelected()) seg.add("SAF");
+        lblSeguimientoValor.setText( (seg.isEmpty() ? "Ninguno" : String.join(" y ", seg)));
+
+        // Texto de Derivación
+        java.util.List<String> der = new java.util.ArrayList<>();
+        if (chkDerivacionSS.isSelected()) der.add("Servicios Sociales");
+        if (chkDerivacionSAF.isSelected()) der.add("SAF");
+        if (chkDerivacionEOEP.isSelected()) der.add("EOEP");
+        if (chkDerivacionColegio.isSelected()) der.add("Colegio");
+        if (chkDerivacionOtro.isSelected()) der.add("Otro");
+
+        String entidades = String.join(", ", der);
+        String persona = txtDerivado.getText() != null ? txtDerivado.getText().trim() : "";
+
+        String textoDerivacion = "Ninguna";
+        if (!entidades.isEmpty() || !persona.isEmpty()) {
+            if (!entidades.isEmpty() && !persona.isEmpty()) {
+                textoDerivacion = entidades + " (" + persona + ")";
+            } else if (!entidades.isEmpty()) {
+                textoDerivacion = entidades;
+            } else {
+                textoDerivacion = persona;
+            }
+        }
+        lblDerivacionValor.setText(textoDerivacion);
     }
 
     @FXML

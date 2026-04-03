@@ -58,7 +58,7 @@
                     <TextField fx:id="txtDni" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="campo-lectura"/>
 
                     <Label text="Fecha Nac.:" GridPane.columnIndex="2" GridPane.rowIndex="1" styleClass="etiqueta-campo"/>
-                    <DatePicker fx:id="dpFechaNacimiento" GridPane.columnIndex="3" GridPane.rowIndex="1" styleClass="campo-lectura"/>
+                    <DatePicker fx:id="dpFechaNacimiento" GridPane.columnIndex="3" GridPane.rowIndex="1" styleClass="campo-lectura" maxWidth="Infinity"/>
 
                     <Label text="Teléfono:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="etiqueta-campo"/>
                     <TextField fx:id="txtTelefono" GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="campo-lectura"/>
@@ -69,11 +69,49 @@
                     <Label text="Colegio:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="etiqueta-campo"/>
                     <TextField fx:id="txtColegio" GridPane.columnIndex="1" GridPane.rowIndex="3" styleClass="campo-lectura"/>
 
-                    <Label text="Derivado por:" GridPane.columnIndex="2" GridPane.rowIndex="3" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtDerivado" GridPane.columnIndex="3" GridPane.rowIndex="3" styleClass="campo-lectura"/>
+                    <Label text="Curso Actual:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCurso" GridPane.columnIndex="1" GridPane.rowIndex="4" styleClass="campo-lectura" editable="false"/>
+
+                    <Label text="Grupo Asignado:" GridPane.columnIndex="2" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
+                    <StackPane GridPane.columnIndex="3" GridPane.rowIndex="4" alignment="CENTER_LEFT">
+                        <TextField fx:id="txtGrupoLectura" styleClass="campo-lectura" editable="false"/>
+                        <ComboBox fx:id="comboGrupo" maxWidth="Infinity" visible="false" managed="false"/>
+                    </StackPane>
                 </GridPane>
 
-                <Separator/>
+
+
+                <StackPane alignment="CENTER_LEFT" styleClass="bloque-seguimiento">
+
+                    <VBox fx:id="boxSeguimientoLectura" spacing="5">
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="Seguimiento:" styleClass="etiqueta-campo"/>
+                            <Label fx:id="lblSeguimientoValor" styleClass="texto-lectura-simple"/>
+                        </HBox>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="Derivación:" styleClass="etiqueta-campo"/>
+                            <Label fx:id="lblDerivacionValor" styleClass="texto-lectura-simple"/>
+                        </HBox>
+                    </VBox>
+
+                    <VBox fx:id="boxSeguimientoEdicion" spacing="10" visible="false" managed="false">
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <Label text="Seguimiento:" styleClass="etiqueta-campo" minWidth="90" alignment="CENTER_RIGHT"/>
+                            <CheckBox fx:id="chkSeguimientoSS" text="Servicios Sociales"/>
+                            <CheckBox fx:id="chkSeguimientoSAF" text="SAF"/>
+                        </HBox>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="Derivación:" styleClass="etiqueta-campo" minWidth="90" alignment="CENTER_RIGHT"/>
+                            <CheckBox fx:id="chkDerivacionSS" text="SS"/>
+                            <CheckBox fx:id="chkDerivacionSAF" text="SAF"/>
+                            <CheckBox fx:id="chkDerivacionEOEP" text="EOEP"/>
+                            <CheckBox fx:id="chkDerivacionColegio" text="Colegio"/>
+                            <CheckBox fx:id="chkDerivacionOtro" text="Otro"/>
+                            <TextField fx:id="txtDerivado" promptText="¿Quién ha derivado?" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+                </StackPane>
+
 
                 <VBox spacing="10">
                     <Accordion>
