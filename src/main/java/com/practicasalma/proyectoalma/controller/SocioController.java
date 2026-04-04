@@ -7,6 +7,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -31,7 +33,7 @@ public class SocioController {
 
     @FXML private ComboBox<String> comboTipoEntidadFiltro;
     @FXML private ComboBox<String> comboPeriodicidadFiltro;
-
+    @FXML private TextField txtBuscar;
 
     private ObservableList<Socio> listaFalsa = FXCollections.observableArrayList(
             new Socio("Asociación Vecinos", "Centro", "Calle Mayor 1", "G12345678", "Persona"),
@@ -50,7 +52,18 @@ public class SocioController {
 
         colCuota.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getCuota()).asObject());
 
-        tablaSocios.setItems(listaFalsa);
+        FilteredList<Socio> listaFiltrada = new FilteredList<>(listaFalsa, s -> true);
+        txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
+            listaFiltrada.setPredicate(socio -> {
+                if (newVal == null || newVal.isBlank()) return true;
+                String filtro = newVal.toLowerCase();
+                return socio.getNombre().toLowerCase().contains(filtro)
+                        || socio.getApellidos().toLowerCase().contains(filtro);
+            });
+        });
+        SortedList<Socio> listaSortable = new SortedList<>(listaFiltrada);
+        listaSortable.comparatorProperty().bind(tablaSocios.comparatorProperty());
+        tablaSocios.setItems(listaSortable);
 
         comboTipoEntidadFiltro.getSelectionModel().select(0);
         comboPeriodicidadFiltro.getSelectionModel().select(0);

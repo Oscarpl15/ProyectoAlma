@@ -38,7 +38,7 @@
         </left>
         <right>
             <HBox alignment="CENTER_RIGHT">
-                <TextField promptText="Buscar alumno..." prefWidth="250"/>
+                <TextField fx:id="txtBuscar" promptText="Buscar alumno..." prefWidth="250"/>
             </HBox>
         </right>
     </BorderPane>

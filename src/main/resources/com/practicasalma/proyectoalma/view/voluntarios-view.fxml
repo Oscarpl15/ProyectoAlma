@@ -10,7 +10,7 @@
     <BorderPane>
         <right>
             <HBox alignment="CENTER_RIGHT">
-                <TextField promptText="Buscar voluntario..." prefWidth="250"/>
+                <TextField fx:id="txtBuscar" promptText="Buscar voluntario..." prefWidth="250"/>
             </HBox>
         </right>
     </BorderPane>

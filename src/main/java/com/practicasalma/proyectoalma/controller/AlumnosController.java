@@ -7,6 +7,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -35,9 +37,11 @@ public class AlumnosController {
 
     @FXML private ComboBox<String> comboCursoFiltro;
     @FXML private ComboBox<String> comboGrupoFiltro;
+    @FXML private TextField txtBuscar;
 
-    // APLICANDO LA ARQUITECTURA: Llamamos al Service
     private final AlumnoService alumnoService = new AlumnoService();
+    private final ObservableList<Alumno> listaMaestra = FXCollections.observableArrayList();
+    private FilteredList<Alumno> listaFiltrada;
 
     @FXML
     public void initialize() {
@@ -61,6 +65,19 @@ public class AlumnosController {
         configurarColumnaBooleana(colAutoIrseSolo, alumno -> alumno.getAutorizaIrseSolo());
 
         comboCursoFiltro.getSelectionModel().select(0);
+
+        listaFiltrada = new FilteredList<>(listaMaestra, a -> true);
+        txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
+            listaFiltrada.setPredicate(alumno -> {
+                if (newVal == null || newVal.isBlank()) return true;
+                String filtro = newVal.toLowerCase();
+                return alumno.getNombre().toLowerCase().contains(filtro)
+                        || alumno.getApellidos().toLowerCase().contains(filtro);
+            });
+        });
+        SortedList<Alumno> listaSortable = new SortedList<>(listaFiltrada);
+        listaSortable.comparatorProperty().bind(tablaAlumnos.comparatorProperty());
+        tablaAlumnos.setItems(listaSortable);
 
         tablaAlumnos.setRowFactory(tv -> {
             TableRow<Alumno> row = new TableRow<>();
@@ -102,9 +119,7 @@ public class AlumnosController {
     }
 
     public void cargarAlumnosEnTabla() {
-        List<Alumno> listaBD = alumnoService.obtenerTodos();
-        ObservableList<Alumno> listaObservable = FXCollections.observableArrayList(listaBD);
-        tablaAlumnos.setItems(listaObservable);
+        listaMaestra.setAll(alumnoService.obtenerTodos());
     }
 
     @FXML

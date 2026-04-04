@@ -5,10 +5,13 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 
 import java.time.LocalDate;
 
@@ -25,6 +28,7 @@ public class VoluntariosController {
     @FXML private TableColumn<Voluntario, Boolean> colDelitos;
     @FXML private TableColumn<Voluntario, Boolean> colProtDatos;
     @FXML private TableColumn<Voluntario, String> colAB;
+    @FXML private TextField txtBuscar;
 
     // Datos falsos para que la tabla no esté vacía
     // NOTA: Ajusta los parámetros del "new Voluntario(...)" si tu constructor es diferente
@@ -45,7 +49,18 @@ public class VoluntariosController {
         colDelitos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoDelitosSexuales() != null ? cellData.getValue().getAutoDelitosSexuales() : false));
         colProtDatos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoProteccionDatos() != null ? cellData.getValue().getAutoProteccionDatos() : false));
 
-        tablaVoluntarios.setItems(listaFalsa);
+        FilteredList<Voluntario> listaFiltrada = new FilteredList<>(listaFalsa, v -> true);
+        txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
+            listaFiltrada.setPredicate(voluntario -> {
+                if (newVal == null || newVal.isBlank()) return true;
+                String filtro = newVal.toLowerCase();
+                return voluntario.getNombre().toLowerCase().contains(filtro)
+                        || voluntario.getApellidos().toLowerCase().contains(filtro);
+            });
+        });
+        SortedList<Voluntario> listaSortable = new SortedList<>(listaFiltrada);
+        listaSortable.comparatorProperty().bind(tablaVoluntarios.comparatorProperty());
+        tablaVoluntarios.setItems(listaSortable);
 
         tablaVoluntarios.setRowFactory(tv -> {
             TableRow<Voluntario> row = new TableRow<>();

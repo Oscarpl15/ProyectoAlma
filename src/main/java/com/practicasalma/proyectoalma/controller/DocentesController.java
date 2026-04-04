@@ -6,6 +6,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,6 +16,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -34,6 +37,7 @@ public class DocentesController {
     @FXML private TableColumn<Docente, Boolean> colDelitos;
     @FXML private TableColumn<Docente, Boolean> colProtDatos;
     @FXML private TableColumn<Docente, String> colAB;
+    @FXML private TextField txtBuscar;
 
     // Datos falsos para la presentación (Mantenemos los tuyos)
     private ObservableList<Docente> listaFalsa = FXCollections.observableArrayList(
@@ -56,8 +60,19 @@ public class DocentesController {
         colDelitos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoDelitosSexuales() != null ? cellData.getValue().getAutoDelitosSexuales() : false));
         colProtDatos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoProteccionDatos() != null ? cellData.getValue().getAutoProteccionDatos() : false));
 
-        // 2. Meter datos
-        tablaDocentes.setItems(listaFalsa);
+        // 2. Meter datos con filtrado en tiempo real
+        FilteredList<Docente> listaFiltrada = new FilteredList<>(listaFalsa, d -> true);
+        txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
+            listaFiltrada.setPredicate(docente -> {
+                if (newVal == null || newVal.isBlank()) return true;
+                String filtro = newVal.toLowerCase();
+                return docente.getNombre().toLowerCase().contains(filtro)
+                        || docente.getApellidos().toLowerCase().contains(filtro);
+            });
+        });
+        SortedList<Docente> listaSortable = new SortedList<>(listaFiltrada);
+        listaSortable.comparatorProperty().bind(tablaDocentes.comparatorProperty());
+        tablaDocentes.setItems(listaSortable);
 
         // 3. EVENTO DOBLE CLIC
         tablaDocentes.setRowFactory(tv -> {
