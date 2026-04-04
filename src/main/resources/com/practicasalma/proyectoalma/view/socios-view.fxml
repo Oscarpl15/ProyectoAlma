@@ -48,6 +48,7 @@
             <TableColumn fx:id="colTipoEntidad" text="Tipo Entidad" prefWidth="120" reorderable="false"/>
             <TableColumn fx:id="colPeriodicidad" text="Periodicidad" prefWidth="120" reorderable="false"/>
             <TableColumn fx:id="colCuota" text="Cuota (€)" prefWidth="90" reorderable="false"/>
+            <TableColumn fx:id="colEstado" text="Estado" prefWidth="80" reorderable="false"/>
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>

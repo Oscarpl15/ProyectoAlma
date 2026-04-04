@@ -413,12 +413,41 @@
 
 .celda-booleana-true {
     -fx-alignment: CENTER;
-    -fx-text-fill: #27ae60; /* Tu verde de éxito */
+    -fx-text-fill: #27ae60;
     -fx-font-weight: bold;
 }
 
 .celda-booleana-false {
     -fx-alignment: CENTER;
-    -fx-text-fill: #e74c3c; /* Tu rojo de error */
+    -fx-text-fill: #e74c3c;
     -fx-font-weight: bold;
+}
+
+.celda-activo {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #27ae60;
+    -fx-font-weight: bold;
+}
+
+.celda-baja {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #e74c3c;
+    -fx-font-weight: bold;
+}
+
+/* Mantener colores al seleccionar la fila (prefijo .table-view para superar especificidad de AtlantaFX) */
+.table-view .table-row-cell:filled:selected .celda-booleana-true {
+    -fx-text-fill: #27ae60;
+}
+
+.table-view .table-row-cell:filled:selected .celda-booleana-false {
+    -fx-text-fill: #e74c3c;
+}
+
+.table-view .table-row-cell:filled:selected .celda-activo {
+    -fx-text-fill: #27ae60;
+}
+
+.table-view .table-row-cell:filled:selected .celda-baja {
+    -fx-text-fill: #e74c3c;
 }

@@ -5,6 +5,7 @@ import com.practicasalma.proyectoalma.model.Socio;
 import com.practicasalma.proyectoalma.service.SocioService;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -16,6 +17,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.control.TableCell;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -34,6 +36,7 @@ public class SocioController {
     @FXML private ComboBox<String> comboTipoEntidadFiltro;
     @FXML private ComboBox<String> comboPeriodicidadFiltro;
     @FXML private TextField txtBuscar;
+    @FXML private TableColumn<Socio, String> colEstado;
 
     private final SocioService socioService = new SocioService();
     private final ObservableList<Socio> listaMaestra = FXCollections.observableArrayList();
@@ -49,6 +52,22 @@ public class SocioController {
         colPeriodicidad.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPeriodicidad()));
 
         colCuota.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getCuota()).asObject());
+
+        colEstado.setCellValueFactory(cellData ->
+                new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Baja"));
+        colEstado.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("celda-activo", "celda-baja");
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    getStyleClass().add("Activo".equals(item) ? "celda-activo" : "celda-baja");
+                }
+            }
+        });
 
         FilteredList<Socio> listaFiltrada = new FilteredList<>(listaMaestra, s -> true);
         txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {

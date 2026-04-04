@@ -5,6 +5,7 @@ import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.service.AlumnoService;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.TableCell;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -34,6 +35,7 @@ public class AlumnosController {
     @FXML private TableColumn<Alumno, Boolean> colAutoComunicaciones;
     @FXML private TableColumn<Alumno, Boolean> colAutoImagen;
     @FXML private TableColumn<Alumno, Boolean> colAutoIrseSolo;
+    @FXML private TableColumn<Alumno, String> colEstado;
 
     @FXML private ComboBox<String> comboCursoFiltro;
     @FXML private ComboBox<String> comboGrupoFiltro;
@@ -56,6 +58,22 @@ public class AlumnosController {
                 return new SimpleStringProperty(curso != null ? curso : "Sin curso");
             }
             return new SimpleStringProperty("Sin matricular");
+        });
+
+        colEstado.setCellValueFactory(cellData ->
+                new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Baja"));
+        colEstado.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("celda-activo", "celda-baja");
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    getStyleClass().add("Activo".equals(item) ? "celda-activo" : "celda-baja");
+                }
+            }
         });
 
         configurarColumnaBooleana(colAutoDatos, alumno -> alumno.getAutorizaUsoDatos());

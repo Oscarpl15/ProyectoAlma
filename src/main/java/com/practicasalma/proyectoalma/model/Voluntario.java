@@ -26,6 +26,9 @@ public class Voluntario extends Persona {
     @Column(name = "ruta_doc_leypd")
     private String rutaDocProteccionDatos;
 
+    @Column(name = "activo", nullable = false)
+    private Boolean activo = true;
+
     @OneToMany(mappedBy = "voluntario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AsignacionPersonal> historialAsignaciones = new ArrayList<>();
 
@@ -61,6 +64,9 @@ public class Voluntario extends Persona {
 
     public String getRutaDocProteccionDatos() { return rutaDocProteccionDatos; }
     public void setRutaDocProteccionDatos(String rutaDocProteccionDatos) { this.rutaDocProteccionDatos = rutaDocProteccionDatos; }
+
+    public Boolean getActivo() {return activo;}
+    public void setActivo(Boolean activo) {this.activo = activo;}
 
     public List<AsignacionPersonal> getHistorialAsignaciones() {return historialAsignaciones;}
 

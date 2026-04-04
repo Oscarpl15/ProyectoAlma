@@ -64,6 +64,9 @@ public class Alumno extends Persona {
     @Column(name = "derivado_por")
     private String derivadoPor;
 
+    @Column(name = "activo", nullable = false)
+    private Boolean activo = true;
+
     // Para el cálculo matemático de la baja automática
     @Column(name = "num_repeticiones_previas", nullable = false)
     private Integer numRepeticionesPrevias = 0;
@@ -140,6 +143,9 @@ public class Alumno extends Persona {
 
     public String getRutaDocAutoriza() {return rutaDocAutoriza;}
     public void setRutaDocAutoriza(String rutaDocAutoriza) {this.rutaDocAutoriza = rutaDocAutoriza;}
+
+    public Boolean getActivo() {return activo;}
+    public void setActivo(Boolean activo) {this.activo = activo;}
 
     public Integer getNumRepeticionesPrevias() {return numRepeticionesPrevias;}
     public void setNumRepeticionesPrevias(Integer numRepeticionesPrevias) {this.numRepeticionesPrevias = numRepeticionesPrevias;}

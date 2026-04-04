@@ -9,6 +9,8 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -43,6 +45,22 @@ public class VoluntariosController {
         // Booleanos comentados temporalmente hasta asegurar que tienes los getters en el modelo Voluntario
         colDelitos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoDelitosSexuales() != null ? cellData.getValue().getAutoDelitosSexuales() : false));
         colProtDatos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoProteccionDatos() != null ? cellData.getValue().getAutoProteccionDatos() : false));
+
+        colAB.setCellValueFactory(cellData ->
+                new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Baja"));
+        colAB.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("celda-activo", "celda-baja");
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    getStyleClass().add("Activo".equals(item) ? "celda-activo" : "celda-baja");
+                }
+            }
+        });
 
         FilteredList<Voluntario> listaFiltrada = new FilteredList<>(listaMaestra, v -> true);
         txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
