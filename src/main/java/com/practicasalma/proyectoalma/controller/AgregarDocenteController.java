@@ -1,12 +1,17 @@
 package com.practicasalma.proyectoalma.controller;
 
+import com.practicasalma.proyectoalma.model.Docente;
+import com.practicasalma.proyectoalma.service.DocenteService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
+import java.time.LocalDate;
 
 public class AgregarDocenteController {
 
@@ -23,37 +28,44 @@ public class AgregarDocenteController {
     @FXML
     private TextField txtCorreo;
 
+    @FXML private DatePicker dpFechaNacimiento;
+
     // Checkboxes
     @FXML private CheckBox checkAuth1;
 
+    private final DocenteService docenteService = new DocenteService();
+
     @FXML
     private void guardarDocente(ActionEvent event) {
-        // Recuperar los datos
-        String nombre = txtNombre.getText();
-        String apellidos = txtApellidos.getText();
-        String direccion = txtDireccion.getText();
-        String telefono = txtTelefono.getText();
-        String dni = txtDni.getText();
-        String correo = txtCorreo.getText();
+        String nombre = txtNombre.getText().trim();
+        String apellidos = txtApellidos.getText().trim();
+        String direccion = txtDireccion.getText().trim();
+        String telefono = txtTelefono.getText().trim();
+        String dni = txtDni.getText().trim();
+        String correo = txtCorreo.getText().trim();
+        LocalDate fechaNacimiento = dpFechaNacimiento.getValue();
 
-
-        // Ejemplo de cómo ver si un check está marcado
-        boolean tieneAuth1 = checkAuth1.isSelected();
-
-        // Validacion simple
-        if (nombre.isEmpty()) {
-            System.out.println("Por favor rellena al menos nombre y curso");
+        if (nombre.isEmpty() || apellidos.isEmpty() || dni.isEmpty() || fechaNacimiento == null) {
+            mostrarError("Nombre, apellidos, DNI y fecha de nacimiento son obligatorios.");
             return;
         }
 
-        System.out.println("Guardando: " + nombre + " " + apellidos);
-        System.out.println("Dirección: " + direccion);
-        System.out.println("Telefono: " + telefono);
-        System.out.println("DNI: " + dni);
-        System.out.println("Correo:" + correo);
+        try {
+            Docente docente = new Docente(nombre, apellidos, direccion, dni, telefono, correo, fechaNacimiento);
+            docente.setAutoDelitosSexuales(checkAuth1.isSelected());
+            docenteService.guardarDocente(docente);
+            cerrarVentana(event);
+        } catch (Exception e) {
+            mostrarError("No se pudo guardar el docente: " + e.getMessage());
+        }
+    }
 
-        // Cierra la ventana
-        cerrarVentana(event);
+    private void mostrarError(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 
     @FXML

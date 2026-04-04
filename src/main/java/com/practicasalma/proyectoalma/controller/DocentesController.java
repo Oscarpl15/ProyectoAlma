@@ -4,6 +4,7 @@ import com.practicasalma.proyectoalma.Launcher;
 import com.practicasalma.proyectoalma.model.Docente;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import com.practicasalma.proyectoalma.service.DocenteService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -22,7 +23,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.time.LocalDate;
 
 public class DocentesController {
 
@@ -39,12 +39,8 @@ public class DocentesController {
     @FXML private TableColumn<Docente, String> colAB;
     @FXML private TextField txtBuscar;
 
-    // Datos falsos para la presentación (Mantenemos los tuyos)
-    private ObservableList<Docente> listaFalsa = FXCollections.observableArrayList(
-            new Docente("Sofía", "Díaz Sánchez", "C/ Olivos 13 1B", "612 34 56 78", "09876543E", "sofiadiazsanchez@gmail.com", LocalDate.now()),
-            new Docente("Daniel", "Gonzalez Fernández", "C/ Flores 5 4D", "698 76 54 32", "01234567G", "danielgonzalezfernandez@gmail.com",LocalDate.now()),
-            new Docente("Alma", "Perez Domínguez", "C/ Olivos 13 1B", "612 34 56 78", "08642975A", "almaperezdominguez@gmail.com", LocalDate.now())
-    );
+    private final DocenteService docenteService = new DocenteService();
+    private final ObservableList<Docente> listaMaestra = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
@@ -60,8 +56,8 @@ public class DocentesController {
         colDelitos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoDelitosSexuales() != null ? cellData.getValue().getAutoDelitosSexuales() : false));
         colProtDatos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoProteccionDatos() != null ? cellData.getValue().getAutoProteccionDatos() : false));
 
-        // 2. Meter datos con filtrado en tiempo real
-        FilteredList<Docente> listaFiltrada = new FilteredList<>(listaFalsa, d -> true);
+        // 2. Filtrado en tiempo real sobre datos de BD
+        FilteredList<Docente> listaFiltrada = new FilteredList<>(listaMaestra, d -> true);
         txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
             listaFiltrada.setPredicate(docente -> {
                 if (newVal == null || newVal.isBlank()) return true;
@@ -73,6 +69,8 @@ public class DocentesController {
         SortedList<Docente> listaSortable = new SortedList<>(listaFiltrada);
         listaSortable.comparatorProperty().bind(tablaDocentes.comparatorProperty());
         tablaDocentes.setItems(listaSortable);
+
+        cargarDocentesEnTabla();
 
         // 3. EVENTO DOBLE CLIC
         tablaDocentes.setRowFactory(tv -> {
@@ -118,11 +116,16 @@ public class DocentesController {
             // 5. Mostrar la ventana
             // showAndWait() espera a que se cierre para continuar la ejecución del código
             stage.showAndWait();
+            cargarDocentesEnTabla();
 
         } catch (IOException e) {
             System.err.println("Error al abrir el pop-up: " + e.getMessage());
             e.printStackTrace();
-        };
+        }
+    }
+
+    public void cargarDocentesEnTabla() {
+        listaMaestra.setAll(docenteService.obtenerTodos());
     }
 
     private void abrirFichaDocente(Docente docente) {

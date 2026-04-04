@@ -1,8 +1,8 @@
 package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.Launcher;
-import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.model.Socio;
+import com.practicasalma.proyectoalma.service.SocioService;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -35,10 +35,8 @@ public class SocioController {
     @FXML private ComboBox<String> comboPeriodicidadFiltro;
     @FXML private TextField txtBuscar;
 
-    private ObservableList<Socio> listaFalsa = FXCollections.observableArrayList(
-            new Socio("Asociación Vecinos", "Centro", "Calle Mayor 1", "G12345678", "Persona"),
-            new Socio("Juan", "Pérez García", "Av. Libertad 20", "12345678Z",  "Persona")
-    );
+    private final SocioService socioService = new SocioService();
+    private final ObservableList<Socio> listaMaestra = FXCollections.observableArrayList();
 
     @FXML
     public void initialize(){
@@ -52,7 +50,7 @@ public class SocioController {
 
         colCuota.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getCuota()).asObject());
 
-        FilteredList<Socio> listaFiltrada = new FilteredList<>(listaFalsa, s -> true);
+        FilteredList<Socio> listaFiltrada = new FilteredList<>(listaMaestra, s -> true);
         txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
             listaFiltrada.setPredicate(socio -> {
                 if (newVal == null || newVal.isBlank()) return true;
@@ -67,6 +65,7 @@ public class SocioController {
 
         comboTipoEntidadFiltro.getSelectionModel().select(0);
         comboPeriodicidadFiltro.getSelectionModel().select(0);
+        cargarSociosEnTabla();
 
         tablaSocios.setRowFactory(tv -> {
             TableRow<Socio> row = new TableRow<>();
@@ -95,11 +94,16 @@ public class SocioController {
             String rutaIcono = "/com/practicasalma/proyectoalma/assets/logo.png";
             stage.getIcons().add(new Image(getClass().getResourceAsStream(rutaIcono)));
             stage.showAndWait();
+            cargarSociosEnTabla();
 
         } catch (IOException e) {
             System.err.println("Error al abrir el pop-up: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public void cargarSociosEnTabla() {
+        listaMaestra.setAll(socioService.obtenerTodos());
     }
 
     private void abrirFichaSocio(Socio socio) {
