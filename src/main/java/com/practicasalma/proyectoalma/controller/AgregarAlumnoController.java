@@ -2,7 +2,6 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.service.AlumnoService;
-import com.practicasalma.proyectoalma.util.Validador;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -17,7 +16,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.time.LocalDate;
 
 public class AgregarAlumnoController {
 
@@ -83,26 +81,9 @@ public class AgregarAlumnoController {
         String dni = limpiarTexto(txtDni.getText());
         String telefono = limpiarTexto(txtTelefono.getText());
 
-        // Validación Rápida de Interfaz
+        // Validación de campos obligatorios de interfaz
         if (nombre == null || apellidos == null || fechaNac == null || cursoNormalizado == null) {
             mostrarMensaje("Datos incompletos", "Nombre, apellidos, fecha de nacimiento y curso son obligatorios.", Alert.AlertType.WARNING);
-            return;
-        }
-
-        if (fechaNac.isAfter(LocalDate.now())) {
-            mostrarMensaje("Fecha incorrecta", "La fecha de nacimiento no puede ser futura.", Alert.AlertType.WARNING);
-            return;
-        }
-
-        if (dni != null) {
-            if (!Validador.esDni(dni) && !Validador.esNie(dni)) {
-                mostrarMensaje("Formato Incorrecto", "El DNI/NIE introducido no es válido. Revisa las letras y números.", Alert.AlertType.WARNING);
-                return; // Cortamos la ejecución, no seguimos guardando
-            }
-        }
-
-        if (telefono != null && !esTelefonoValido(telefono)) {
-            mostrarMensaje("Formato incorrecto", "El teléfono no es válido. Debe tener 9 dígitos.", Alert.AlertType.WARNING);
             return;
         }
 
@@ -145,11 +126,6 @@ public class AgregarAlumnoController {
             System.err.println("Error en el proceso de guardado: " + e.getMessage());
             mostrarMensaje("Error", "No se pudo guardar el alumno: " + e.getMessage(), Alert.AlertType.ERROR);
         }
-    }
-
-    private boolean esTelefonoValido(String telefono) {
-        String soloDigitos = telefono.replaceAll("\\s+", "");
-        return soloDigitos.matches("^[0-9]{9}$");
     }
 
     private String limpiarTexto(String valor) {
