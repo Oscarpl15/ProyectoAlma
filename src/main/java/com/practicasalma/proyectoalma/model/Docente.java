@@ -28,6 +28,9 @@ public class Docente extends Persona {
 
     private String titulacion;
 
+    @Column(name = "activo", nullable = false)
+    private Boolean activo = true;
+
     @OneToMany(mappedBy = "docente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AsignacionPersonal> historialAsignaciones = new ArrayList<>();
 
@@ -67,6 +70,9 @@ public class Docente extends Persona {
 
     public String getTitulacion() {return titulacion;}
     public void setTitulacion(String titulacion) {this.titulacion = titulacion;}
+
+    public Boolean getActivo() {return activo;}
+    public void setActivo(Boolean activo) {this.activo = activo;}
 
     public List<AsignacionPersonal> getHistorialAsignaciones() {return historialAsignaciones;}
 

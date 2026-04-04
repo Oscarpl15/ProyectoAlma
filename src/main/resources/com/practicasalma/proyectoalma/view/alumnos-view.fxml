@@ -9,7 +9,7 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.practicasalma.proyectoalma.controller.AlumnosController"
-      spacing="15" style="-fx-padding: 20;">
+      spacing="15" styleClass="contenedor-padding-estandar">
 
     <BorderPane>
         <left>
@@ -38,7 +38,7 @@
         </left>
         <right>
             <HBox alignment="CENTER_RIGHT">
-                <TextField promptText="Buscar alumno..." prefWidth="250"/>
+                <TextField fx:id="txtBuscar" promptText="Buscar alumno..." prefWidth="250"/>
             </HBox>
         </right>
     </BorderPane>
@@ -50,15 +50,16 @@
             <TableColumn fx:id="colTelefono" text="Teléfono" prefWidth="110" reorderable="false"/>
             <TableColumn fx:id="colGrupo" text="Grupo" prefWidth="90" reorderable="false"/>
 
-            <TableColumn text="Autorizaciones" reorderable="false" styleClass="sin-borde-derecho">
+            <TableColumn text="Autorizaciones" reorderable="false">
                 <columns>
                     <TableColumn fx:id="colAutoDatos" text="Datos" prefWidth="60" reorderable="false"/>
                     <TableColumn fx:id="colAutoActividades" text="Activ." prefWidth="60" reorderable="false"/>
                     <TableColumn fx:id="colAutoComunicaciones" text="Com." prefWidth="60" reorderable="false"/>
                     <TableColumn fx:id="colAutoImagen" text="Imagen" prefWidth="65" reorderable="false"/>
-                    <TableColumn fx:id="colAutoIrseSolo" text="Irse Solo" prefWidth="75" reorderable="false" styleClass="sin-borde-derecho"/>
+                    <TableColumn fx:id="colAutoIrseSolo" text="Irse Solo" prefWidth="75" reorderable="false"/>
                 </columns>
             </TableColumn>
+            <TableColumn fx:id="colEstado" text="Estado" prefWidth="75" reorderable="false"/>
         </columns>
 
         <columnResizePolicy>

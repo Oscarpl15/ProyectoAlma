@@ -69,7 +69,7 @@
         </top>
 
         <center>
-            <BorderPane style="-fx-padding: 20;">
+            <BorderPane styleClass="contenedor-padding-estandar">
                 <center>
                     <TabPane fx:id="tabPrincipal" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="0" tabMinHeight="0">
                         <tabs>

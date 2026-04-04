@@ -5,28 +5,26 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
-<?import javafx.collections.FXCollections?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.practicasalma.proyectoalma.controller.AgregarDocenteController"
-            prefHeight="500.0" prefWidth="450.0"
+            fx:controller="com.practicasalma.proyectoalma.controller.AgregarVoluntarioController"
+            prefHeight="520.0" prefWidth="450.0"
             styleClass="fondo-blanco">
 
    <VBox spacing="20.0" AnchorPane.topAnchor="20.0" AnchorPane.bottomAnchor="20.0"
          AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
 
-      <Label text="Añadir Nuevo Docente"
-             styleClass="titulo-ventana"/>
+      <Label text="Añadir Nuevo Voluntario" styleClass="titulo-ventana"/>
 
       <GridPane vgap="15.0" hgap="10.0">
          <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="ALWAYS" minWidth="200.0" prefWidth="250.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0"/>
+            <ColumnConstraints hgrow="ALWAYS" minWidth="200.0" prefWidth="250.0"/>
          </columnConstraints>
 
          <Label text="Nombre:" GridPane.rowIndex="0" styleClass="etiqueta-campo"/>
-         <TextField fx:id="txtNombre" promptText="Ej: Javier" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+         <TextField fx:id="txtNombre" promptText="Ej: Carlos" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
          <Label text="Apellidos:" GridPane.rowIndex="1" styleClass="etiqueta-campo"/>
          <TextField fx:id="txtApellidos" promptText="Ej: García Pérez" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
@@ -35,13 +33,13 @@
          <TextField fx:id="txtDireccion" promptText="C/ Ejemplo 123" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
          <Label text="Teléfono:" GridPane.rowIndex="3" styleClass="etiqueta-campo"/>
-         <TextField fx:id="txtTelefono" promptText=" 600 00 00 00" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+         <TextField fx:id="txtTelefono" promptText="600 00 00 00" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
          <Label text="DNI:" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
-         <TextField fx:id="txtDni" promptText=" 00000000A" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+         <TextField fx:id="txtDni" promptText="00000000A" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
          <Label text="Correo:" GridPane.rowIndex="5" styleClass="etiqueta-campo"/>
-         <TextField fx:id="txtCorreo" promptText=" tuemail@ejemplo.com" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+         <TextField fx:id="txtCorreo" promptText="tuemail@ejemplo.com" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
 
          <Label text="Fecha nacimiento:" GridPane.rowIndex="6" styleClass="etiqueta-campo"/>
          <DatePicker fx:id="dpFechaNacimiento" GridPane.rowIndex="6" GridPane.columnIndex="1" maxWidth="Infinity"/>
@@ -60,25 +58,22 @@
                </FXCollections>
             </items>
          </ComboBox>
-
       </GridPane>
 
-      <Separator />
+      <Separator/>
 
       <Label text="Certificados:" styleClass="etiqueta-campo"/>
 
       <VBox spacing="10.0">
-         <CheckBox fx:id="checkAuth1" text="Certificado delitos sexuales"/>
+         <CheckBox fx:id="checkDelitos" text="Certificado delitos sexuales"/>
+         <CheckBox fx:id="checkProtDatos" text="Ley de Protección de Datos"/>
       </VBox>
 
-      <Region VBox.vgrow="ALWAYS" />
+      <Region VBox.vgrow="ALWAYS"/>
 
       <HBox spacing="15.0" alignment="CENTER_RIGHT">
-         <Button text="Cancelar" onAction="#cancelar"
-                 styleClass="boton-cancelar"/>
-
-         <Button text="Guardar Docente" onAction="#guardarDocente"
-                 styleClass="boton-accion"/>
+         <Button text="Cancelar" onAction="#cancelar" styleClass="boton-cancelar"/>
+         <Button text="Guardar Voluntario" onAction="#guardarVoluntario" styleClass="boton-accion"/>
       </HBox>
 
    </VBox>

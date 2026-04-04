@@ -2,7 +2,6 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
 <?import javafx.scene.image.ImageView?>
@@ -11,13 +10,14 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.practicasalma.proyectoalma.controller.AgregarAlumnoController"
             prefWidth="800.0"
-            style="-fx-background-color: white;" stylesheets="@../css/estilos.css">
+            styleClass="fondo-blanco"
+            stylesheets="@../css/estilos.css">
 
     <VBox spacing="20.0" AnchorPane.topAnchor="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
 
         <VBox spacing="5">
-            <Label text="Añadir Nuevo Alumno" styleClass="title-2" style="-fx-text-fill: #2E5374; -fx-font-weight: bold;"/>
-            <Label text="Rellena los datos personales y marca las autorizaciones correspondientes." style="-fx-text-fill: gray;"/>
+            <Label text="Añadir Nuevo Alumno" styleClass="titulo-ventana"/>
+            <Label text="Rellena los datos personales y marca las autorizaciones correspondientes." styleClass="subtitulo-ventana"/>
         </VBox>
 
         <GridPane vgap="15.0" hgap="15.0">
@@ -28,28 +28,28 @@
                 <ColumnConstraints hgrow="ALWAYS" prefWidth="200.0" />
             </columnConstraints>
 
-            <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+            <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
             <TextField fx:id="txtNombre" promptText="Ej: Javier" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-            <Label text="Apellidos:" GridPane.rowIndex="0" GridPane.columnIndex="2" style="-fx-font-weight: bold;"/>
+            <Label text="Apellidos:" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
             <TextField fx:id="txtApellidos" promptText="Ej: García Pérez" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
 
-            <Label text="DNI/NIE:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+            <Label text="DNI/NIE:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
             <TextField fx:id="txtDni" promptText="Ej: 12345678A" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-            <Label text="Fecha Nac.:" GridPane.rowIndex="1" GridPane.columnIndex="2" style="-fx-font-weight: bold;"/>
+            <Label text="Fecha Nac.:" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
             <DatePicker fx:id="dpFechaNacimiento" prefWidth="300" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
 
-            <Label text="Teléfono:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+            <Label text="Teléfono:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
             <TextField fx:id="txtTelefono" promptText="Ej: 600 123 456" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-            <Label text="Dirección:" GridPane.rowIndex="2" GridPane.columnIndex="2" style="-fx-font-weight: bold;"/>
+            <Label text="Dirección:" GridPane.rowIndex="2" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
             <TextField fx:id="txtDireccion" promptText="C/ Ejemplo 123" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
 
-            <Label text="Colegio:" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+            <Label text="Colegio:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
             <TextField fx:id="txtColegio" promptText="Opcional" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-            <Label text="Curso:" GridPane.rowIndex="3" GridPane.columnIndex="2" style="-fx-font-weight: bold;"/>
+            <Label text="Curso:" GridPane.rowIndex="3" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
             <ComboBox fx:id="comboCurso" promptText="Seleccione curso" GridPane.rowIndex="3" GridPane.columnIndex="3" maxWidth="Infinity">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
@@ -66,7 +66,7 @@
                 </items>
             </ComboBox>
 
-            <Label text="Grupo:" GridPane.rowIndex="4" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+            <Label text="Grupo:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
             <ComboBox fx:id="comboGrupo" promptText="Seleccione grupo" GridPane.rowIndex="4" GridPane.columnIndex="1" maxWidth="Infinity">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
@@ -78,15 +78,29 @@
                 </items>
             </ComboBox>
 
+            <Label text="Nacionalidad:" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+            <TextField fx:id="txtNacionalidad" promptText="Ej: Española" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+            <Label text="Género:" GridPane.rowIndex="5" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+            <ComboBox fx:id="comboGenero" promptText="Seleccione..." GridPane.rowIndex="5" GridPane.columnIndex="3" maxWidth="Infinity">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Masculino"/>
+                        <String fx:value="Femenino"/>
+                        <String fx:value="No binario"/>
+                        <String fx:value="Prefiero no especificar"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
         </GridPane>
 
         <Separator />
 
         <HBox spacing="30.0">
-            <VBox spacing="15.0" HBox.hgrow="ALWAYS">
+            <VBox spacing="20.0" HBox.hgrow="ALWAYS">
 
                 <VBox spacing="8">
-                    <Label text="Autorizaciones Legales" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2E5374;"/>
+                    <Label text="Autorizaciones Legales" styleClass="titulo-seccion"/>
                     <FlowPane hgap="15" vgap="10">
                         <CheckBox fx:id="chkAutoDatos" text="Prot. Datos"/>
                         <CheckBox fx:id="chkAutoImagen" text="Uso Imagen"/>
@@ -96,32 +110,45 @@
                     </FlowPane>
                 </VBox>
 
-                <VBox spacing="8">
-                    <Label text="Seguimiento / Derivación" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2E5374;"/>
-                    <HBox spacing="15" alignment="CENTER_LEFT">
-                        <CheckBox fx:id="chkSS" text="Servicios Sociales"/>
-                        <CheckBox fx:id="chkSAF" text="SAF"/>
-                        <TextField fx:id="txtDerivado" promptText="Derivado por (Nombre)" prefWidth="200"/>
-                    </HBox>
-                </VBox>
+                <HBox spacing="40.0">
+                    <VBox spacing="8">
+                        <Label text="Seguimiento" styleClass="titulo-seccion"/>
+                        <VBox spacing="10">
+                            <CheckBox fx:id="chkSeguimientoSS" text="Servicios Sociales"/>
+                            <CheckBox fx:id="chkSeguimientoSAF" text="SAF"/>
+                        </VBox>
+                    </VBox>
+
+                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                        <Label text="Derivación" styleClass="titulo-seccion"/>
+                        <FlowPane hgap="15" vgap="10">
+                            <CheckBox fx:id="chkDerivacionSS" text="Servicios Sociales"/>
+                            <CheckBox fx:id="chkDerivacionSAF" text="SAF"/>
+                            <CheckBox fx:id="chkDerivacionEOEP" text="EOEP"/>
+                            <CheckBox fx:id="chkDerivacionColegio" text="Colegio"/>
+                            <CheckBox fx:id="chkDerivacionOtro" text="Otro"/>
+                        </FlowPane>
+                        <TextField fx:id="txtDerivado" promptText="Especificar quién ha derivado (Nombre, Entidad...)" prefWidth="250"/>
+                    </VBox>
+                </HBox>
 
             </VBox>
 
             <VBox alignment="CENTER" spacing="10.0">
-                <StackPane prefHeight="140.0" prefWidth="120.0" style="-fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-color: #f8f9fa; -fx-background-radius: 5;">
+                <StackPane prefHeight="140.0" prefWidth="120.0" styleClass="caja-foto">
                     <children>
-                        <Label text="Sin foto" style="-fx-text-fill: #999999;" />
+                        <Label text="Sin foto" styleClass="texto-sin-foto"/>
                         <ImageView fx:id="fotoAlumno" fitHeight="135.0" fitWidth="115.0" preserveRatio="true" />
                     </children>
                 </StackPane>
-                <Button text="Añadir Foto" onAction="#onSeleccionarFotoClick" style="-fx-background-color: transparent; -fx-border-color: #2E5374; -fx-border-radius: 6; -fx-text-fill: #2E5374; -fx-cursor: hand;" />
+                <Button text="Añadir Foto" onAction="#onSeleccionarFotoClick" styleClass="boton-secundario"/>
             </VBox>
         </HBox>
 
         <Region VBox.vgrow="ALWAYS" />
 
         <HBox spacing="15.0" alignment="CENTER_RIGHT">
-            <Button text="Cancelar" onAction="#cancelar" style="-fx-background-color: transparent; -fx-text-fill: #666666; -fx-border-color: #999999; -fx-border-radius: 6; -fx-cursor: hand; -fx-padding: 8 15;"/>
+            <Button text="Cancelar" onAction="#cancelar" styleClass="boton-cancelar"/>
             <Button text="GUARDAR ALUMNO" onAction="#guardarAlumno" styleClass="boton-accion"/>
         </HBox>
 

@@ -12,6 +12,10 @@
     -color-accent-fg: #ffffff;
 }
 
+.contenedor-padding-estandar {
+    -fx-padding: 20px;
+}
+
 #mainLayout {
     -fx-background-color: rgba(255, 255, 255, 0.7); /* Blanco sutil */
 }
@@ -229,67 +233,221 @@
     -fx-opacity: 0.9;
 }
 
-/* === ESTILOS PARA LAS FICHAS/DIÁLOGOS === */
+/*  VENTANAS DE FORMULARIOS (Agregar / Fichas) */
 
-/* COMENTADOS: AtlantaFX formatea textos, enlaces y fondos automáticamente con consistencia.
-.fondo-ficha {
-    -fx-background-color: #F4F6F8;
+.fondo-blanco {
+    -fx-background-color: white;
 }
 
-.titulo-ficha {
+.titulo-ventana {
     -fx-font-size: 22px;
+    -fx-text-fill: #2E5374;
     -fx-font-weight: bold;
-    -fx-text-fill: #2C3E50;
 }
 
-.label-seccion {
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #3498DB;
-}
-
-.label-formulario {
-    -fx-font-weight: bold;
-    -fx-text-fill: #5D6D7E;
+.subtitulo-ventana {
+    -fx-text-fill: gray;
     -fx-font-size: 13px;
 }
 
-.link-padres {
-    -fx-text-fill: #3498DB;
+.etiqueta-campo {
     -fx-font-weight: bold;
-    -fx-underline: false;
+    -fx-text-fill: #333333;
 }
-.link-padres:hover {
-    -fx-underline: true;
-    -fx-text-fill: #2980B9;
-}
-*/
 
-/* --- BOTONES DEL DIÁLOGO --- */
-/* COMENTADOS: Usaremos las clases nativas de AtlantaFX para que los botones tengan hover, sombras y animaciones fluidas.
-.boton-primario {
-    -fx-background-color: #3498DB;
+.titulo-seccion {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2E5374;
+}
+
+/* Caja contenedora de la foto de perfil */
+.caja-foto {
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 5px;
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 5px;
+}
+
+.texto-sin-foto {
+    -fx-text-fill: #999999;
+}
+
+/* Botón outline para acciones secundarias (como Añadir foto) */
+.boton-secundario {
+    -fx-background-color: transparent;
+    -fx-border-color: #2E5374;
+    -fx-border-radius: 6px;
+    -fx-text-fill: #2E5374;
+    -fx-cursor: hand;
+    -fx-padding: 6px 12px;
+}
+
+.boton-secundario:hover {
+    -fx-background-color: #E3F2FD; /* Azul clarito corporativo */
+}
+
+/* Botón outline en gris para cancelar y salir */
+.boton-cancelar {
+    -fx-background-color: transparent;
+    -fx-text-fill: #666666;
+    -fx-border-color: #999999;
+    -fx-border-radius: 6px;
+    -fx-cursor: hand;
+    -fx-padding: 8px 15px;
+}
+
+.boton-cancelar:hover {
+    -fx-background-color: #f2f2f2;
+}
+
+/* ESTILOS ESPECÍFICOS PARA FICHAS (Solo Lectura / Edición) */
+
+/* Paddings estructurales */
+.padding-cabecera-ficha {
+    -fx-padding: 20px 20px 10px 20px;
+}
+.padding-cuerpo-ficha {
+    -fx-padding: 10px 20px 20px 20px;
+}
+.padding-pie-ficha {
+    -fx-padding: 10px 20px 20px 20px;
+}
+
+/* Panel izquierdo (Foto y checkboxes) */
+.panel-lateral-ficha {
+    -fx-background-color: #f0f4f8; /* Gris azulado muy suave */
+    -fx-padding: 20px;
+    -fx-background-radius: 8px;
+    -fx-pref-width: 250px;
+}
+
+/* Enlaces (Como Cambiar Foto) */
+.boton-enlace {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2E5374;
+    -fx-cursor: hand;
+    -fx-underline: true;
+}
+
+/* Texto gris de relleno para áreas sin datos aún */
+.texto-placeholder {
+    -fx-text-fill: gray;
+}
+
+/* MAGIA: Aspecto de los campos en modo "Solo lectura" vs "Edición" */
+/* 1. Estado Base (Cuando se está editando) */
+.campo-lectura {
+    -fx-background-color: white;
+    -fx-border-width: 1px;
+    -fx-border-color: #BDC3C7;
+    -fx-border-radius: 4px;
+}
+
+/* 2. Estado de Solo Lectura (Cuando setEditable(false) o setDisable(true)) */
+.campo-lectura:readonly,
+.campo-lectura:disabled {
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 1px 0; /* Solo una fina línea debajo */
+    -fx-border-color: #e0e0e0;
+    -fx-opacity: 1; /* Para que el texto no se vuelva gris apagado */
+    -fx-text-fill: #333333;
+}
+
+.campo-lectura:editable {
+    /* Cuando se puede editar, recupera el aspecto de TextField de AtlantaFX */
+    -fx-background-color: white;
+    -fx-border-width: 1px;
+    -fx-border-color: #BDC3C7;
+    -fx-border-radius: 4px;
+}
+
+/* Botón verde para Guardar y destacar en modo edición */
+.boton-guardar-exito {
+    -fx-background-color: #27ae60;
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-background-radius: 4;
-    -fx-padding: 8 20;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 15px;
     -fx-cursor: hand;
-}
-.boton-primario:hover {
-    -fx-background-color: #2980B9;
 }
 
-.boton-secundario {
-    -fx-background-color: white;
-    -fx-text-fill: #7F8C8D;
-    -fx-border-color: #BDC3C7;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-    -fx-padding: 8 20;
-    -fx-cursor: hand;
+.boton-guardar-exito:hover {
+    -fx-background-color: #2ecc71;
 }
-.boton-secundario:hover {
-    -fx-background-color: #ECF0F1;
-    -fx-text-fill: #2C3E50;
+
+/* ESTADO DE CHECKBOXES EN MODO LECTURA */
+
+/* 1. Cuando el check es TRUE (Verde) */
+.check-lectura-true:disabled {
+    -fx-opacity: 1; /* Quitamos el efecto "apagado" por defecto */
+    -fx-text-fill: #27ae60; /* Verde éxito */
+    -fx-font-weight: bold;
 }
-*/
+
+/* 2. Cuando el check es FALSE (Rojo) */
+.check-lectura-false:disabled {
+    -fx-opacity: 1;
+    -fx-text-fill: #e74c3c; /* Rojo error */
+    -fx-font-weight: bold;
+}
+
+/* 3. Ocultamos el cuadradito original del CheckBox en ambos casos */
+.check-lectura-true:disabled .box,
+.check-lectura-false:disabled .box {
+    visibility: hidden;
+    -fx-padding: 0;
+}
+
+.texto-lectura-simple {
+    -fx-text-fill: #333333;
+    -fx-font-size: 13px;
+}
+
+/* Bloque de seguimiento: Líneas separadoras integradas y padding reducido */
+.bloque-seguimiento {
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1px 0 1px 0; /* Borde solo arriba y abajo */
+    -fx-padding: 10px 0; /* 10 píxeles de aire arriba y abajo, 0 en los lados */
+}
+
+.celda-booleana-true {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #27ae60;
+    -fx-font-weight: bold;
+}
+
+.celda-booleana-false {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #e74c3c;
+    -fx-font-weight: bold;
+}
+
+.celda-activo {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #27ae60;
+    -fx-font-weight: bold;
+}
+
+.celda-baja {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #e74c3c;
+    -fx-font-weight: bold;
+}
+
+/* Mantener colores al seleccionar la fila (prefijo .table-view para superar especificidad de AtlantaFX) */
+.table-view .table-row-cell:filled:selected .celda-booleana-true {
+    -fx-text-fill: #27ae60;
+}
+
+.table-view .table-row-cell:filled:selected .celda-booleana-false {
+    -fx-text-fill: #e74c3c;
+}
+
+.table-view .table-row-cell:filled:selected .celda-activo {
+    -fx-text-fill: #27ae60;
+}
+
+.table-view .table-row-cell:filled:selected .celda-baja {
+    -fx-text-fill: #e74c3c;
+}

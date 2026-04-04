@@ -5,12 +5,12 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.practicasalma.proyectoalma.controller.VoluntariosController"
-      spacing="15" style="-fx-padding: 20;">
+      spacing="15" styleClass="contenedor-padding-estandar">
 
     <BorderPane>
         <right>
             <HBox alignment="CENTER_RIGHT">
-                <TextField promptText="Buscar voluntario..." prefWidth="250"/>
+                <TextField fx:id="txtBuscar" promptText="Buscar voluntario..." prefWidth="250"/>
             </HBox>
         </right>
     </BorderPane>

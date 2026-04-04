@@ -7,7 +7,7 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.practicasalma.proyectoalma.controller.SocioController"
-      spacing="15" style="-fx-padding: 20;">
+      spacing="15" styleClass="contenedor-padding-estandar">
 
     <BorderPane>
         <left>
@@ -35,7 +35,7 @@
         </left>
         <right>
             <HBox alignment="CENTER_RIGHT">
-                <TextField promptText="Buscar Socio..." prefWidth="250"/>
+                <TextField fx:id="txtBuscar" promptText="Buscar Socio..." prefWidth="250"/>
             </HBox>
         </right>
     </BorderPane>
@@ -48,6 +48,7 @@
             <TableColumn fx:id="colTipoEntidad" text="Tipo Entidad" prefWidth="120" reorderable="false"/>
             <TableColumn fx:id="colPeriodicidad" text="Periodicidad" prefWidth="120" reorderable="false"/>
             <TableColumn fx:id="colCuota" text="Cuota (€)" prefWidth="90" reorderable="false"/>
+            <TableColumn fx:id="colEstado" text="Estado" prefWidth="80" reorderable="false"/>
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>

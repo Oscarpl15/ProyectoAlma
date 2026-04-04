@@ -11,7 +11,7 @@ public class Matricula {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     // Formato: "2025-2026"
     @Column(name = "anyo_academico", nullable = false)
@@ -46,7 +46,7 @@ public class Matricula {
 
     // Getters y Setters
 
-    public Integer getId() { return id; }
+    public Long getId() { return id; }
 
     public String getAnyoAcademico() { return anyoAcademico; }
     public void setAnyoAcademico(String anyoAcademico) { this.anyoAcademico = anyoAcademico; }

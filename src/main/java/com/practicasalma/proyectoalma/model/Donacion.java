@@ -1,6 +1,7 @@
 package com.practicasalma.proyectoalma.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -9,13 +10,13 @@ public class Donacion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false)
     private LocalDate fecha;
 
-    @Column(nullable = false)
-    private Double importe;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal importe;
 
     @Column(name = "forma_donacion")
     private String formaDonacion; // Ej: "Domiciliación", "Transferencia", "Efectivo"
@@ -30,7 +31,7 @@ public class Donacion {
 
     public Donacion() {}
 
-    public Donacion(LocalDate fecha, Double importe, Boolean esPuntual, Socio socio) {
+    public Donacion(LocalDate fecha, BigDecimal importe, Boolean esPuntual, Socio socio) {
         this.fecha = fecha;
         this.importe = importe;
         this.esPuntual = esPuntual;
@@ -40,13 +41,13 @@ public class Donacion {
     // ... Getters y Setters ...
 
 
-    public Integer getId() { return id; }
+    public Long getId() { return id; }
 
     public LocalDate getFecha() { return fecha; }
     public void setFecha(LocalDate fecha) { this.fecha = fecha; }
 
-    public Double getImporte() { return importe; }
-    public void setImporte(Double importe) { this.importe = importe; }
+    public BigDecimal getImporte() { return importe; }
+    public void setImporte(BigDecimal importe) { this.importe = importe; }
 
     public Boolean getEsPuntual() { return esPuntual; }
     public void setEsPuntual(Boolean esPuntual) { this.esPuntual = esPuntual; }

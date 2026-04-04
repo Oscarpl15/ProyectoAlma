@@ -33,6 +33,29 @@ public class AlumnoDAO {
             }
         }
     }
+
+    public void actualizar(Alumno alumno) throws Exception {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+
+            // MERGE es el comando mágico de Hibernate para hacer un UPDATE
+            em.merge(alumno);
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new Exception("Error técnico al actualizar en BBDD: " + e.getMessage());
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
     public List<Alumno> obtenerTodos() {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -50,6 +73,25 @@ public class AlumnoDAO {
         } catch (Exception e) {
             System.err.println("Error al cargar todos los alumnos: " + e.getMessage());
             return List.of();
+        }
+    }
+
+    public Alumno obtenerCompleto(Long id) {
+        try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
+            // Buscamos al alumno por su ID
+            Alumno alumno = em.find(Alumno.class, id);
+
+            if (alumno != null) {
+                // "Despertamos" las colecciones perezosas llamando a .size()
+                // antes de que el EntityManager se cierre.
+                alumno.getMatriculas().size();
+                alumno.getAutorizadaRecoger().size();
+                alumno.getTutores().size(); // Lo dejamos preparado para el futuro
+            }
+            return alumno;
+        } catch (Exception e) {
+            System.err.println("Error al cargar los detalles del alumno: " + e.getMessage());
+            return null;
         }
     }
 }

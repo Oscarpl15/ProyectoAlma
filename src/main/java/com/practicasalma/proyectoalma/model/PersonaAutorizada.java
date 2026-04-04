@@ -2,46 +2,37 @@ package com.practicasalma.proyectoalma.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "personas_autorizadas")
-public class PersonaAutorizada {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class PersonaAutorizada extends Persona {
 
     @Column(nullable = false)
-    private String nombre;
+    private String relacion; // Ej: "Padre", "Abuela", "Vecino"
 
-    @Column(nullable = false)
-    private String documentoIdentidad;
+    // Lado inverso de la relación con Alumno (la tabla intermedia la gestiona Alumno)
+    @ManyToMany(mappedBy = "autorizadaRecoger")
+    private List<Alumno> alumnos = new ArrayList<>();
 
-    @Column(name = "tipo_documento", nullable = false)
-    private String tipoDocumento; //DNI, NIE o Pasaporte
+    public PersonaAutorizada() {
+        super();
+    }
 
-    @Column(nullable = false)
-    private String relacion; // Ej: "Abuelo", "Tía", "Vecina"
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "alumno_id", nullable = false)
-    private Alumno alumno;
+    public PersonaAutorizada(String nombre, String apellidos, String documentoIdentidad, String telefono, String relacion) {
+        super();
+        this.setNombre(nombre);
+        this.setApellidos(apellidos);
+        this.setDocumentoIdentidad(documentoIdentidad);
+        this.setTelefono(telefono);
+        this.relacion = relacion;
+    }
 
     // Getters y Setters
 
-    public Integer getId() {return id;}
+    public String getRelacion() { return relacion; }
+    public void setRelacion(String relacion) { this.relacion = relacion; }
 
-    public String getNombre() {return nombre;}
-    public void setNombre(String nombre) {this.nombre = nombre;}
-
-    public String getDocumentoIdentidad() {return documentoIdentidad;}
-    public void setDocumentoIdentidad(String documentoIdentidad) {this.documentoIdentidad = documentoIdentidad;}
-
-    public String getTipoDocumento() {return tipoDocumento;}
-    public void setTipoDocumento(String tipoDocumento) {this.tipoDocumento = tipoDocumento;}
-
-    public String getRelacion() {return relacion;}
-    public void setRelacion(String relacion) {this.relacion = relacion;}
-
-    public Alumno getAlumno() {return alumno;}
-    public void setAlumno(Alumno alumno) {this.alumno = alumno;}
+    public List<Alumno> getAlumnos() { return alumnos; }
 }

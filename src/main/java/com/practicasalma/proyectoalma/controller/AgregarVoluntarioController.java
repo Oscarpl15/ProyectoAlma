@@ -1,7 +1,7 @@
 package com.practicasalma.proyectoalma.controller;
 
-import com.practicasalma.proyectoalma.model.Docente;
-import com.practicasalma.proyectoalma.service.DocenteService;
+import com.practicasalma.proyectoalma.model.Voluntario;
+import com.practicasalma.proyectoalma.service.VoluntarioService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -14,32 +14,24 @@ import javafx.stage.Stage;
 
 import java.time.LocalDate;
 
-public class AgregarDocenteController {
+public class AgregarVoluntarioController {
 
-    @FXML
-    private TextField txtNombre;
-    @FXML
-    private TextField txtApellidos;
-    @FXML
-    private TextField txtDireccion; // Nuevo campo
-    @FXML
-    private TextField txtTelefono;
-    @FXML
-    private TextField txtDni;
-    @FXML
-    private TextField txtCorreo;
-
+    @FXML private TextField txtNombre;
+    @FXML private TextField txtApellidos;
+    @FXML private TextField txtDireccion;
+    @FXML private TextField txtTelefono;
+    @FXML private TextField txtDni;
+    @FXML private TextField txtCorreo;
     @FXML private DatePicker dpFechaNacimiento;
     @FXML private TextField txtNacionalidad;
     @FXML private ComboBox<String> comboGenero;
+    @FXML private CheckBox checkDelitos;
+    @FXML private CheckBox checkProtDatos;
 
-    // Checkboxes
-    @FXML private CheckBox checkAuth1;
-
-    private final DocenteService docenteService = new DocenteService();
+    private final VoluntarioService voluntarioService = new VoluntarioService();
 
     @FXML
-    private void guardarDocente(ActionEvent event) {
+    private void guardarVoluntario(ActionEvent event) {
         String nombre = txtNombre.getText().trim();
         String apellidos = txtApellidos.getText().trim();
         String direccion = txtDireccion.getText().trim();
@@ -54,25 +46,18 @@ public class AgregarDocenteController {
         }
 
         try {
-            Docente docente = new Docente(nombre, apellidos, direccion, dni, telefono, correo, fechaNacimiento);
-            docente.setAutoDelitosSexuales(checkAuth1.isSelected());
+            Voluntario voluntario = new Voluntario(nombre, apellidos, direccion, dni, telefono, correo, fechaNacimiento);
+            voluntario.setAutoDelitosSexuales(checkDelitos.isSelected());
+            voluntario.setAutoProteccionDatos(checkProtDatos.isSelected());
             String nacionalidad = txtNacionalidad.getText().trim();
-            if (!nacionalidad.isEmpty()) docente.setNacionalidad(nacionalidad);
+            if (!nacionalidad.isEmpty()) voluntario.setNacionalidad(nacionalidad);
             String genero = comboGenero.getValue();
-            if (genero != null) docente.setGenero(genero);
-            docenteService.guardarDocente(docente);
+            if (genero != null) voluntario.setGenero(genero);
+            voluntarioService.guardarVoluntario(voluntario);
             cerrarVentana(event);
         } catch (Exception e) {
-            mostrarError("No se pudo guardar el docente: " + e.getMessage());
+            mostrarError("No se pudo guardar el voluntario: " + e.getMessage());
         }
-    }
-
-    private void mostrarError(String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
     }
 
     @FXML
@@ -81,8 +66,15 @@ public class AgregarDocenteController {
     }
 
     private void cerrarVentana(ActionEvent event) {
-        Node source = (Node) event.getSource();
-        Stage stage = (Stage) source.getScene().getWindow();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
+    }
+
+    private void mostrarError(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 }

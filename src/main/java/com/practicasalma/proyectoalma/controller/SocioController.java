@@ -1,12 +1,16 @@
 package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.Launcher;
-import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.model.Socio;
+import com.practicasalma.proyectoalma.service.SocioService;
+import com.practicasalma.proyectoalma.util.FxUtils;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +18,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.control.TableCell;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -31,12 +36,11 @@ public class SocioController {
 
     @FXML private ComboBox<String> comboTipoEntidadFiltro;
     @FXML private ComboBox<String> comboPeriodicidadFiltro;
+    @FXML private TextField txtBuscar;
+    @FXML private TableColumn<Socio, String> colEstado;
 
-
-    private ObservableList<Socio> listaFalsa = FXCollections.observableArrayList(
-            new Socio("Asociación Vecinos", "Centro", "Calle Mayor 1", "G12345678", "Persona"),
-            new Socio("Juan", "Pérez García", "Av. Libertad 20", "12345678Z",  "Persona")
-    );
+    private final SocioService socioService = new SocioService();
+    private final ObservableList<Socio> listaMaestra = FXCollections.observableArrayList();
 
     @FXML
     public void initialize(){
@@ -50,10 +54,26 @@ public class SocioController {
 
         colCuota.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getCuota()).asObject());
 
-        tablaSocios.setItems(listaFalsa);
+        colEstado.setCellValueFactory(cellData ->
+                new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Baja"));
+        colEstado.setCellFactory(FxUtils.celdaEstado());
+
+        FilteredList<Socio> listaFiltrada = new FilteredList<>(listaMaestra, s -> true);
+        txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
+            listaFiltrada.setPredicate(socio -> {
+                if (newVal == null || newVal.isBlank()) return true;
+                String filtro = newVal.toLowerCase();
+                return socio.getNombre().toLowerCase().contains(filtro)
+                        || socio.getApellidos().toLowerCase().contains(filtro);
+            });
+        });
+        SortedList<Socio> listaSortable = new SortedList<>(listaFiltrada);
+        listaSortable.comparatorProperty().bind(tablaSocios.comparatorProperty());
+        tablaSocios.setItems(listaSortable);
 
         comboTipoEntidadFiltro.getSelectionModel().select(0);
         comboPeriodicidadFiltro.getSelectionModel().select(0);
+        cargarSociosEnTabla();
 
         tablaSocios.setRowFactory(tv -> {
             TableRow<Socio> row = new TableRow<>();
@@ -68,25 +88,16 @@ public class SocioController {
     }
 
     public void nuevoSocio(ActionEvent actionEvent) {
-
         try {
-            FXMLLoader loader = new FXMLLoader(Launcher.class.getResource("view/agregarSocio-view.fxml"));
-            Parent root = loader.load();
-
-            Scene scene = new Scene(root);
-
-            Stage stage = new Stage();
-            stage.setTitle("Agregar nuevo socio");
-            stage.setScene(scene);
-            stage.initModality(Modality.APPLICATION_MODAL);
-            String rutaIcono = "/com/practicasalma/proyectoalma/assets/logo.png";
-            stage.getIcons().add(new Image(getClass().getResourceAsStream(rutaIcono)));
-            stage.showAndWait();
-
+            FxUtils.abrirModal("agregarSocio-view.fxml", "Agregar nuevo socio");
+            cargarSociosEnTabla();
         } catch (IOException e) {
             System.err.println("Error al abrir el pop-up: " + e.getMessage());
-            e.printStackTrace();
         }
+    }
+
+    public void cargarSociosEnTabla() {
+        listaMaestra.setAll(socioService.obtenerTodos());
     }
 
     private void abrirFichaSocio(Socio socio) {
@@ -115,11 +126,4 @@ public class SocioController {
         }
     }
 
-    private void mostrarMensaje(String titulo, String contenido) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(contenido);
-        alert.showAndWait();
-    }
 }

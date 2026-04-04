@@ -13,7 +13,7 @@ public abstract class Persona {
     // Hibernate autoincrementará este ID en cada tabla hija
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     // Obligatorios
     @Column(nullable = false)
@@ -62,7 +62,7 @@ public abstract class Persona {
 
     // Getters y Setters
 
-    public Integer getId() { return id; }
+    public Long getId() { return id; }
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
@@ -97,4 +97,16 @@ public abstract class Persona {
 
     public String getCodigoPostal() {return codigoPostal;}
     public void setCodigoPostal(String codigoPostal) {this.codigoPostal = codigoPostal;}
+
+    @Column
+    private String nacionalidad;
+
+    @Column
+    private String genero;
+
+    public String getNacionalidad() {return nacionalidad;}
+    public void setNacionalidad(String nacionalidad) {this.nacionalidad = nacionalidad;}
+
+    public String getGenero() {return genero;}
+    public void setGenero(String genero) {this.genero = genero;}
 }

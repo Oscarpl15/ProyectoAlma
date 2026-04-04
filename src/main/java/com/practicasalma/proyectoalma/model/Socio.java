@@ -29,10 +29,13 @@ public class Socio extends Persona {
     @Column(name = "periodicidad")
     private String periodicidad;
 
+    @Column(name = "activo", nullable = false)
+    private Boolean activo = true;
 
     // Relación Uno a Muchos: Un socio puede tener un historial de muchas donaciones.
     // mappedBy = "socio" le dice a Hibernate que la relación la controla la clase Donacion.
-    @OneToMany(mappedBy = "socio", cascade = CascadeType.ALL, orphanRemoval = true)
+    // Solo PERSIST y MERGE: las donaciones son registros contables y NO deben borrarse si se elimina el socio.
+    @OneToMany(mappedBy = "socio", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Donacion> donaciones = new ArrayList<>();
 
     @OneToMany(mappedBy = "socio", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -81,6 +84,9 @@ public class Socio extends Persona {
 
     public String getTipoBanco() {return tipoBanco;}
     public void setTipoBanco(String tipoBanco) {this.tipoBanco = tipoBanco;}
+
+    public Boolean getActivo() {return activo;}
+    public void setActivo(Boolean activo) {this.activo = activo;}
 
     public List<Donacion> getDonaciones() {return donaciones;}
 

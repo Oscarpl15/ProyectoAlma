@@ -53,6 +53,12 @@ public class Validador {
         return letraProporcionada == letraCalculada;
     }
 
+    public static boolean esTelefonoValido(String telefono) {
+        if (telefono == null) return false;
+        String soloDigitos = telefono.replaceAll("\\s+", "");
+        return soloDigitos.matches("^[0-9]{9}$");
+    }
+
     public static boolean esEmailValido(String email) {
 
         if (email == null) {
