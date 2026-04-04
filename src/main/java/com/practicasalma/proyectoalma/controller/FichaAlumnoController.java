@@ -1,6 +1,7 @@
 package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Alumno;
+import com.practicasalma.proyectoalma.model.Matricula;
 import com.practicasalma.proyectoalma.model.PersonaAutorizada;
 import com.practicasalma.proyectoalma.model.Tutor;
 import com.practicasalma.proyectoalma.service.AlumnoService;
@@ -71,6 +72,13 @@ public class FichaAlumnoController {
     @FXML private CheckBox chkDerivacionOtro;
     @FXML private TextField txtDerivado;
 
+    // Tabla Matrículas
+    @FXML private TableView<Matricula> tablaMatriculas;
+    @FXML private TableColumn<Matricula, String> colMatAnyo;
+    @FXML private TableColumn<Matricula, String> colMatCurso;
+    @FXML private TableColumn<Matricula, String> colMatGrupo;
+    @FXML private TableColumn<Matricula, String> colMatRepeticion;
+
     // Tabla Tutores
     @FXML private TableView<Tutor> tablaTutores;
     @FXML private TableColumn<Tutor, String> colTutorNombre;
@@ -107,6 +115,14 @@ public class FichaAlumnoController {
         comboGenero.getItems().addAll(
                 "Masculino", "Femenino", "No binario", "Prefiero no especificar"
         );
+
+        // Configurar columnas de Matrículas
+        colMatAnyo.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getAnyoAcademico()));
+        colMatCurso.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getCurso()));
+        colMatGrupo.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
+                c.getValue().getGrupoAsignado() != null ? c.getValue().getGrupoAsignado() : "—"));
+        colMatRepeticion.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
+                Boolean.TRUE.equals(c.getValue().getEsRepeticion()) ? "Sí" : "No"));
 
         // Configurar columnas de Tutores
         colTutorNombre.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getNombre()));
@@ -189,8 +205,9 @@ public class FichaAlumnoController {
             chkDerivacionOtro.setSelected(Boolean.TRUE.equals(alumnoActual.getDerivacionOtro()));
             txtDerivado.setText(alumnoActual.getDerivadoPor() != null ? alumnoActual.getDerivadoPor() : "");
 
-            tablaTutores.setItems(javafx.collections.FXCollections.observableArrayList(alumnoActual.getTutores()));
-            tablaAutorizados.setItems(javafx.collections.FXCollections.observableArrayList(alumnoActual.getAutorizadaRecoger()));
+            tablaMatriculas.setItems(FXCollections.observableArrayList(alumnoActual.getMatriculas()));
+            tablaTutores.setItems(FXCollections.observableArrayList(alumnoActual.getTutores()));
+            tablaAutorizados.setItems(FXCollections.observableArrayList(alumnoActual.getAutorizadaRecoger()));
 
             // Generar el texto bonito para el Modo Lectura
             actualizarTextosSeguimiento();

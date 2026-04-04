@@ -127,7 +127,7 @@
                         <panes>
                             <TitledPane text="Padres / Tutores Legales" animated="true">
                                 <VBox spacing="10">
-                                    <TableView fx:id="tablaTutores" prefHeight="160" styleClass="striped, bordered">
+                                    <TableView fx:id="tablaTutores" prefHeight="160" maxHeight="160" styleClass="striped, bordered">
                                         <columns>
                                             <TableColumn fx:id="colTutorNombre" text="Nombre" prefWidth="120" reorderable="false"/>
                                             <TableColumn fx:id="colTutorApellidos" text="Apellidos" prefWidth="150" reorderable="false"/>
@@ -148,7 +148,7 @@
                             </TitledPane>
                             <TitledPane text="Personas Autorizadas (Recogida)" animated="true">
                                 <VBox spacing="10">
-                                    <TableView fx:id="tablaAutorizados" prefHeight="160" styleClass="striped, bordered">
+                                    <TableView fx:id="tablaAutorizados" prefHeight="160" maxHeight="160" styleClass="striped, bordered">
                                         <columns>
                                             <TableColumn fx:id="colAutoNombre" text="Nombre" prefWidth="120" reorderable="false"/>
                                             <TableColumn fx:id="colAutoApellidos" text="Apellidos" prefWidth="150" reorderable="false"/>
@@ -169,7 +169,17 @@
                                 </VBox>
                             </TitledPane>
                             <TitledPane text="Historial de Matrículas" animated="true">
-                                <VBox spacing="10"><Label text="Lista de cursos irá aquí..." styleClass="texto-placeholder"/></VBox>
+                                <TableView fx:id="tablaMatriculas" prefHeight="160" maxHeight="160" styleClass="striped, bordered">
+                                    <columns>
+                                        <TableColumn fx:id="colMatAnyo" text="Año Académico" prefWidth="120" reorderable="false"/>
+                                        <TableColumn fx:id="colMatCurso" text="Curso" prefWidth="120" reorderable="false"/>
+                                        <TableColumn fx:id="colMatGrupo" text="Grupo" prefWidth="120" reorderable="false"/>
+                                        <TableColumn fx:id="colMatRepeticion" text="Repetición" prefWidth="80" reorderable="false"/>
+                                    </columns>
+                                    <columnResizePolicy>
+                                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                                    </columnResizePolicy>
+                                </TableView>
                             </TitledPane>
                         </panes>
                     </Accordion>
