@@ -83,7 +83,7 @@ public class Alumno extends Persona {
 
     // Relación Muchos a Muchos con PadreTutor
     // @JoinTable fuerza a crear la tabla intermedia "alumno_tutor"
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "alumno_tutor",
             joinColumns = @JoinColumn(name = "alumno_id"),

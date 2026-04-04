@@ -2,7 +2,10 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.model.PersonaAutorizada;
+import com.practicasalma.proyectoalma.model.Tutor;
 import com.practicasalma.proyectoalma.service.AlumnoService;
+import com.practicasalma.proyectoalma.service.PersonaAutorizadaService;
+import com.practicasalma.proyectoalma.service.TutorService;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.collections.FXCollections;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -67,6 +71,15 @@ public class FichaAlumnoController {
     @FXML private CheckBox chkDerivacionOtro;
     @FXML private TextField txtDerivado;
 
+    // Tabla Tutores
+    @FXML private TableView<Tutor> tablaTutores;
+    @FXML private TableColumn<Tutor, String> colTutorNombre;
+    @FXML private TableColumn<Tutor, String> colTutorApellidos;
+    @FXML private TableColumn<Tutor, String> colTutorDni;
+    @FXML private TableColumn<Tutor, String> colTutorTelefono;
+    @FXML private TableColumn<Tutor, String> colTutorRelacion;
+    @FXML private HBox boxBotonesTutores;
+
     // Tabla Personas Autorizadas
     @FXML private TableView<PersonaAutorizada> tablaAutorizados;
     @FXML private TableColumn<PersonaAutorizada, String> colAutoNombre;
@@ -79,8 +92,9 @@ public class FichaAlumnoController {
     private Alumno alumnoActual;
     private String rutaFotoSeleccionada = null;
 
-    // Servicio para conectar con la BBDD
     private final AlumnoService alumnoService = new AlumnoService();
+    private final TutorService tutorService = new TutorService();
+    private final PersonaAutorizadaService paService = new PersonaAutorizadaService();
 
     @FXML
     public void initialize() {
@@ -93,6 +107,19 @@ public class FichaAlumnoController {
         comboGenero.getItems().addAll(
                 "Masculino", "Femenino", "No binario", "Prefiero no especificar"
         );
+
+        // Configurar columnas de Tutores
+        colTutorNombre.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getNombre()));
+        colTutorApellidos.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getApellidos()));
+        colTutorDni.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getDocumentoIdentidad()));
+        colTutorTelefono.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getTelefono()));
+        colTutorRelacion.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getRelacion()));
+
+        ContextMenu menuTutores = new ContextMenu();
+        MenuItem itemEliminarTutor = new MenuItem("Eliminar Tutor");
+        itemEliminarTutor.setOnAction(e -> eliminarTutor());
+        menuTutores.getItems().add(itemEliminarTutor);
+        tablaTutores.setContextMenu(menuTutores);
 
         // Configurar columnas de Autorizados
         colAutoNombre.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getNombre()));
@@ -162,6 +189,7 @@ public class FichaAlumnoController {
             chkDerivacionOtro.setSelected(Boolean.TRUE.equals(alumnoActual.getDerivacionOtro()));
             txtDerivado.setText(alumnoActual.getDerivadoPor() != null ? alumnoActual.getDerivadoPor() : "");
 
+            tablaTutores.setItems(javafx.collections.FXCollections.observableArrayList(alumnoActual.getTutores()));
             tablaAutorizados.setItems(javafx.collections.FXCollections.observableArrayList(alumnoActual.getAutorizadaRecoger()));
 
             // Generar el texto bonito para el Modo Lectura
@@ -249,6 +277,13 @@ public class FichaAlumnoController {
         boxSeguimientoLectura.setManaged(!editable);
         boxSeguimientoEdicion.setVisible(editable);
         boxSeguimientoEdicion.setManaged(editable);
+
+        // Tutores
+        boxBotonesTutores.setVisible(editable);
+        boxBotonesTutores.setManaged(editable);
+        if (tablaTutores.getContextMenu() != null) {
+            tablaTutores.getContextMenu().getItems().get(0).setVisible(editable);
+        }
 
         // Autorizados
         boxBotonesAutorizados.setVisible(editable);
@@ -476,5 +511,164 @@ public class FichaAlumnoController {
     private void cerrarVentana() {
         Stage stage = (Stage) btnCerrar.getScene().getWindow();
         stage.close();
+    }
+
+    // ── TUTORES ──────────────────────────────────────────────────────────────
+
+    @FXML
+    private void agregarNuevoTutor() {
+        Dialog<Tutor> dialog = new Dialog<>();
+        dialog.setTitle("Nuevo Tutor / Padre");
+        dialog.setHeaderText("Crear nueva persona tutora");
+        dialog.getDialogPane().getStylesheets().add(getClass().getResource("/com/practicasalma/proyectoalma/css/estilos.css").toExternalForm());
+        dialog.getDialogPane().getStyleClass().add("fondo-blanco");
+
+        ButtonType btnOk = new ButtonType("Añadir", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(btnOk, ButtonType.CANCEL);
+
+        javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
+        grid.setHgap(10); grid.setVgap(10);
+
+        TextField nombre    = new TextField(); nombre.setPromptText("Nombre");
+        TextField apellidos = new TextField(); apellidos.setPromptText("Apellidos");
+        TextField dni       = new TextField(); dni.setPromptText("DNI/NIE");
+        TextField telefono  = new TextField(); telefono.setPromptText("Teléfono");
+        TextField relacion  = new TextField(); relacion.setPromptText("Ej: Madre, Padre...");
+        relacion.setText("Tutor/a Legal");
+
+        grid.add(new Label("Nombre:"),    0, 0); grid.add(nombre,    1, 0);
+        grid.add(new Label("Apellidos:"), 0, 1); grid.add(apellidos, 1, 1);
+        grid.add(new Label("DNI/NIE:"),   0, 2); grid.add(dni,       1, 2);
+        grid.add(new Label("Teléfono:"),  0, 3); grid.add(telefono,  1, 3);
+        grid.add(new Label("Relación:"),  0, 4); grid.add(relacion,  1, 4);
+
+        dialog.getDialogPane().setContent(grid);
+        Platform.runLater(nombre::requestFocus);
+
+        dialog.setResultConverter(btn -> {
+            if (btn == btnOk && !nombre.getText().trim().isEmpty()) {
+                Tutor t = new Tutor();
+                t.setNombre(nombre.getText().trim());
+                t.setApellidos(apellidos.getText().trim());
+                t.setDocumentoIdentidad(dni.getText().trim().isEmpty() ? null : dni.getText().trim());
+                t.setTelefono(telefono.getText().trim().isEmpty() ? null : telefono.getText().trim());
+                t.setRelacion(relacion.getText().trim().isEmpty() ? "Tutor/a Legal" : relacion.getText().trim());
+                return t;
+            }
+            return null;
+        });
+
+        dialog.showAndWait().ifPresent(tutor -> {
+            alumnoActual.addTutor(tutor);
+            tablaTutores.getItems().add(tutor);
+        });
+    }
+
+    @FXML
+    private void agregarTutorExistente() {
+        java.util.List<Tutor> todos = tutorService.obtenerTodos();
+        // Filtramos los que ya están vinculados
+        java.util.List<Tutor> disponibles = todos.stream()
+                .filter(t -> !alumnoActual.getTutores().stream()
+                        .anyMatch(existing -> existing.getId().equals(t.getId())))
+                .toList();
+
+        Tutor seleccionado = mostrarDialogoSeleccionPersona(
+                disponibles.stream().map(t -> (com.practicasalma.proyectoalma.model.Persona) t).toList(),
+                "Buscar Tutor Existente", "Selecciona un tutor ya registrado:");
+
+        if (seleccionado != null) {
+            alumnoActual.addTutor(seleccionado);
+            tablaTutores.getItems().add(seleccionado);
+        }
+    }
+
+    @FXML
+    private void eliminarTutor() {
+        Tutor seleccion = tablaTutores.getSelectionModel().getSelectedItem();
+        if (seleccion != null) {
+            alumnoActual.removeTutor(seleccion);
+            tablaTutores.getItems().remove(seleccion);
+        }
+    }
+
+    // ── PERSONAS AUTORIZADAS (BUSCAR EXISTENTE) ───────────────────────────────
+
+    @FXML
+    private void agregarAutorizadoExistente() {
+        java.util.List<PersonaAutorizada> todos = paService.obtenerTodos();
+        java.util.List<PersonaAutorizada> disponibles = todos.stream()
+                .filter(p -> !alumnoActual.getAutorizadaRecoger().stream()
+                        .anyMatch(existing -> existing.getId().equals(p.getId())))
+                .toList();
+
+        PersonaAutorizada seleccionada = mostrarDialogoSeleccionPersona(
+                disponibles.stream().map(p -> (com.practicasalma.proyectoalma.model.Persona) p).toList(),
+                "Buscar Persona Autorizada", "Selecciona una persona ya registrada:");
+
+        if (seleccionada != null) {
+            alumnoActual.addPersonaAutorizada(seleccionada);
+            tablaAutorizados.getItems().add(seleccionada);
+        }
+    }
+
+    // ── HELPER: DIÁLOGO DE SELECCIÓN GENÉRICO ────────────────────────────────
+
+    @SuppressWarnings("unchecked")
+    private <T extends com.practicasalma.proyectoalma.model.Persona> T mostrarDialogoSeleccionPersona(
+            java.util.List<? extends com.practicasalma.proyectoalma.model.Persona> lista,
+            String titulo, String cabecera) {
+
+        if (lista.isEmpty()) {
+            Alert info = new Alert(Alert.AlertType.INFORMATION);
+            info.setTitle(titulo);
+            info.setHeaderText(null);
+            info.setContentText("No hay personas disponibles para añadir.");
+            info.showAndWait();
+            return null;
+        }
+
+        Dialog<com.practicasalma.proyectoalma.model.Persona> dialog = new Dialog<>();
+        dialog.setTitle(titulo);
+        dialog.setHeaderText(cabecera);
+        dialog.getDialogPane().getStylesheets().add(getClass().getResource("/com/practicasalma/proyectoalma/css/estilos.css").toExternalForm());
+        dialog.getDialogPane().getStyleClass().add("fondo-blanco");
+
+        ButtonType btnOk = new ButtonType("Seleccionar", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(btnOk, ButtonType.CANCEL);
+
+        TextField txtFiltro = new TextField();
+        txtFiltro.setPromptText("Buscar por nombre o apellidos...");
+
+        javafx.collections.ObservableList<com.practicasalma.proyectoalma.model.Persona> items =
+                javafx.collections.FXCollections.observableArrayList(lista);
+        javafx.collections.transformation.FilteredList<com.practicasalma.proyectoalma.model.Persona> filtrada =
+                new javafx.collections.transformation.FilteredList<>(items, p -> true);
+
+        txtFiltro.textProperty().addListener((obs, old, val) -> filtrada.setPredicate(p -> {
+            if (val == null || val.isBlank()) return true;
+            String f = val.toLowerCase();
+            return p.getNombre().toLowerCase().contains(f) || p.getApellidos().toLowerCase().contains(f);
+        }));
+
+        ListView<com.practicasalma.proyectoalma.model.Persona> listView = new ListView<>(filtrada);
+        listView.setPrefHeight(250);
+        listView.setCellFactory(lv -> new javafx.scene.control.ListCell<>() {
+            @Override
+            protected void updateItem(com.practicasalma.proyectoalma.model.Persona item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.getApellidos() + ", " + item.getNombre()
+                        + (item.getDocumentoIdentidad() != null ? "  (" + item.getDocumentoIdentidad() + ")" : ""));
+            }
+        });
+
+        VBox content = new VBox(8, txtFiltro, listView);
+        content.setPrefWidth(380);
+        dialog.getDialogPane().setContent(content);
+        Platform.runLater(txtFiltro::requestFocus);
+
+        dialog.setResultConverter(btn -> btn == btnOk ? listView.getSelectionModel().getSelectedItem() : null);
+
+        return (T) dialog.showAndWait().orElse(null);
     }
 }
