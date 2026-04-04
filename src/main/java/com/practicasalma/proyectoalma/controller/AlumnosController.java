@@ -134,20 +134,32 @@ public class AlumnosController {
         }
     }
 
-    private void abrirFichaAlumno(Alumno alumno) {
+    private void abrirFichaAlumno(Alumno alumnoTabla) {
         try {
+            // 1. Pedimos a la BBDD el alumno con TODA su información "despierta"
+            Alumno alumnoCompleto = alumnoService.obtenerCompleto(alumnoTabla.getId());
+
+            if (alumnoCompleto == null) {
+                System.err.println("No se ha podido cargar la información completa del alumno.");
+                return;
+            }
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/practicasalma/proyectoalma/view/ficha-alumno.fxml"));
             Parent root = loader.load();
 
             FichaAlumnoController controller = loader.getController();
-            controller.setAlumno(alumno);
+
+            // 2. Le pasamos a la ficha el alumno COMPLETO, no el de la tabla
+            controller.setAlumno(alumnoCompleto);
 
             Stage stage = new Stage();
-            stage.setTitle("Ficha del Alumno: " + alumno.getNombre());
+            stage.setTitle("Ficha del Alumno: " + alumnoCompleto.getNombre());
             stage.setScene(new Scene(root));
             stage.initModality(Modality.WINDOW_MODAL);
             stage.initOwner(tablaAlumnos.getScene().getWindow());
             stage.showAndWait();
+
+            // Refrescamos la tabla al cerrar por si hubo cambios
             cargarAlumnosEnTabla();
 
         } catch (IOException e) {

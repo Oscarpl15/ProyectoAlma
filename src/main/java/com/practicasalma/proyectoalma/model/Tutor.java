@@ -8,6 +8,9 @@ import java.util.List;
 @Table(name = "tutores")
 public class Tutor extends Persona {
 
+    @Column(name = "relacion", nullable = false)
+    private String relacion = "Tutor/a Legal";
+
     // Lado inverso de la relación Muchos a Muchos con Alumno.
     // "mappedBy" le dice a Hibernate que busque la variable "tutores" en la clase Alumno
     // para saber cómo está configurada la tabla intermedia.
@@ -26,6 +29,9 @@ public class Tutor extends Persona {
     }
 
     // Getters y setters
+
+    public String getRelacion() { return relacion; }
+    public void setRelacion(String relacion) { this.relacion = relacion; }
 
     public List<Alumno> getAlumnos() { return alumnos; }
 

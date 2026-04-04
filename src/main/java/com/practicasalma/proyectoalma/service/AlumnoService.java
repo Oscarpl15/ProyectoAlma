@@ -35,4 +35,8 @@ public class AlumnoService {
     public List<Alumno> obtenerTodos() {
         return alumnoDAO.obtenerTodos();
     }
+
+    public Alumno obtenerCompleto(Integer id) {
+        return alumnoDAO.obtenerCompleto(id);
+    }
 }

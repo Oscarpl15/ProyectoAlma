@@ -14,34 +14,49 @@ public class PersonaAutorizada {
     private String nombre;
 
     @Column(nullable = false)
+    private String apellidos;
+
+    @Column(name = "documento_identidad", nullable = false)
     private String documentoIdentidad;
 
-    @Column(name = "tipo_documento", nullable = false)
-    private String tipoDocumento; //DNI, NIE o Pasaporte
+    @Column
+    private String telefono;
 
     @Column(nullable = false)
-    private String relacion; // Ej: "Abuelo", "Tía", "Vecina"
+    private String relacion; // Ej: "Padre", "Abuela", "Vecino"
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "alumno_id", nullable = false)
     private Alumno alumno;
 
+    public PersonaAutorizada() {}
+
+    public PersonaAutorizada(String nombre, String apellidos, String documentoIdentidad, String telefono, String relacion) {
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.documentoIdentidad = documentoIdentidad;
+        this.telefono = telefono;
+        this.relacion = relacion;
+    }
+
     // Getters y Setters
+    public Integer getId() { return id; }
 
-    public Integer getId() {return id;}
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public String getNombre() {return nombre;}
-    public void setNombre(String nombre) {this.nombre = nombre;}
+    public String getApellidos() { return apellidos; }
+    public void setApellidos(String apellidos) { this.apellidos = apellidos; }
 
-    public String getDocumentoIdentidad() {return documentoIdentidad;}
-    public void setDocumentoIdentidad(String documentoIdentidad) {this.documentoIdentidad = documentoIdentidad;}
+    public String getDocumentoIdentidad() { return documentoIdentidad; }
+    public void setDocumentoIdentidad(String documentoIdentidad) { this.documentoIdentidad = documentoIdentidad; }
 
-    public String getTipoDocumento() {return tipoDocumento;}
-    public void setTipoDocumento(String tipoDocumento) {this.tipoDocumento = tipoDocumento;}
+    public String getTelefono() { return telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
 
-    public String getRelacion() {return relacion;}
-    public void setRelacion(String relacion) {this.relacion = relacion;}
+    public String getRelacion() { return relacion; }
+    public void setRelacion(String relacion) { this.relacion = relacion; }
 
-    public Alumno getAlumno() {return alumno;}
-    public void setAlumno(Alumno alumno) {this.alumno = alumno;}
+    public Alumno getAlumno() { return alumno; }
+    public void setAlumno(Alumno alumno) { this.alumno = alumno; }
 }

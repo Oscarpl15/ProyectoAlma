@@ -1,6 +1,7 @@
 package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Alumno;
+import com.practicasalma.proyectoalma.model.PersonaAutorizada;
 import com.practicasalma.proyectoalma.service.AlumnoService;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -9,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -60,6 +62,15 @@ public class FichaAlumnoController {
     @FXML private CheckBox chkDerivacionOtro;
     @FXML private TextField txtDerivado;
 
+    // Tabla Personas Autorizadas
+    @FXML private TableView<PersonaAutorizada> tablaAutorizados;
+    @FXML private TableColumn<PersonaAutorizada, String> colAutoNombre;
+    @FXML private TableColumn<PersonaAutorizada, String> colAutoApellidos;
+    @FXML private TableColumn<PersonaAutorizada, String> colAutoDni;
+    @FXML private TableColumn<PersonaAutorizada, String> colAutoTelefono;
+    @FXML private TableColumn<PersonaAutorizada, String> colAutoRelacion;
+    @FXML private HBox boxBotonesAutorizados;
+
     private Alumno alumnoActual;
     private String rutaFotoSeleccionada = null;
 
@@ -74,6 +85,20 @@ public class FichaAlumnoController {
                 "g1 martes/jueves",
                 "g2 martes/jueves"
         );
+
+        // Configurar columnas de Autorizados
+        colAutoNombre.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getNombre()));
+        colAutoApellidos.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getApellidos()));
+        colAutoDni.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getDocumentoIdentidad()));
+        colAutoTelefono.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getTelefono()));
+        colAutoRelacion.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getRelacion()));
+
+        // Menú contextual (Clic derecho)
+        ContextMenu menuContextual = new ContextMenu();
+        MenuItem itemEliminar = new MenuItem("Eliminar Autorizado");
+        itemEliminar.setOnAction(e -> eliminarAutorizado());
+        menuContextual.getItems().add(itemEliminar);
+        tablaAutorizados.setContextMenu(menuContextual);
     }
 
     public void setAlumno(Alumno alumno) {
@@ -102,6 +127,7 @@ public class FichaAlumnoController {
             chkAutoComunicaciones.setSelected(Boolean.TRUE.equals(alumnoActual.getAutorizaComunicaciones()));
             chkAutoIrseSolo.setSelected(Boolean.TRUE.equals(alumnoActual.getAutorizaIrseSolo()));
 
+
             // --- CARGAR CURSO Y GRUPO DESDE MATRÍCULA ---
             // Buscamos la última matrícula activa (asumimos la última de la lista)
             if (alumnoActual.getMatriculas() != null && !alumnoActual.getMatriculas().isEmpty()) {
@@ -124,6 +150,8 @@ public class FichaAlumnoController {
             chkDerivacionColegio.setSelected(Boolean.TRUE.equals(alumnoActual.getDerivacionColegio()));
             chkDerivacionOtro.setSelected(Boolean.TRUE.equals(alumnoActual.getDerivacionOtro()));
             txtDerivado.setText(alumnoActual.getDerivadoPor() != null ? alumnoActual.getDerivadoPor() : "");
+
+            tablaAutorizados.setItems(javafx.collections.FXCollections.observableArrayList(alumnoActual.getAutorizadaRecoger()));
 
             // Generar el texto bonito para el Modo Lectura
             actualizarTextosSeguimiento();
@@ -201,6 +229,13 @@ public class FichaAlumnoController {
         boxSeguimientoLectura.setManaged(!editable);
         boxSeguimientoEdicion.setVisible(editable);
         boxSeguimientoEdicion.setManaged(editable);
+
+        // Autorizados
+        boxBotonesAutorizados.setVisible(editable);
+        boxBotonesAutorizados.setManaged(editable);
+        if (tablaAutorizados.getContextMenu() != null) {
+            tablaAutorizados.getContextMenu().getItems().get(0).setVisible(editable);
+        }
 
         if (!editable) {
             // Al volver a modo lectura, actualizamos los textos resumen por si ha cambiado algún check
@@ -356,6 +391,62 @@ public class FichaAlumnoController {
             }
         }
         lblDerivacionValor.setText(textoDerivacion);
+    }
+
+    @FXML
+    private void agregarAutorizado() {
+        Dialog<PersonaAutorizada> dialog = new Dialog<>();
+        dialog.setTitle("Nueva Persona Autorizada");
+        dialog.setHeaderText("Añadir autorización de recogida");
+
+        dialog.getDialogPane().getStylesheets().add(getClass().getResource("/com/practicasalma/proyectoalma/css/estilos.css").toExternalForm());
+        dialog.getDialogPane().getStyleClass().add("fondo-blanco");
+
+        ButtonType btnGuardarType = new ButtonType("Añadir", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(btnGuardarType, ButtonType.CANCEL);
+
+        javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
+        grid.setHgap(10); grid.setVgap(10);
+
+        TextField nombre = new TextField(); nombre.setPromptText("Nombre");
+        TextField apellidos = new TextField(); apellidos.setPromptText("Apellidos");
+        TextField dni = new TextField(); dni.setPromptText("DNI/NIE");
+        TextField telefono = new TextField(); telefono.setPromptText("Teléfono");
+        TextField relacion = new TextField(); relacion.setPromptText("Ej: Abuela, Tío...");
+
+        grid.add(new Label("Nombre:"), 0, 0); grid.add(nombre, 1, 0);
+        grid.add(new Label("Apellidos:"), 0, 1); grid.add(apellidos, 1, 1);
+        grid.add(new Label("DNI/NIE:"), 0, 2); grid.add(dni, 1, 2);
+        grid.add(new Label("Teléfono:"), 0, 3); grid.add(telefono, 1, 3);
+        grid.add(new Label("Relación:"), 0, 4); grid.add(relacion, 1, 4);
+
+        dialog.getDialogPane().setContent(grid);
+        Platform.runLater(nombre::requestFocus);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == btnGuardarType && !nombre.getText().trim().isEmpty() && !dni.getText().trim().isEmpty()) {
+                PersonaAutorizada pa = new PersonaAutorizada(
+                        nombre.getText(), apellidos.getText(), dni.getText(), telefono.getText(), relacion.getText()
+                );
+                pa.setAlumno(alumnoActual);
+                return pa;
+            }
+            return null;
+        });
+
+        dialog.showAndWait().ifPresent(pa -> {
+            alumnoActual.getAutorizadaRecoger().add(pa);
+            tablaAutorizados.getItems().add(pa);
+        });
+    }
+
+    @FXML
+    private void eliminarAutorizado() {
+        PersonaAutorizada seleccion = tablaAutorizados.getSelectionModel().getSelectedItem();
+        if (seleccion != null) {
+            alumnoActual.getAutorizadaRecoger().remove(seleccion);
+            tablaAutorizados.getItems().remove(seleccion);
+        }
     }
 
     @FXML

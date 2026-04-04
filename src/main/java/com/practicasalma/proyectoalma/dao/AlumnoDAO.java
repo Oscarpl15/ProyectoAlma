@@ -75,4 +75,23 @@ public class AlumnoDAO {
             return List.of();
         }
     }
+
+    public Alumno obtenerCompleto(Integer id) {
+        try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
+            // Buscamos al alumno por su ID
+            Alumno alumno = em.find(Alumno.class, id);
+
+            if (alumno != null) {
+                // "Despertamos" las colecciones perezosas llamando a .size()
+                // antes de que el EntityManager se cierre.
+                alumno.getMatriculas().size();
+                alumno.getAutorizadaRecoger().size();
+                alumno.getTutores().size(); // Lo dejamos preparado para el futuro
+            }
+            return alumno;
+        } catch (Exception e) {
+            System.err.println("Error al cargar los detalles del alumno: " + e.getMessage());
+            return null;
+        }
+    }
 }

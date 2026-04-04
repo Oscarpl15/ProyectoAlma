@@ -8,7 +8,7 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.practicasalma.proyectoalma.controller.FichaAlumnoController"
             stylesheets="@../css/estilos.css"
-            prefWidth="850" prefHeight="650"
+            prefWidth="1000" prefHeight="900"
             styleClass="fondo-blanco">
 
     <top>
@@ -120,7 +120,25 @@
                                 <VBox spacing="10"><Label text="Lista de tutores irá aquí..." styleClass="texto-placeholder"/></VBox>
                             </TitledPane>
                             <TitledPane text="Personas Autorizadas (Recogida)" animated="true">
-                                <VBox spacing="10"><Label text="Lista de autorizados irá aquí..." styleClass="texto-placeholder"/></VBox>
+                                <VBox spacing="10">
+                                    <TableView fx:id="tablaAutorizados" prefHeight="160" styleClass="striped, bordered">
+                                        <columns>
+                                            <TableColumn fx:id="colAutoNombre" text="Nombre" prefWidth="120" reorderable="false"/>
+                                            <TableColumn fx:id="colAutoApellidos" text="Apellidos" prefWidth="150" reorderable="false"/>
+                                            <TableColumn fx:id="colAutoDni" text="DNI/NIE" prefWidth="90" reorderable="false"/>
+                                            <TableColumn fx:id="colAutoTelefono" text="Teléfono" prefWidth="100" reorderable="false"/>
+                                            <TableColumn fx:id="colAutoRelacion" text="Relación" prefWidth="90" reorderable="false"/>
+                                        </columns>
+                                        <columnResizePolicy>
+                                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                                        </columnResizePolicy>
+                                    </TableView>
+
+                                    <HBox fx:id="boxBotonesAutorizados" spacing="10" alignment="CENTER_RIGHT" visible="false" managed="false">
+                                        <Button text="Eliminar Seleccionado" onAction="#eliminarAutorizado" styleClass="boton-cancelar"/>
+                                        <Button text="+ Añadir Persona" onAction="#agregarAutorizado" styleClass="boton-secundario"/>
+                                    </HBox>
+                                </VBox>
                             </TitledPane>
                             <TitledPane text="Historial de Matrículas" animated="true">
                                 <VBox spacing="10"><Label text="Lista de cursos irá aquí..." styleClass="texto-placeholder"/></VBox>
