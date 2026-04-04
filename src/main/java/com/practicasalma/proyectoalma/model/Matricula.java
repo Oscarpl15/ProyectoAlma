@@ -46,7 +46,7 @@ public class Matricula {
 
     // Getters y Setters
 
-    public Integer getId() { return id; }
+    public Long getId() { return id; }
 
     public String getAnyoAcademico() { return anyoAcademico; }
     public void setAnyoAcademico(String anyoAcademico) { this.anyoAcademico = anyoAcademico; }
