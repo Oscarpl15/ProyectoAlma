@@ -1,5 +1,6 @@
 package com.practicasalma.proyectoalma.controller;
 
+import com.practicasalma.proyectoalma.Launcher;
 import com.practicasalma.proyectoalma.model.Voluntario;
 import com.practicasalma.proyectoalma.service.VoluntarioService;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -9,8 +10,16 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.TableCell;
+import javafx.scene.image.Image;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -96,7 +105,22 @@ public class VoluntariosController {
 
     @FXML
     private void nuevoVoluntario() {
-        // Aquí cargaremos el Pop-up de agregar voluntario más adelante
-        System.out.println("Botón: Abrir ventana de nuevo voluntario");
+        try {
+            FXMLLoader loader = new FXMLLoader(Launcher.class.getResource("view/agregarVoluntario-view.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Agregar voluntario");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            String rutaIcono = "/com/practicasalma/proyectoalma/assets/logo.png";
+            try {
+                stage.getIcons().add(new Image(getClass().getResourceAsStream(rutaIcono)));
+            } catch (Exception ignored) {}
+            stage.showAndWait();
+            cargarVoluntariosEnTabla();
+        } catch (IOException e) {
+            System.err.println("Error al abrir el pop-up: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
