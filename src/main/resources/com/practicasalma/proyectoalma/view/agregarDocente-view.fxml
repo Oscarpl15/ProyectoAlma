@@ -10,13 +10,13 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.practicasalma.proyectoalma.controller.AgregarDocenteController"
             prefHeight="500.0" prefWidth="450.0"
-            style="-fx-background-color: #f4f4f4;">
+            styleClass="fondo-blanco">
 
    <VBox spacing="20.0" AnchorPane.topAnchor="20.0" AnchorPane.bottomAnchor="20.0"
          AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
 
       <Label text="Añadir Nuevo Docente"
-             style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #407093;"/>
+             styleClass="titulo-ventana"/>
 
       <GridPane vgap="15.0" hgap="10.0">
          <columnConstraints>
@@ -24,22 +24,22 @@
             <ColumnConstraints hgrow="ALWAYS" minWidth="200.0" prefWidth="250.0" />
          </columnConstraints>
 
-         <Label text="Nombre:" GridPane.rowIndex="0" style="-fx-font-weight: bold;"/>
+         <Label text="Nombre:" GridPane.rowIndex="0" styleClass="etiqueta-campo"/>
          <TextField fx:id="txtNombre" promptText="Ej: Javier" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-         <Label text="Apellidos:" GridPane.rowIndex="1" style="-fx-font-weight: bold;"/>
+         <Label text="Apellidos:" GridPane.rowIndex="1" styleClass="etiqueta-campo"/>
          <TextField fx:id="txtApellidos" promptText="Ej: García Pérez" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-         <Label text="Dirección:" GridPane.rowIndex="2" style="-fx-font-weight: bold;"/>
+         <Label text="Dirección:" GridPane.rowIndex="2" styleClass="etiqueta-campo"/>
          <TextField fx:id="txtDireccion" promptText="C/ Ejemplo 123" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-         <Label text="Teléfono:" GridPane.rowIndex="3" style="-fx-font-weight: bold;"/>
+         <Label text="Teléfono:" GridPane.rowIndex="3" styleClass="etiqueta-campo"/>
          <TextField fx:id="txtTelefono" promptText=" 600 00 00 00" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-         <Label text="DNI:" GridPane.rowIndex="4" style="-fx-font-weight: bold;"/>
+         <Label text="DNI:" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
          <TextField fx:id="txtDni" promptText=" 00000000A" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
-         <Label text="Correo:" GridPane.rowIndex="5" style="-fx-font-weight: bold;"/>
+         <Label text="Correo:" GridPane.rowIndex="5" styleClass="etiqueta-campo"/>
          <TextField fx:id="txtCorreo" promptText=" tuemail@ejemplo.com" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
 
 
@@ -47,7 +47,7 @@
 
       <Separator />
 
-      <Label text="Certificados:" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #407093;"/>
+      <Label text="Certificados:" styleClass="etiqueta-campo"/>
 
       <VBox spacing="10.0">
          <CheckBox fx:id="checkAuth1" text="Certificado delitos sexuales"/>
@@ -57,10 +57,10 @@
 
       <HBox spacing="15.0" alignment="CENTER_RIGHT">
          <Button text="Cancelar" onAction="#cancelar"
-                 style="-fx-background-color: transparent; -fx-text-fill: #666666; -fx-border-color: #999999; -fx-border-radius: 3;"/>
+                 styleClass="boton-cancelar"/>
 
          <Button text="Guardar Docente" onAction="#guardarDocente"
-                 style="-fx-background-color: #407093; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 3; -fx-cursor: hand;"/>
+                 styleClass="boton-accion"/>
       </HBox>
 
    </VBox>

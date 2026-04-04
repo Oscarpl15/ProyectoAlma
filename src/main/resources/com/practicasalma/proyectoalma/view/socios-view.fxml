@@ -7,7 +7,7 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.practicasalma.proyectoalma.controller.SocioController"
-      spacing="15" style="-fx-padding: 20;">
+      spacing="15" styleClass="contenedor-padding-estandar">
 
     <BorderPane>
         <left>

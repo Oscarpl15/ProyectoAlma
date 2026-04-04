@@ -5,11 +5,12 @@
 
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.practicasalma.proyectoalma.controller.AgregarSocioController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.practicasalma.proyectoalma.controller.AgregarSocioController" styleClass="fondo-blanco">
 
     <VBox spacing="20" AnchorPane.topAnchor="20" AnchorPane.bottomAnchor="20" AnchorPane.leftAnchor="30" AnchorPane.rightAnchor="30">
 
-        <Label text="Añadir nuevo Socio" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #407093;"/>
+        <Label text="Añadir nuevo Socio" styleClass="titulo-ventana"/>
 
         <GridPane vgap="15" hgap="10">
 
@@ -18,22 +19,22 @@
                 <ColumnConstraints hgrow="ALWAYS" minWidth="200" prefWidth="250"/>
             </columnConstraints>
 
-            <Label text="Nombre: " GridPane.rowIndex="0" style="-fx-font-weight: bold;"/>
+            <Label text="Nombre: " GridPane.rowIndex="0" styleClass="etiqueta-campo"/>
             <TextField fx:id="txtNombre" promptText="Ej: Javier" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-            <Label text="Apellidos: " GridPane.rowIndex="1" style="-fx-font-weight: bold;"/>
+            <Label text="Apellidos: " GridPane.rowIndex="1" styleClass="etiqueta-campo"/>
             <TextField fx:id="txtApellidos" promptText="Ej: Sanchez Perez" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-            <Label text="Direccion: " GridPane.rowIndex="2" style="-fx-font-weight: bold;"/>
+            <Label text="Direccion: " GridPane.rowIndex="2" styleClass="etiqueta-campo"/>
             <TextField fx:id="txtDireccion" promptText="Ej: C/ Ejemplo 12" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-            <Label text="DNI: " GridPane.rowIndex="3" style="-fx-font-weight: bold;"/>
+            <Label text="DNI: " GridPane.rowIndex="3" styleClass="etiqueta-campo"/>
             <TextField fx:id="txtDni" promptText="Ej: 00000000X" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-            <Label text="Cuota: " GridPane.rowIndex="4" style="-fx-font-weight: bold;"/>
+            <Label text="Cuota: " GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
             <TextField fx:id="txtCuota" promptText="Ej: 0.0" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
-            <Label text="Tipo de entidad: " GridPane.rowIndex="5" style="-fx-font-weight: bold;"/>
+            <Label text="Tipo de entidad: " GridPane.rowIndex="5" styleClass="etiqueta-campo"/>
             <ComboBox fx:id="comboTipoEntidad" promptText="Seleccione Entidad" GridPane.rowIndex="5" GridPane.columnIndex="1" maxWidth="-Infinity">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
@@ -44,7 +45,7 @@
                 </items>
             </ComboBox>
 
-            <Label text="Periodicidad: " GridPane.rowIndex="6" style="-fx-font-weight: bold;"/>
+            <Label text="Periodicidad: " GridPane.rowIndex="6" styleClass="etiqueta-campo"/>
             <ComboBox fx:id="comboPeriodicidad" promptText="Seleccione periodicidad" GridPane.rowIndex="6" GridPane.columnIndex="1" maxWidth="-Infinity">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
@@ -62,9 +63,9 @@
         <HBox spacing="15" alignment="CENTER_RIGHT">
 
             <Button text="Cancelar" onAction="#cancelar"
-                    style="-fx-background-color: transparent; -fx-text-fill: #666666; -fx-border-color: #999999; -fx-border-radius: 3;"/>
+                    styleClass="boton-cancelar"/>
             <Button text="Guardar Socio" onAction="#guardarSocio"
-                    style="-fx-background-color: #407093; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 3; -fx-cursor: hand;"/>
+                    styleClass="boton-accion"/>
         </HBox>
 
     </VBox>

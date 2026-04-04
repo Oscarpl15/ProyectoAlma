@@ -86,12 +86,16 @@ public class AlumnosController {
             @Override
             protected void updateItem(Boolean item, boolean empty) {
                 super.updateItem(item, empty);
+
+                // Limpiamos las clases previas para evitar conflictos al reciclar celdas
+                getStyleClass().removeAll("celda-booleana-true", "celda-booleana-false");
+
                 if (empty || item == null) {
                     setText(null);
-                    setStyle("");
                 } else {
                     setText(item ? "✓" : "✗");
-                    setStyle("-fx-alignment: CENTER; " + (item ? "-fx-text-fill: green;" : "-fx-text-fill: red;"));
+                    // Aplicamos la clase CSS correspondiente
+                    getStyleClass().add(item ? "celda-booleana-true" : "celda-booleana-false");
                 }
             }
         });
@@ -143,7 +147,8 @@ public class AlumnosController {
             stage.setScene(new Scene(root));
             stage.initModality(Modality.WINDOW_MODAL);
             stage.initOwner(tablaAlumnos.getScene().getWindow());
-            stage.show();
+            stage.showAndWait();
+            cargarAlumnosEnTabla();
 
         } catch (IOException e) {
             e.printStackTrace();

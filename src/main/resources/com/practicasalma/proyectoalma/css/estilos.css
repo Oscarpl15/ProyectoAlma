@@ -12,6 +12,10 @@
     -color-accent-fg: #ffffff;
 }
 
+.contenedor-padding-estandar {
+    -fx-padding: 20px;
+}
+
 #mainLayout {
     -fx-background-color: rgba(255, 255, 255, 0.7); /* Blanco sutil */
 }
@@ -405,4 +409,16 @@
     -fx-border-color: #e0e0e0;
     -fx-border-width: 1px 0 1px 0; /* Borde solo arriba y abajo */
     -fx-padding: 10px 0; /* 10 píxeles de aire arriba y abajo, 0 en los lados */
+}
+
+.celda-booleana-true {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #27ae60; /* Tu verde de éxito */
+    -fx-font-weight: bold;
+}
+
+.celda-booleana-false {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #e74c3c; /* Tu rojo de error */
+    -fx-font-weight: bold;
 }
