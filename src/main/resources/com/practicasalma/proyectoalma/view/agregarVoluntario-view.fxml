@@ -3,6 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -41,6 +43,21 @@
 
          <Label text="Fecha nacimiento:" GridPane.rowIndex="6" styleClass="etiqueta-campo"/>
          <DatePicker fx:id="dpFechaNacimiento" GridPane.rowIndex="6" GridPane.columnIndex="1" maxWidth="Infinity"/>
+
+         <Label text="Nacionalidad:" GridPane.rowIndex="7" styleClass="etiqueta-campo"/>
+         <TextField fx:id="txtNacionalidad" promptText="Ej: Española" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
+         <Label text="Género:" GridPane.rowIndex="8" styleClass="etiqueta-campo"/>
+         <ComboBox fx:id="comboGenero" promptText="Seleccione..." GridPane.rowIndex="8" GridPane.columnIndex="1" maxWidth="Infinity">
+            <items>
+               <FXCollections fx:factory="observableArrayList">
+                  <String fx:value="Masculino"/>
+                  <String fx:value="Femenino"/>
+                  <String fx:value="No binario"/>
+                  <String fx:value="Prefiero no especificar"/>
+               </FXCollections>
+            </items>
+         </ComboBox>
       </GridPane>
 
       <Separator/>

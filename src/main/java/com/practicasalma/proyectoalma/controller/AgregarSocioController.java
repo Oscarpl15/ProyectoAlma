@@ -20,6 +20,8 @@ public class AgregarSocioController {
 
     @FXML private ComboBox<String> comboTipoEntidad;
     @FXML private ComboBox<String> comboPeriodicidad;
+    @FXML private TextField txtNacionalidad;
+    @FXML private ComboBox<String> comboGenero;
 
     private final SocioService socioService = new SocioService();
 
@@ -51,6 +53,10 @@ public class AgregarSocioController {
         try {
             Socio socio = new Socio(nombre, apellidos, direccion, dni, tipoEntidad,
                     cuota, periodicidad != null ? periodicidad : "Ninguna");
+            String nacionalidad = txtNacionalidad.getText().trim();
+            if (!nacionalidad.isEmpty()) socio.setNacionalidad(nacionalidad);
+            String genero = comboGenero.getValue();
+            if (genero != null) socio.setGenero(genero);
             socioService.guardarSocio(socio);
             cerrarVentana(event);
         } catch (Exception e) {

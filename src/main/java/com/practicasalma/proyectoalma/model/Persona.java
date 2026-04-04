@@ -97,4 +97,16 @@ public abstract class Persona {
 
     public String getCodigoPostal() {return codigoPostal;}
     public void setCodigoPostal(String codigoPostal) {this.codigoPostal = codigoPostal;}
+
+    @Column
+    private String nacionalidad;
+
+    @Column
+    private String genero;
+
+    public String getNacionalidad() {return nacionalidad;}
+    public void setNacionalidad(String nacionalidad) {this.nacionalidad = nacionalidad;}
+
+    public String getGenero() {return genero;}
+    public void setGenero(String genero) {this.genero = genero;}
 }

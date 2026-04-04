@@ -33,6 +33,10 @@ public class AgregarAlumnoController {
     @FXML private ComboBox<String> comboCurso;
     @FXML private ComboBox<String> comboGrupo;
 
+    // Opcionales
+    @FXML private TextField txtNacionalidad;
+    @FXML private ComboBox<String> comboGenero;
+
     // Seguimiento
     @FXML private CheckBox chkSeguimientoSS;
     @FXML private CheckBox chkSeguimientoSAF;
@@ -114,6 +118,11 @@ public class AgregarAlumnoController {
         alumno.setDerivacionOtro(chkDerivacionOtro.isSelected());
 
         alumno.setDerivadoPor(limpiarTexto(txtDerivado.getText()));
+
+        String nacionalidad = limpiarTexto(txtNacionalidad.getText());
+        if (nacionalidad != null) alumno.setNacionalidad(nacionalidad);
+        String genero = comboGenero.getValue();
+        if (genero != null) alumno.setGenero(genero);
 
         // Delegar la responsabilidad al Servicio
         try {

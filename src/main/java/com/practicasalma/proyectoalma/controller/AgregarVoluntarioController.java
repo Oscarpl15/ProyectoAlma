@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -22,6 +23,8 @@ public class AgregarVoluntarioController {
     @FXML private TextField txtDni;
     @FXML private TextField txtCorreo;
     @FXML private DatePicker dpFechaNacimiento;
+    @FXML private TextField txtNacionalidad;
+    @FXML private ComboBox<String> comboGenero;
     @FXML private CheckBox checkDelitos;
     @FXML private CheckBox checkProtDatos;
 
@@ -46,6 +49,10 @@ public class AgregarVoluntarioController {
             Voluntario voluntario = new Voluntario(nombre, apellidos, direccion, dni, telefono, correo, fechaNacimiento);
             voluntario.setAutoDelitosSexuales(checkDelitos.isSelected());
             voluntario.setAutoProteccionDatos(checkProtDatos.isSelected());
+            String nacionalidad = txtNacionalidad.getText().trim();
+            if (!nacionalidad.isEmpty()) voluntario.setNacionalidad(nacionalidad);
+            String genero = comboGenero.getValue();
+            if (genero != null) voluntario.setGenero(genero);
             voluntarioService.guardarVoluntario(voluntario);
             cerrarVentana(event);
         } catch (Exception e) {

@@ -77,6 +77,15 @@
                         <TextField fx:id="txtGrupoLectura" styleClass="campo-lectura" editable="false"/>
                         <ComboBox fx:id="comboGrupo" maxWidth="Infinity" visible="false" managed="false"/>
                     </StackPane>
+
+                    <Label text="Nacionalidad:" GridPane.columnIndex="0" GridPane.rowIndex="5" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtNacionalidad" GridPane.columnIndex="1" GridPane.rowIndex="5" styleClass="campo-lectura"/>
+
+                    <Label text="Género:" GridPane.columnIndex="2" GridPane.rowIndex="5" styleClass="etiqueta-campo"/>
+                    <StackPane GridPane.columnIndex="3" GridPane.rowIndex="5" alignment="CENTER_LEFT">
+                        <TextField fx:id="txtGeneroLectura" styleClass="campo-lectura" editable="false"/>
+                        <ComboBox fx:id="comboGenero" maxWidth="Infinity" visible="false" managed="false"/>
+                    </StackPane>
                 </GridPane>
 
 

@@ -46,6 +46,11 @@ public class FichaAlumnoController {
     @FXML private TextField txtGrupoLectura;
     @FXML private ComboBox<String> comboGrupo;
 
+    // Nacionalidad y Género
+    @FXML private TextField txtNacionalidad;
+    @FXML private TextField txtGeneroLectura;
+    @FXML private ComboBox<String> comboGenero;
+
     // Seguimiento y Derivación (Lectura)
     @FXML private VBox boxSeguimientoLectura;
     @FXML private Label lblSeguimientoValor;
@@ -85,6 +90,9 @@ public class FichaAlumnoController {
                 "g1 martes/jueves",
                 "g2 martes/jueves"
         );
+        comboGenero.getItems().addAll(
+                "Masculino", "Femenino", "No binario", "Prefiero no especificar"
+        );
 
         // Configurar columnas de Autorizados
         colAutoNombre.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getNombre()));
@@ -119,6 +127,9 @@ public class FichaAlumnoController {
             txtTelefono.setText(alumnoActual.getTelefono() != null ? alumnoActual.getTelefono() : "");
             txtColegio.setText(alumnoActual.getColegio() != null ? alumnoActual.getColegio() : "");
             txtDerivado.setText(alumnoActual.getDerivadoPor() != null ? alumnoActual.getDerivadoPor() : "");
+            txtNacionalidad.setText(alumnoActual.getNacionalidad() != null ? alumnoActual.getNacionalidad() : "");
+            txtGeneroLectura.setText(alumnoActual.getGenero() != null ? alumnoActual.getGenero() : "");
+            comboGenero.setValue(alumnoActual.getGenero());
             dpFechaNacimiento.setValue(alumnoActual.getFechaNacimiento());
 
             chkAutoDatos.setSelected(Boolean.TRUE.equals(alumnoActual.getAutorizaUsoDatos()));
@@ -224,6 +235,15 @@ public class FichaAlumnoController {
         comboGrupo.setVisible(editable);
         comboGrupo.setManaged(editable);
 
+        // Truco visual para el Género
+        txtGeneroLectura.setVisible(!editable);
+        txtGeneroLectura.setManaged(!editable);
+        comboGenero.setVisible(editable);
+        comboGenero.setManaged(editable);
+
+        // Nacionalidad editable/no editable
+        txtNacionalidad.setEditable(editable);
+
         // Truco visual para Seguimiento/Derivación
         boxSeguimientoLectura.setVisible(!editable);
         boxSeguimientoLectura.setManaged(!editable);
@@ -245,6 +265,8 @@ public class FichaAlumnoController {
             if (comboGrupo.getValue() != null) {
                 txtGrupoLectura.setText(comboGrupo.getValue());
             }
+            // Sincronizamos el texto de lectura del género
+            txtGeneroLectura.setText(comboGenero.getValue() != null ? comboGenero.getValue() : "");
 
             Platform.runLater(() -> btnEditar.requestFocus());
         }
@@ -294,6 +316,8 @@ public class FichaAlumnoController {
             alumnoActual.setColegio(txtColegio.getText());
             alumnoActual.setFechaNacimiento(dpFechaNacimiento.getValue());
             alumnoActual.setDerivadoPor(txtDerivado.getText());
+            alumnoActual.setNacionalidad(txtNacionalidad.getText().isBlank() ? null : txtNacionalidad.getText().trim());
+            alumnoActual.setGenero(comboGenero.getValue());
 
             // 2. Recoger Autorizaciones
             alumnoActual.setAutorizaUsoDatos(chkAutoDatos.isSelected());
