@@ -5,6 +5,7 @@ import com.practicasalma.proyectoalma.model.Docente;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import com.practicasalma.proyectoalma.service.DocenteService;
+import com.practicasalma.proyectoalma.util.FxUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -59,19 +60,7 @@ public class DocentesController {
 
         colAB.setCellValueFactory(cellData ->
                 new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Baja"));
-        colAB.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                getStyleClass().removeAll("celda-activo", "celda-baja");
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    getStyleClass().add("Activo".equals(item) ? "celda-activo" : "celda-baja");
-                }
-            }
-        });
+        colAB.setCellFactory(FxUtils.celdaEstado());
 
         // 2. Filtrado en tiempo real sobre datos de BD
         FilteredList<Docente> listaFiltrada = new FilteredList<>(listaMaestra, d -> true);
@@ -105,39 +94,10 @@ public class DocentesController {
     @FXML
     private void nuevoDocente() {
         try {
-            // 1. Cargar la vista del Pop-up
-            FXMLLoader loader = new FXMLLoader(Launcher.class.getResource("view/agregarDocente-view.fxml"));
-            Parent root = loader.load();
-
-            // 2. Crear la escena
-            Scene scene = new Scene(root);
-
-            // 3. Crear un NUEVO escenario (Stage) para el pop-up
-            Stage stage = new Stage();
-
-            // Título de la ventanita
-            stage.setTitle("Agregar docente");
-
-            // Asignar la escena
-            stage.setScene(scene);
-
-            // 4. Configurar la modalidad (IMPORTANTE para efecto pop-up)
-            // APPLICATION_MODAL: Bloquea la interacción con la ventana principal
-            // hasta que cierres este pop-up.
-            stage.initModality(Modality.APPLICATION_MODAL);
-
-            // Agregamos logo de la fundación a la ventana
-            String rutaIcono = "/com/practicasalma/proyectoalma/assets/logo.png";
-            stage.getIcons().add(new Image(getClass().getResourceAsStream(rutaIcono)));
-
-            // 5. Mostrar la ventana
-            // showAndWait() espera a que se cierre para continuar la ejecución del código
-            stage.showAndWait();
+            FxUtils.abrirModal("agregarDocente-view.fxml", "Agregar docente");
             cargarDocentesEnTabla();
-
         } catch (IOException e) {
             System.err.println("Error al abrir el pop-up: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -146,19 +106,8 @@ public class DocentesController {
     }
 
     private void abrirFichaDocente(Docente docente) {
-        // Aquí abrirías la ventana con los datos cargados
-        mostrarMensaje("Ficha de Docente", "Has hecho doble clic en: " + docente.getNombre());
-        // PARA LA PRESENTACIÓN:
-        // 1. Crear un nuevo Stage (Ventana)
-        // 2. Cargar el FXML de detalle
-        // 3. Pasar el objeto 'alumno' al controlador de esa nueva ventana
-    }
-
-    private void mostrarMensaje(String titulo, String contenido) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(contenido);
-        alert.showAndWait();
+        // TODO: abrir ficha real de docente
+        FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Ficha de Docente",
+                "Has hecho doble clic en: " + docente.getNombre());
     }
 }

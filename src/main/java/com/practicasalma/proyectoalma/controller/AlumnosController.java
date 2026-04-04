@@ -3,6 +3,7 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.Launcher;
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.service.AlumnoService;
+import com.practicasalma.proyectoalma.util.FxUtils;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TableCell;
@@ -62,19 +63,7 @@ public class AlumnosController {
 
         colEstado.setCellValueFactory(cellData ->
                 new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Baja"));
-        colEstado.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                getStyleClass().removeAll("celda-activo", "celda-baja");
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    getStyleClass().add("Activo".equals(item) ? "celda-activo" : "celda-baja");
-                }
-            }
-        });
+        colEstado.setCellFactory(FxUtils.celdaEstado());
 
         configurarColumnaBooleana(colAutoDatos, alumno -> alumno.getAutorizaUsoDatos());
         configurarColumnaBooleana(colAutoActividades, alumno -> alumno.getAutorizaActividades());
@@ -143,27 +132,10 @@ public class AlumnosController {
     @FXML
     private void nuevoAlumno() {
         try {
-            FXMLLoader loader = new FXMLLoader(Launcher.class.getResource("view/agregarAlumno-view.fxml"));
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            Stage stage = new Stage();
-            stage.setTitle("Agregar alumno");
-            stage.setScene(scene);
-            stage.initModality(Modality.APPLICATION_MODAL);
-
-            String rutaIcono = "/com/practicasalma/proyectoalma/assets/logo.png";
-            try {
-                stage.getIcons().add(new Image(getClass().getResourceAsStream(rutaIcono)));
-            } catch (Exception ignored) {}
-
-            stage.showAndWait();
-
-            // Refresco automático al cerrar la ventana de añadir
+            FxUtils.abrirModal("agregarAlumno-view.fxml", "Agregar alumno");
             cargarAlumnosEnTabla();
-
         } catch (IOException e) {
             System.err.println("Error al abrir el pop-up: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

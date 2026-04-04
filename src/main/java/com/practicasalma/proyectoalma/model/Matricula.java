@@ -11,7 +11,7 @@ public class Matricula {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     // Formato: "2025-2026"
     @Column(name = "anyo_academico", nullable = false)

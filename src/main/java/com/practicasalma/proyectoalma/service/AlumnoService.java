@@ -49,7 +49,7 @@ public class AlumnoService {
         return alumnoDAO.obtenerTodos();
     }
 
-    public Alumno obtenerCompleto(Integer id) {
+    public Alumno obtenerCompleto(Long id) {
         return alumnoDAO.obtenerCompleto(id);
     }
 }

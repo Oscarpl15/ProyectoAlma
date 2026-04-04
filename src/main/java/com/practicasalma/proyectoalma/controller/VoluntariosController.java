@@ -3,6 +3,7 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.Launcher;
 import com.practicasalma.proyectoalma.model.Voluntario;
 import com.practicasalma.proyectoalma.service.VoluntarioService;
+import com.practicasalma.proyectoalma.util.FxUtils;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -57,19 +58,7 @@ public class VoluntariosController {
 
         colAB.setCellValueFactory(cellData ->
                 new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Baja"));
-        colAB.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                getStyleClass().removeAll("celda-activo", "celda-baja");
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    getStyleClass().add("Activo".equals(item) ? "celda-activo" : "celda-baja");
-                }
-            }
-        });
+        colAB.setCellFactory(FxUtils.celdaEstado());
 
         FilteredList<Voluntario> listaFiltrada = new FilteredList<>(listaMaestra, v -> true);
         txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -106,21 +95,10 @@ public class VoluntariosController {
     @FXML
     private void nuevoVoluntario() {
         try {
-            FXMLLoader loader = new FXMLLoader(Launcher.class.getResource("view/agregarVoluntario-view.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Agregar voluntario");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            String rutaIcono = "/com/practicasalma/proyectoalma/assets/logo.png";
-            try {
-                stage.getIcons().add(new Image(getClass().getResourceAsStream(rutaIcono)));
-            } catch (Exception ignored) {}
-            stage.showAndWait();
+            FxUtils.abrirModal("agregarVoluntario-view.fxml", "Agregar voluntario");
             cargarVoluntariosEnTabla();
         } catch (IOException e) {
             System.err.println("Error al abrir el pop-up: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }

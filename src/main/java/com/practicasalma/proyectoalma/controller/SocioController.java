@@ -3,6 +3,7 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.Launcher;
 import com.practicasalma.proyectoalma.model.Socio;
 import com.practicasalma.proyectoalma.service.SocioService;
+import com.practicasalma.proyectoalma.util.FxUtils;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -55,19 +56,7 @@ public class SocioController {
 
         colEstado.setCellValueFactory(cellData ->
                 new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Baja"));
-        colEstado.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                getStyleClass().removeAll("celda-activo", "celda-baja");
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    getStyleClass().add("Activo".equals(item) ? "celda-activo" : "celda-baja");
-                }
-            }
-        });
+        colEstado.setCellFactory(FxUtils.celdaEstado());
 
         FilteredList<Socio> listaFiltrada = new FilteredList<>(listaMaestra, s -> true);
         txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -99,25 +88,11 @@ public class SocioController {
     }
 
     public void nuevoSocio(ActionEvent actionEvent) {
-
         try {
-            FXMLLoader loader = new FXMLLoader(Launcher.class.getResource("view/agregarSocio-view.fxml"));
-            Parent root = loader.load();
-
-            Scene scene = new Scene(root);
-
-            Stage stage = new Stage();
-            stage.setTitle("Agregar nuevo socio");
-            stage.setScene(scene);
-            stage.initModality(Modality.APPLICATION_MODAL);
-            String rutaIcono = "/com/practicasalma/proyectoalma/assets/logo.png";
-            stage.getIcons().add(new Image(getClass().getResourceAsStream(rutaIcono)));
-            stage.showAndWait();
+            FxUtils.abrirModal("agregarSocio-view.fxml", "Agregar nuevo socio");
             cargarSociosEnTabla();
-
         } catch (IOException e) {
             System.err.println("Error al abrir el pop-up: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -151,11 +126,4 @@ public class SocioController {
         }
     }
 
-    private void mostrarMensaje(String titulo, String contenido) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(contenido);
-        alert.showAndWait();
-    }
 }

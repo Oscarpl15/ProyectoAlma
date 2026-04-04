@@ -76,7 +76,7 @@ public class AlumnoDAO {
         }
     }
 
-    public Alumno obtenerCompleto(Integer id) {
+    public Alumno obtenerCompleto(Long id) {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             // Buscamos al alumno por su ID
             Alumno alumno = em.find(Alumno.class, id);
