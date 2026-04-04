@@ -449,17 +449,16 @@ public class FichaAlumnoController {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == btnGuardarType && !nombre.getText().trim().isEmpty() && !dni.getText().trim().isEmpty()) {
-                PersonaAutorizada pa = new PersonaAutorizada(
-                        nombre.getText(), apellidos.getText(), dni.getText(), telefono.getText(), relacion.getText()
+                return new PersonaAutorizada(
+                        nombre.getText().trim(), apellidos.getText().trim(),
+                        dni.getText().trim(), telefono.getText().trim(), relacion.getText().trim()
                 );
-                pa.setAlumno(alumnoActual);
-                return pa;
             }
             return null;
         });
 
         dialog.showAndWait().ifPresent(pa -> {
-            alumnoActual.getAutorizadaRecoger().add(pa);
+            alumnoActual.addPersonaAutorizada(pa);
             tablaAutorizados.getItems().add(pa);
         });
     }
@@ -468,7 +467,7 @@ public class FichaAlumnoController {
     private void eliminarAutorizado() {
         PersonaAutorizada seleccion = tablaAutorizados.getSelectionModel().getSelectedItem();
         if (seleccion != null) {
-            alumnoActual.getAutorizadaRecoger().remove(seleccion);
+            alumnoActual.removePersonaAutorizada(seleccion);
             tablaAutorizados.getItems().remove(seleccion);
         }
     }

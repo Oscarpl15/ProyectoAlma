@@ -104,7 +104,12 @@ public class Alumno extends Persona {
     @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PeriodoActividad> periodosActividad = new ArrayList<>();
 
-    @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "alumno_persona_autorizada",
+            joinColumns = @JoinColumn(name = "alumno_id"),
+            inverseJoinColumns = @JoinColumn(name = "persona_autorizada_id")
+    )
     private List<PersonaAutorizada> autorizadaRecoger = new ArrayList<>();
 
     // Constructor vacío obligatorio para Hibernate
@@ -190,6 +195,18 @@ public class Alumno extends Persona {
     public List<PeriodoActividad> getPeriodosActividad() {return periodosActividad;}
 
     public List<PersonaAutorizada> getAutorizadaRecoger() {return autorizadaRecoger;}
+
+    public void addPersonaAutorizada(PersonaAutorizada pa) {
+        this.autorizadaRecoger.add(pa);
+        if (!pa.getAlumnos().contains(this)) {
+            pa.getAlumnos().add(this);
+        }
+    }
+
+    public void removePersonaAutorizada(PersonaAutorizada pa) {
+        this.autorizadaRecoger.remove(pa);
+        pa.getAlumnos().remove(this);
+    }
 
     // Métodos para añadir o eliminar tutores o matrículas a un alumno
 
