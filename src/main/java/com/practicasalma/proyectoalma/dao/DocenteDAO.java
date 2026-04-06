@@ -42,6 +42,20 @@ public class DocenteDAO {
         }
     }
 
+    public Docente obtenerCompleto(Long id) {
+        try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
+            Docente docente = em.find(Docente.class, id);
+            if (docente != null) {
+                docente.getHistorialAsignaciones().size();
+                docente.getPeriodosActividad().size();
+            }
+            return docente;
+        } catch (Exception e) {
+            System.err.println("Error al cargar detalles del docente: " + e.getMessage());
+            return null;
+        }
+    }
+
     public List<Docente> obtenerTodos() {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             return em.createQuery("SELECT d FROM Docente d", Docente.class).getResultList();

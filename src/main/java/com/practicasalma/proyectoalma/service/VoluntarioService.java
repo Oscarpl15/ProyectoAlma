@@ -13,6 +13,10 @@ public class VoluntarioService {
         voluntarioDAO.guardar(voluntario);
     }
 
+    public Voluntario obtenerCompleto(Long id) {
+        return voluntarioDAO.obtenerCompleto(id);
+    }
+
     public void actualizarVoluntario(Voluntario voluntario) throws Exception {
         voluntarioDAO.actualizar(voluntario);
     }

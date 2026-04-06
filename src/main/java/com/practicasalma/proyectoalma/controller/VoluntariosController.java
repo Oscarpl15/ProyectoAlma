@@ -50,7 +50,24 @@ public class VoluntariosController {
 
         // Booleanos comentados temporalmente hasta asegurar que tienes los getters en el modelo Voluntario
         colDelitos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoDelitosSexuales() != null ? cellData.getValue().getAutoDelitosSexuales() : false));
+        colDelitos.setCellFactory(tc -> new javafx.scene.control.TableCell<>() {
+            @Override protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("celda-booleana-true", "celda-booleana-false");
+                if (empty || item == null) { setText(null); }
+                else { setText(item ? "✓" : "✗"); getStyleClass().add(item ? "celda-booleana-true" : "celda-booleana-false"); }
+            }
+        });
+
         colProtDatos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoProteccionDatos() != null ? cellData.getValue().getAutoProteccionDatos() : false));
+        colProtDatos.setCellFactory(tc -> new javafx.scene.control.TableCell<>() {
+            @Override protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("celda-booleana-true", "celda-booleana-false");
+                if (empty || item == null) { setText(null); }
+                else { setText(item ? "✓" : "✗"); getStyleClass().add(item ? "celda-booleana-true" : "celda-booleana-false"); }
+            }
+        });
 
         colAB.setCellValueFactory(cellData ->
                 new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Baja"));
@@ -87,8 +104,11 @@ public class VoluntariosController {
         listaMaestra.setAll(voluntarioService.obtenerTodos());
     }
 
-    private void abrirFichaVoluntario(Voluntario voluntario) {
+    private void abrirFichaVoluntario(Voluntario voluntarioTabla) {
         try {
+            Voluntario voluntario = voluntarioService.obtenerCompleto(voluntarioTabla.getId());
+            if (voluntario == null) return;
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
                     "/com/practicasalma/proyectoalma/view/ficha-voluntario.fxml"));
             javafx.scene.Parent root = loader.load();

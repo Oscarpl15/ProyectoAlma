@@ -54,7 +54,24 @@ public class DocentesController {
         // Enlazamos los booleanos nuevos (Asumiendo que hiciste los getters en el modelo Docente)
         // Si aún no los tienes en el modelo, comenta estas dos líneas para que no de error
         colDelitos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoDelitosSexuales() != null ? cellData.getValue().getAutoDelitosSexuales() : false));
+        colDelitos.setCellFactory(tc -> new javafx.scene.control.TableCell<>() {
+            @Override protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("celda-booleana-true", "celda-booleana-false");
+                if (empty || item == null) { setText(null); }
+                else { setText(item ? "✓" : "✗"); getStyleClass().add(item ? "celda-booleana-true" : "celda-booleana-false"); }
+            }
+        });
+
         colProtDatos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoProteccionDatos() != null ? cellData.getValue().getAutoProteccionDatos() : false));
+        colProtDatos.setCellFactory(tc -> new javafx.scene.control.TableCell<>() {
+            @Override protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("celda-booleana-true", "celda-booleana-false");
+                if (empty || item == null) { setText(null); }
+                else { setText(item ? "✓" : "✗"); getStyleClass().add(item ? "celda-booleana-true" : "celda-booleana-false"); }
+            }
+        });
 
         colAB.setCellValueFactory(cellData ->
                 new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Baja"));
@@ -103,8 +120,11 @@ public class DocentesController {
         listaMaestra.setAll(docenteService.obtenerTodos());
     }
 
-    private void abrirFichaDocente(Docente docente) {
+    private void abrirFichaDocente(Docente docenteTabla) {
         try {
+            Docente docente = docenteService.obtenerCompleto(docenteTabla.getId());
+            if (docente == null) return;
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
                     "/com/practicasalma/proyectoalma/view/ficha-docente.fxml"));
             javafx.scene.Parent root = loader.load();
