@@ -1,71 +1,137 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="500" prefWidth="700" styleClass="fondo-ficha" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.practicasalma.proyectoalma.controller.FichaSocioController">
-
-    <padding>
-        <Insets bottom="20" left="30" right="30" top="20" />
-    </padding>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.practicasalma.proyectoalma.controller.FichaSocioController"
+            stylesheets="@../css/estilos.css"
+            prefWidth="1000" prefHeight="750"
+            styleClass="fondo-blanco">
 
     <top>
-        <VBox>
-            <Label styleClass="titulo-ficha" text="Ficha del Socio" />
-            <Separator>
-                <VBox.margin>
-                    <Insets bottom="20" top="10" />
-                </VBox.margin>
-            </Separator>
+        <VBox spacing="5" styleClass="padding-cabecera-ficha">
+            <Label text="Ficha del Socio" styleClass="titulo-ventana"/>
+            <Separator/>
         </VBox>
     </top>
 
     <center>
-        <GridPane hgap="15" prefHeight="335.0" prefWidth="621.0" vgap="15">
-            <columnConstraints>
-                <ColumnConstraints hgrow="NEVER" maxWidth="235.0" minWidth="100.0" prefWidth="125.0" />
-                <ColumnConstraints halignment="LEFT" hgrow="NEVER" maxWidth="501.0" minWidth="318.0" prefWidth="394.0" />
-                <ColumnConstraints hgrow="ALWAYS" maxWidth="167.0" minWidth="5.0" prefWidth="91.0" />
-            </columnConstraints>
+        <HBox spacing="20" styleClass="padding-cuerpo-ficha">
 
-            <Label styleClass="label-formulario" text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-            <TextField fx:id="txtNombre" promptText="Ej: Juan" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            <VBox spacing="20" styleClass="panel-lateral-ficha" alignment="TOP_CENTER">
+                <StackPane styleClass="caja-foto">
+                    <ImageView fx:id="imgFoto" fitWidth="130" fitHeight="150" preserveRatio="true"/>
+                </StackPane>
+                <Button fx:id="btnCambiarFoto" text="Cambiar Foto..." onAction="#seleccionarFoto" styleClass="boton-enlace"/>
 
-            <Label styleClass="label-formulario" text="Apellidos:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <TextField fx:id="txtApellidos" promptText="Ej: Pérez Gómez" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Separator/>
 
-            <Label styleClass="label-formulario" text="DNI / NIF:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <VBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="Estado" styleClass="titulo-seccion"/>
+                    <CheckBox fx:id="chkActivo" text="Activo"/>
+                </VBox>
+            </VBox>
 
-            <TextField fx:id="txtDni" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="120" promptText="12345678X" />
+            <VBox spacing="20" HBox.hgrow="ALWAYS">
+                <GridPane hgap="15" vgap="15">
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="90" halignment="RIGHT"/>
+                        <ColumnConstraints hgrow="ALWAYS" prefWidth="200"/>
+                        <ColumnConstraints minWidth="90" halignment="RIGHT"/>
+                        <ColumnConstraints hgrow="ALWAYS" prefWidth="200"/>
+                    </columnConstraints>
 
-            <Label styleClass="label-formulario" text="Dirección:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-            <TextField fx:id="txtDireccion" promptText="C/ Ejemplo, 123" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                    <Label text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtNombre" GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="campo-lectura"/>
 
-            <Label styleClass="label-formulario" text="Cuota: " GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-            <TextField fx:id="txtCuota" promptText="0.0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                    <Label text="Apellidos:" GridPane.columnIndex="2" GridPane.rowIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtApellidos" GridPane.columnIndex="3" GridPane.rowIndex="0" styleClass="campo-lectura"/>
 
-            <Label styleClass="label-formulario" text="Tipo Entidad:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-            <ComboBox fx:id="cmbTipoEntidad" prefWidth="150" promptText="Seleccionar..." GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-            <Label styleClass="label-formulario" text="Periodicidad:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-            <ComboBox fx:id="cmbPeriodicidad" prefWidth="150" promptText="Seleccionar..." GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+                    <Label text="DNI / NIF:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtDni" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="campo-lectura"/>
 
-         <rowConstraints>
-            <RowConstraints />
-            <RowConstraints />
-            <RowConstraints />
-            <RowConstraints />
-            <RowConstraints />
-         </rowConstraints>
+                    <Label text="Teléfono:" GridPane.columnIndex="2" GridPane.rowIndex="1" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtTelefono" GridPane.columnIndex="3" GridPane.rowIndex="1" styleClass="campo-lectura"/>
 
-        </GridPane>
+                    <Label text="Correo:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCorreo" GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="campo-lectura"/>
+
+                    <Label text="Dirección:" GridPane.columnIndex="2" GridPane.rowIndex="2" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtDireccion" GridPane.columnIndex="3" GridPane.rowIndex="2" styleClass="campo-lectura"/>
+
+                    <Label text="Nacionalidad:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtNacionalidad" GridPane.columnIndex="1" GridPane.rowIndex="3" styleClass="campo-lectura"/>
+
+                    <Label text="Género:" GridPane.columnIndex="2" GridPane.rowIndex="3" styleClass="etiqueta-campo"/>
+                    <StackPane GridPane.columnIndex="3" GridPane.rowIndex="3" alignment="CENTER_LEFT">
+                        <TextField fx:id="txtGeneroLectura" styleClass="campo-lectura" editable="false"/>
+                        <ComboBox fx:id="comboGenero" maxWidth="Infinity" visible="false" managed="false"/>
+                    </StackPane>
+
+                    <Label text="Tipo Entidad:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
+                    <StackPane GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="CENTER_LEFT">
+                        <TextField fx:id="txtTipoEntidadLectura" styleClass="campo-lectura" editable="false"/>
+                        <ComboBox fx:id="comboTipoEntidad" maxWidth="Infinity" visible="false" managed="false"/>
+                    </StackPane>
+
+                    <Label text="Cuota (€):" GridPane.columnIndex="2" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCuota" GridPane.columnIndex="3" GridPane.rowIndex="4" styleClass="campo-lectura"/>
+
+                    <Label text="Periodicidad:" GridPane.columnIndex="0" GridPane.rowIndex="5" styleClass="etiqueta-campo"/>
+                    <StackPane GridPane.columnIndex="1" GridPane.rowIndex="5" alignment="CENTER_LEFT">
+                        <TextField fx:id="txtPeriodicidadLectura" styleClass="campo-lectura" editable="false"/>
+                        <ComboBox fx:id="comboPeriodicidad" maxWidth="Infinity" visible="false" managed="false"/>
+                    </StackPane>
+                </GridPane>
+
+                <VBox spacing="10">
+                    <Accordion>
+                        <panes>
+                            <TitledPane text="Datos Bancarios" animated="true">
+                                <GridPane hgap="15" vgap="12">
+                                    <columnConstraints>
+                                        <ColumnConstraints minWidth="110" halignment="RIGHT"/>
+                                        <ColumnConstraints hgrow="ALWAYS"/>
+                                        <ColumnConstraints minWidth="110" halignment="RIGHT"/>
+                                        <ColumnConstraints hgrow="ALWAYS"/>
+                                    </columnConstraints>
+                                    <Label text="Cuenta:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="etiqueta-campo"/>
+                                    <TextField fx:id="txtCuentaBancaria" GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="campo-lectura"/>
+                                    <Label text="Cód. BIC:" GridPane.columnIndex="2" GridPane.rowIndex="0" styleClass="etiqueta-campo"/>
+                                    <TextField fx:id="txtCodigoBic" GridPane.columnIndex="3" GridPane.rowIndex="0" styleClass="campo-lectura"/>
+                                    <Label text="Banco:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="etiqueta-campo"/>
+                                    <TextField fx:id="txtTipoBanco" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="campo-lectura"/>
+                                </GridPane>
+                            </TitledPane>
+                            <TitledPane text="Historial de Donaciones" animated="true">
+                                <TableView fx:id="tablaDonaciones" prefHeight="160" maxHeight="160" styleClass="striped, bordered">
+                                    <columns>
+                                        <TableColumn fx:id="colDonFecha" text="Fecha" prefWidth="120" reorderable="false"/>
+                                        <TableColumn fx:id="colDonImporte" text="Importe (€)" prefWidth="120" reorderable="false"/>
+                                        <TableColumn fx:id="colDonDescripcion" text="Forma de Pago" prefWidth="200" reorderable="false"/>
+                                    </columns>
+                                    <columnResizePolicy>
+                                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                                    </columnResizePolicy>
+                                </TableView>
+                            </TitledPane>
+                        </panes>
+                    </Accordion>
+                </VBox>
+            </VBox>
+        </HBox>
     </center>
 
     <bottom>
-        <HBox alignment="CENTER_RIGHT" spacing="15">
-            <BorderPane.margin><Insets top="30" /></BorderPane.margin>
-            <Button onAction="#cancelar" styleClass="boton-secundario" text="Cancelar" />
-            <Button fx:id="btnGuardar" onAction="#guardar" styleClass="boton-primario" text="Guardar Ficha" />
+        <HBox alignment="CENTER_RIGHT" spacing="15" styleClass="padding-pie-ficha">
+            <Button fx:id="btnCerrar" text="Cerrar" onAction="#cerrarVentana" styleClass="boton-cancelar"/>
+            <Button fx:id="btnEditar" text="Editar Ficha" onAction="#activarEdicion" styleClass="boton-accion"/>
+
+            <Button fx:id="btnCancelarEdicion" text="Cancelar" onAction="#cancelarEdicion" styleClass="boton-cancelar"/>
+            <Button fx:id="btnGuardar" text="Guardar Cambios" onAction="#guardarDatos" styleClass="boton-guardar-exito"/>
         </HBox>
     </bottom>
 

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.practicasalma.proyectoalma.controller.FichaDocenteController"
+            stylesheets="@../css/estilos.css"
+            prefWidth="1000" prefHeight="700"
+            styleClass="fondo-blanco">
+
+    <top>
+        <VBox spacing="5" styleClass="padding-cabecera-ficha">
+            <Label text="Ficha del Docente" styleClass="titulo-ventana"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <center>
+        <HBox spacing="20" styleClass="padding-cuerpo-ficha">
+
+            <VBox spacing="20" styleClass="panel-lateral-ficha" alignment="TOP_CENTER">
+                <StackPane styleClass="caja-foto">
+                    <ImageView fx:id="imgFoto" fitWidth="130" fitHeight="150" preserveRatio="true"/>
+                </StackPane>
+                <Button fx:id="btnCambiarFoto" text="Cambiar Foto..." onAction="#seleccionarFoto" styleClass="boton-enlace"/>
+
+                <Separator/>
+
+                <VBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="Documentación" styleClass="titulo-seccion"/>
+                    <CheckBox fx:id="chkDelitosSexuales" text="Cert. Delitos Sexuales"/>
+                    <CheckBox fx:id="chkProteccionDatos" text="Cert. Protección Datos"/>
+                </VBox>
+
+                <Separator/>
+
+                <VBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="Estado" styleClass="titulo-seccion"/>
+                    <CheckBox fx:id="chkActivo" text="Activo"/>
+                </VBox>
+            </VBox>
+
+            <VBox spacing="20" HBox.hgrow="ALWAYS">
+                <GridPane hgap="15" vgap="15">
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="90" halignment="RIGHT"/>
+                        <ColumnConstraints hgrow="ALWAYS" prefWidth="200"/>
+                        <ColumnConstraints minWidth="90" halignment="RIGHT"/>
+                        <ColumnConstraints hgrow="ALWAYS" prefWidth="200"/>
+                    </columnConstraints>
+
+                    <Label text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtNombre" GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="campo-lectura"/>
+
+                    <Label text="Apellidos:" GridPane.columnIndex="2" GridPane.rowIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtApellidos" GridPane.columnIndex="3" GridPane.rowIndex="0" styleClass="campo-lectura"/>
+
+                    <Label text="DNI / NIE:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtDni" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="campo-lectura"/>
+
+                    <Label text="Fecha Nac.:" GridPane.columnIndex="2" GridPane.rowIndex="1" styleClass="etiqueta-campo"/>
+                    <DatePicker fx:id="dpFechaNacimiento" GridPane.columnIndex="3" GridPane.rowIndex="1" styleClass="campo-lectura" maxWidth="Infinity"/>
+
+                    <Label text="Teléfono:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtTelefono" GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="campo-lectura"/>
+
+                    <Label text="Correo:" GridPane.columnIndex="2" GridPane.rowIndex="2" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCorreo" GridPane.columnIndex="3" GridPane.rowIndex="2" styleClass="campo-lectura"/>
+
+                    <Label text="Dirección:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtDireccion" GridPane.columnIndex="1" GridPane.rowIndex="3" styleClass="campo-lectura"/>
+
+                    <Label text="Titulación:" GridPane.columnIndex="2" GridPane.rowIndex="3" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtTitulacion" GridPane.columnIndex="3" GridPane.rowIndex="3" styleClass="campo-lectura"/>
+
+                    <Label text="Nacionalidad:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtNacionalidad" GridPane.columnIndex="1" GridPane.rowIndex="4" styleClass="campo-lectura"/>
+
+                    <Label text="Género:" GridPane.columnIndex="2" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
+                    <StackPane GridPane.columnIndex="3" GridPane.rowIndex="4" alignment="CENTER_LEFT">
+                        <TextField fx:id="txtGeneroLectura" styleClass="campo-lectura" editable="false"/>
+                        <ComboBox fx:id="comboGenero" maxWidth="Infinity" visible="false" managed="false"/>
+                    </StackPane>
+                </GridPane>
+
+                <VBox spacing="10">
+                    <Accordion>
+                        <panes>
+                            <TitledPane text="Historial de Asignaciones" animated="true">
+                                <TableView fx:id="tablaAsignaciones" prefHeight="160" maxHeight="160" styleClass="striped, bordered">
+                                    <columns>
+                                        <TableColumn fx:id="colAsiAnyo" text="Año Académico" prefWidth="150" reorderable="false"/>
+                                        <TableColumn fx:id="colAsiGrupo" text="Grupo Asignado" prefWidth="200" reorderable="false"/>
+                                    </columns>
+                                    <columnResizePolicy>
+                                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                                    </columnResizePolicy>
+                                </TableView>
+                            </TitledPane>
+                        </panes>
+                    </Accordion>
+                </VBox>
+            </VBox>
+        </HBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="15" styleClass="padding-pie-ficha">
+            <Button fx:id="btnCerrar" text="Cerrar" onAction="#cerrarVentana" styleClass="boton-cancelar"/>
+            <Button fx:id="btnEditar" text="Editar Ficha" onAction="#activarEdicion" styleClass="boton-accion"/>
+
+            <Button fx:id="btnCancelarEdicion" text="Cancelar" onAction="#cancelarEdicion" styleClass="boton-cancelar"/>
+            <Button fx:id="btnGuardar" text="Guardar Cambios" onAction="#guardarDatos" styleClass="boton-guardar-exito"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

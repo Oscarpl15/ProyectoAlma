@@ -2,79 +2,85 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.practicasalma.proyectoalma.controller.AgregarVoluntarioController"
-            prefHeight="520.0" prefWidth="450.0"
-            styleClass="fondo-blanco">
+            prefWidth="700.0"
+            styleClass="fondo-blanco"
+            stylesheets="@../css/estilos.css">
 
-   <VBox spacing="20.0" AnchorPane.topAnchor="20.0" AnchorPane.bottomAnchor="20.0"
-         AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
+    <VBox spacing="20.0" AnchorPane.topAnchor="20.0" AnchorPane.bottomAnchor="20.0"
+          AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
 
-      <Label text="Añadir Nuevo Voluntario" styleClass="titulo-ventana"/>
+        <VBox spacing="5">
+            <Label text="Añadir Nuevo Voluntario" styleClass="titulo-ventana"/>
+            <Label text="Rellena los datos personales y marca los certificados correspondientes." styleClass="subtitulo-ventana"/>
+        </VBox>
 
-      <GridPane vgap="15.0" hgap="10.0">
-         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0"/>
-            <ColumnConstraints hgrow="ALWAYS" minWidth="200.0" prefWidth="250.0"/>
-         </columnConstraints>
+        <GridPane vgap="15.0" hgap="15.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" minWidth="90.0" halignment="RIGHT"/>
+                <ColumnConstraints hgrow="ALWAYS" prefWidth="200.0"/>
+                <ColumnConstraints hgrow="NEVER" minWidth="90.0" halignment="RIGHT"/>
+                <ColumnConstraints hgrow="ALWAYS" prefWidth="200.0"/>
+            </columnConstraints>
 
-         <Label text="Nombre:" GridPane.rowIndex="0" styleClass="etiqueta-campo"/>
-         <TextField fx:id="txtNombre" promptText="Ej: Carlos" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+            <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+            <TextField fx:id="txtNombre" promptText="Ej: Carlos" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-         <Label text="Apellidos:" GridPane.rowIndex="1" styleClass="etiqueta-campo"/>
-         <TextField fx:id="txtApellidos" promptText="Ej: García Pérez" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="Apellidos:" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+            <TextField fx:id="txtApellidos" promptText="Ej: García Pérez" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
 
-         <Label text="Dirección:" GridPane.rowIndex="2" styleClass="etiqueta-campo"/>
-         <TextField fx:id="txtDireccion" promptText="C/ Ejemplo 123" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <Label text="DNI/NIE:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+            <TextField fx:id="txtDni" promptText="00000000A" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-         <Label text="Teléfono:" GridPane.rowIndex="3" styleClass="etiqueta-campo"/>
-         <TextField fx:id="txtTelefono" promptText="600 00 00 00" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <Label text="Fecha Nac.:" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+            <DatePicker fx:id="dpFechaNacimiento" GridPane.rowIndex="1" GridPane.columnIndex="3" maxWidth="Infinity"/>
 
-         <Label text="DNI:" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
-         <TextField fx:id="txtDni" promptText="00000000A" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+            <Label text="Teléfono:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+            <TextField fx:id="txtTelefono" promptText="600 00 00 00" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-         <Label text="Correo:" GridPane.rowIndex="5" styleClass="etiqueta-campo"/>
-         <TextField fx:id="txtCorreo" promptText="tuemail@ejemplo.com" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+            <Label text="Correo:" GridPane.rowIndex="2" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+            <TextField fx:id="txtCorreo" promptText="tuemail@ejemplo.com" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
 
-         <Label text="Fecha nacimiento:" GridPane.rowIndex="6" styleClass="etiqueta-campo"/>
-         <DatePicker fx:id="dpFechaNacimiento" GridPane.rowIndex="6" GridPane.columnIndex="1" maxWidth="Infinity"/>
+            <Label text="Dirección:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+            <TextField fx:id="txtDireccion" promptText="C/ Ejemplo 123" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-         <Label text="Nacionalidad:" GridPane.rowIndex="7" styleClass="etiqueta-campo"/>
-         <TextField fx:id="txtNacionalidad" promptText="Ej: Española" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+            <Label text="Nacionalidad:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+            <TextField fx:id="txtNacionalidad" promptText="Ej: Española" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
-         <Label text="Género:" GridPane.rowIndex="8" styleClass="etiqueta-campo"/>
-         <ComboBox fx:id="comboGenero" promptText="Seleccione..." GridPane.rowIndex="8" GridPane.columnIndex="1" maxWidth="Infinity">
-            <items>
-               <FXCollections fx:factory="observableArrayList">
-                  <String fx:value="Masculino"/>
-                  <String fx:value="Femenino"/>
-                  <String fx:value="No binario"/>
-                  <String fx:value="Prefiero no especificar"/>
-               </FXCollections>
-            </items>
-         </ComboBox>
-      </GridPane>
+            <Label text="Género:" GridPane.rowIndex="4" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+            <ComboBox fx:id="comboGenero" promptText="Seleccione..." GridPane.rowIndex="4" GridPane.columnIndex="3" maxWidth="Infinity">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Masculino"/>
+                        <String fx:value="Femenino"/>
+                        <String fx:value="No binario"/>
+                        <String fx:value="Prefiero no especificar"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+        </GridPane>
 
-      <Separator/>
+        <Separator/>
 
-      <Label text="Certificados:" styleClass="etiqueta-campo"/>
+        <VBox spacing="8">
+            <Label text="Certificados" styleClass="titulo-seccion"/>
+            <FlowPane hgap="15" vgap="10">
+                <CheckBox fx:id="checkDelitos" text="Cert. Delitos Sexuales"/>
+                <CheckBox fx:id="checkProtDatos" text="Cert. Protección Datos"/>
+            </FlowPane>
+        </VBox>
 
-      <VBox spacing="10.0">
-         <CheckBox fx:id="checkDelitos" text="Certificado delitos sexuales"/>
-         <CheckBox fx:id="checkProtDatos" text="Ley de Protección de Datos"/>
-      </VBox>
+        <Region VBox.vgrow="ALWAYS"/>
 
-      <Region VBox.vgrow="ALWAYS"/>
+        <HBox spacing="15.0" alignment="CENTER_RIGHT">
+            <Button text="Cancelar" onAction="#cancelar" styleClass="boton-cancelar"/>
+            <Button text="GUARDAR VOLUNTARIO" onAction="#guardarVoluntario" styleClass="boton-accion"/>
+        </HBox>
 
-      <HBox spacing="15.0" alignment="CENTER_RIGHT">
-         <Button text="Cancelar" onAction="#cancelar" styleClass="boton-cancelar"/>
-         <Button text="Guardar Voluntario" onAction="#guardarVoluntario" styleClass="boton-accion"/>
-      </HBox>
-
-   </VBox>
+    </VBox>
 </AnchorPane>

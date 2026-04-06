@@ -1,0 +1,183 @@
+package com.practicasalma.proyectoalma.controller;
+
+import com.practicasalma.proyectoalma.model.AsignacionPersonal;
+import com.practicasalma.proyectoalma.model.Voluntario;
+import com.practicasalma.proyectoalma.service.VoluntarioService;
+import com.practicasalma.proyectoalma.util.FxUtils;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
+import java.io.File;
+
+public class FichaVoluntarioController {
+
+    @FXML private ImageView imgFoto;
+    @FXML private Button btnCambiarFoto;
+    @FXML private Button btnEditar;
+    @FXML private Button btnGuardar;
+    @FXML private Button btnCancelarEdicion;
+    @FXML private Button btnCerrar;
+
+    @FXML private TextField txtNombre;
+    @FXML private TextField txtApellidos;
+    @FXML private TextField txtDni;
+    @FXML private DatePicker dpFechaNacimiento;
+    @FXML private TextField txtTelefono;
+    @FXML private TextField txtCorreo;
+    @FXML private TextField txtDireccion;
+    @FXML private TextField txtNacionalidad;
+
+    @FXML private TextField txtGeneroLectura;
+    @FXML private ComboBox<String> comboGenero;
+
+    @FXML private CheckBox chkDelitosSexuales;
+    @FXML private CheckBox chkProteccionDatos;
+    @FXML private CheckBox chkActivo;
+
+    @FXML private TableView<AsignacionPersonal> tablaAsignaciones;
+    @FXML private TableColumn<AsignacionPersonal, String> colAsiAnyo;
+    @FXML private TableColumn<AsignacionPersonal, String> colAsiGrupo;
+
+    private Voluntario voluntarioActual;
+
+    private final VoluntarioService voluntarioService = new VoluntarioService();
+
+    @FXML
+    public void initialize() {
+        comboGenero.getItems().addAll("Masculino", "Femenino", "No binario", "Prefiero no especificar");
+
+        colAsiAnyo.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
+                c.getValue().getAnyoAcademico() != null ? c.getValue().getAnyoAcademico() : "—"));
+        colAsiGrupo.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
+                c.getValue().getGrupoAsignado() != null ? c.getValue().getGrupoAsignado() : "—"));
+    }
+
+    public void setVoluntario(Voluntario voluntario) {
+        this.voluntarioActual = voluntario;
+        cargarDatosEnVista();
+        cambiarModoEdicion(false);
+    }
+
+    private void cargarDatosEnVista() {
+        txtNombre.setText(voluntarioActual.getNombre() != null ? voluntarioActual.getNombre() : "");
+        txtApellidos.setText(voluntarioActual.getApellidos() != null ? voluntarioActual.getApellidos() : "");
+        txtDni.setText(voluntarioActual.getDocumentoIdentidad() != null ? voluntarioActual.getDocumentoIdentidad() : "");
+        dpFechaNacimiento.setValue(voluntarioActual.getFechaNacimiento());
+        txtTelefono.setText(voluntarioActual.getTelefono() != null ? voluntarioActual.getTelefono() : "");
+        txtCorreo.setText(voluntarioActual.getCorreo() != null ? voluntarioActual.getCorreo() : "");
+        txtDireccion.setText(voluntarioActual.getDireccion() != null ? voluntarioActual.getDireccion() : "");
+        txtNacionalidad.setText(voluntarioActual.getNacionalidad() != null ? voluntarioActual.getNacionalidad() : "");
+
+        txtGeneroLectura.setText(voluntarioActual.getGenero() != null ? voluntarioActual.getGenero() : "");
+        comboGenero.setValue(voluntarioActual.getGenero());
+
+        chkDelitosSexuales.setSelected(Boolean.TRUE.equals(voluntarioActual.getAutoDelitosSexuales()));
+        chkProteccionDatos.setSelected(Boolean.TRUE.equals(voluntarioActual.getAutoProteccionDatos()));
+        chkActivo.setSelected(Boolean.TRUE.equals(voluntarioActual.getActivo()));
+
+        if (voluntarioActual.getHistorialAsignaciones() != null) {
+            tablaAsignaciones.setItems(FXCollections.observableArrayList(voluntarioActual.getHistorialAsignaciones()));
+        }
+
+        cargarFoto();
+    }
+
+    private void cargarFoto() {
+        try {
+            imgFoto.setImage(new Image(getClass().getResource(
+                    "/com/practicasalma/proyectoalma/assets/default.png").toExternalForm()));
+        } catch (Exception e) {
+            System.out.println("No se encontró imagen por defecto.");
+        }
+    }
+
+    private void cambiarModoEdicion(boolean editable) {
+        txtNombre.setEditable(editable);
+        txtApellidos.setEditable(editable);
+        txtDni.setEditable(editable);
+        dpFechaNacimiento.setDisable(!editable);
+        txtTelefono.setEditable(editable);
+        txtCorreo.setEditable(editable);
+        txtDireccion.setEditable(editable);
+        txtNacionalidad.setEditable(editable);
+        chkDelitosSexuales.setDisable(!editable);
+        chkProteccionDatos.setDisable(!editable);
+        chkActivo.setDisable(!editable);
+
+        btnCambiarFoto.setVisible(editable);
+        btnCambiarFoto.setManaged(editable);
+
+        btnEditar.setVisible(!editable);
+        btnEditar.setManaged(!editable);
+        btnCerrar.setVisible(!editable);
+        btnCerrar.setManaged(!editable);
+
+        btnGuardar.setVisible(editable);
+        btnGuardar.setManaged(editable);
+        btnCancelarEdicion.setVisible(editable);
+        btnCancelarEdicion.setManaged(editable);
+
+        txtGeneroLectura.setVisible(!editable);
+        txtGeneroLectura.setManaged(!editable);
+        comboGenero.setVisible(editable);
+        comboGenero.setManaged(editable);
+    }
+
+    @FXML
+    private void activarEdicion() {
+        cambiarModoEdicion(true);
+    }
+
+    @FXML
+    private void cancelarEdicion() {
+        cargarDatosEnVista();
+        cambiarModoEdicion(false);
+    }
+
+    @FXML
+    private void guardarDatos() {
+        voluntarioActual.setNombre(txtNombre.getText().trim());
+        voluntarioActual.setApellidos(txtApellidos.getText().trim());
+        voluntarioActual.setDocumentoIdentidad(txtDni.getText().trim());
+        voluntarioActual.setFechaNacimiento(dpFechaNacimiento.getValue());
+        voluntarioActual.setTelefono(txtTelefono.getText().trim());
+        voluntarioActual.setCorreo(txtCorreo.getText().trim());
+        voluntarioActual.setDireccion(txtDireccion.getText().trim());
+        voluntarioActual.setNacionalidad(txtNacionalidad.getText().trim());
+        voluntarioActual.setGenero(comboGenero.getValue());
+        voluntarioActual.setAutoDelitosSexuales(chkDelitosSexuales.isSelected());
+        voluntarioActual.setAutoProteccionDatos(chkProteccionDatos.isSelected());
+        voluntarioActual.setActivo(chkActivo.isSelected());
+
+        try {
+            voluntarioService.actualizarVoluntario(voluntarioActual);
+            cambiarModoEdicion(false);
+            cargarDatosEnVista();
+        } catch (Exception e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR,
+                    "Error al guardar", "No se pudieron guardar los cambios: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void seleccionarFoto() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Seleccionar foto");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg"));
+        File file = chooser.showOpenDialog(imgFoto.getScene().getWindow());
+        if (file != null) {
+            imgFoto.setImage(new Image(file.toURI().toString()));
+        }
+    }
+
+    @FXML
+    private void cerrarVentana() {
+        Stage stage = (Stage) btnCerrar.getScene().getWindow();
+        stage.close();
+    }
+}

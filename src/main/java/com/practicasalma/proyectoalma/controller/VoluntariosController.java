@@ -12,10 +12,6 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.TableCell;
-import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -80,8 +76,7 @@ public class VoluntariosController {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
                     Voluntario voluntarioSeleccionado = row.getItem();
-                    // abrirFichaVoluntario(voluntarioSeleccionado); // Lo haremos luego
-                    System.out.println("Doble clic en voluntario: " + voluntarioSeleccionado.getNombre());
+                    abrirFichaVoluntario(voluntarioSeleccionado);
                 }
             });
             return row ;
@@ -90,6 +85,29 @@ public class VoluntariosController {
 
     public void cargarVoluntariosEnTabla() {
         listaMaestra.setAll(voluntarioService.obtenerTodos());
+    }
+
+    private void abrirFichaVoluntario(Voluntario voluntario) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/practicasalma/proyectoalma/view/ficha-voluntario.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            FichaVoluntarioController controller = loader.getController();
+            controller.setVoluntario(voluntario);
+
+            Stage stage = new Stage();
+            stage.setTitle("Ficha del Voluntario: " + voluntario.getNombre());
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(tablaVoluntarios.getScene().getWindow());
+            stage.showAndWait();
+
+            cargarVoluntariosEnTabla();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error al abrir la ficha: " + e.getMessage());
+        }
     }
 
     @FXML

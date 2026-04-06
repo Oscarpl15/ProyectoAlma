@@ -118,7 +118,8 @@ public class SocioController {
             stage.setScene(new Scene(root));
             stage.initModality(Modality.WINDOW_MODAL); // Bloquea la ventana de atrás hasta que cierres esta
             stage.initOwner(tablaSocios.getScene().getWindow()); // Dice que esta ventana pertenece a la principal
-            stage.show();
+            stage.showAndWait();
+            cargarSociosEnTabla();
 
         } catch (IOException e) {
             e.printStackTrace();
