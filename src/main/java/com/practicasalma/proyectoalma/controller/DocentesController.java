@@ -14,13 +14,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -56,7 +54,24 @@ public class DocentesController {
         // Enlazamos los booleanos nuevos (Asumiendo que hiciste los getters en el modelo Docente)
         // Si aún no los tienes en el modelo, comenta estas dos líneas para que no de error
         colDelitos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoDelitosSexuales() != null ? cellData.getValue().getAutoDelitosSexuales() : false));
+        colDelitos.setCellFactory(tc -> new javafx.scene.control.TableCell<>() {
+            @Override protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("celda-booleana-true", "celda-booleana-false");
+                if (empty || item == null) { setText(null); }
+                else { setText(item ? "✓" : "✗"); getStyleClass().add(item ? "celda-booleana-true" : "celda-booleana-false"); }
+            }
+        });
+
         colProtDatos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoProteccionDatos() != null ? cellData.getValue().getAutoProteccionDatos() : false));
+        colProtDatos.setCellFactory(tc -> new javafx.scene.control.TableCell<>() {
+            @Override protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("celda-booleana-true", "celda-booleana-false");
+                if (empty || item == null) { setText(null); }
+                else { setText(item ? "✓" : "✗"); getStyleClass().add(item ? "celda-booleana-true" : "celda-booleana-false"); }
+            }
+        });
 
         colAB.setCellValueFactory(cellData ->
                 new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Baja"));
@@ -105,9 +120,29 @@ public class DocentesController {
         listaMaestra.setAll(docenteService.obtenerTodos());
     }
 
-    private void abrirFichaDocente(Docente docente) {
-        // TODO: abrir ficha real de docente
-        FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Ficha de Docente",
-                "Has hecho doble clic en: " + docente.getNombre());
+    private void abrirFichaDocente(Docente docenteTabla) {
+        try {
+            Docente docente = docenteService.obtenerCompleto(docenteTabla.getId());
+            if (docente == null) return;
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/practicasalma/proyectoalma/view/ficha-docente.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            FichaDocenteController controller = loader.getController();
+            controller.setDocente(docente);
+
+            Stage stage = new Stage();
+            stage.setTitle("Ficha del Docente: " + docente.getNombre());
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(tablaDocentes.getScene().getWindow());
+            stage.showAndWait();
+
+            cargarDocentesEnTabla();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error al abrir la ficha: " + e.getMessage());
+        }
     }
 }

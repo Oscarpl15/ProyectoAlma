@@ -42,6 +42,20 @@ public class VoluntarioDAO {
         }
     }
 
+    public Voluntario obtenerCompleto(Long id) {
+        try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
+            Voluntario voluntario = em.find(Voluntario.class, id);
+            if (voluntario != null) {
+                voluntario.getHistorialAsignaciones().size();
+                voluntario.getPeriodosActividad().size();
+            }
+            return voluntario;
+        } catch (Exception e) {
+            System.err.println("Error al cargar detalles del voluntario: " + e.getMessage());
+            return null;
+        }
+    }
+
     public List<Voluntario> obtenerTodos() {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             return em.createQuery("SELECT v FROM Voluntario v", Voluntario.class).getResultList();

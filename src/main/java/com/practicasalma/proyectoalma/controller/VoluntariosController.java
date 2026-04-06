@@ -12,10 +12,6 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.TableCell;
-import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -54,7 +50,24 @@ public class VoluntariosController {
 
         // Booleanos comentados temporalmente hasta asegurar que tienes los getters en el modelo Voluntario
         colDelitos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoDelitosSexuales() != null ? cellData.getValue().getAutoDelitosSexuales() : false));
+        colDelitos.setCellFactory(tc -> new javafx.scene.control.TableCell<>() {
+            @Override protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("celda-booleana-true", "celda-booleana-false");
+                if (empty || item == null) { setText(null); }
+                else { setText(item ? "✓" : "✗"); getStyleClass().add(item ? "celda-booleana-true" : "celda-booleana-false"); }
+            }
+        });
+
         colProtDatos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoProteccionDatos() != null ? cellData.getValue().getAutoProteccionDatos() : false));
+        colProtDatos.setCellFactory(tc -> new javafx.scene.control.TableCell<>() {
+            @Override protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("celda-booleana-true", "celda-booleana-false");
+                if (empty || item == null) { setText(null); }
+                else { setText(item ? "✓" : "✗"); getStyleClass().add(item ? "celda-booleana-true" : "celda-booleana-false"); }
+            }
+        });
 
         colAB.setCellValueFactory(cellData ->
                 new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Baja"));
@@ -80,8 +93,7 @@ public class VoluntariosController {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
                     Voluntario voluntarioSeleccionado = row.getItem();
-                    // abrirFichaVoluntario(voluntarioSeleccionado); // Lo haremos luego
-                    System.out.println("Doble clic en voluntario: " + voluntarioSeleccionado.getNombre());
+                    abrirFichaVoluntario(voluntarioSeleccionado);
                 }
             });
             return row ;
@@ -90,6 +102,32 @@ public class VoluntariosController {
 
     public void cargarVoluntariosEnTabla() {
         listaMaestra.setAll(voluntarioService.obtenerTodos());
+    }
+
+    private void abrirFichaVoluntario(Voluntario voluntarioTabla) {
+        try {
+            Voluntario voluntario = voluntarioService.obtenerCompleto(voluntarioTabla.getId());
+            if (voluntario == null) return;
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/practicasalma/proyectoalma/view/ficha-voluntario.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            FichaVoluntarioController controller = loader.getController();
+            controller.setVoluntario(voluntario);
+
+            Stage stage = new Stage();
+            stage.setTitle("Ficha del Voluntario: " + voluntario.getNombre());
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(tablaVoluntarios.getScene().getWindow());
+            stage.showAndWait();
+
+            cargarVoluntariosEnTabla();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error al abrir la ficha: " + e.getMessage());
+        }
     }
 
     @FXML

@@ -42,6 +42,20 @@ public class SocioDAO {
         }
     }
 
+    public Socio obtenerCompleto(Long id) {
+        try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
+            Socio socio = em.find(Socio.class, id);
+            if (socio != null) {
+                socio.getDonaciones().size();
+                socio.getPeriodosActividad().size();
+            }
+            return socio;
+        } catch (Exception e) {
+            System.err.println("Error al cargar detalles del socio: " + e.getMessage());
+            return null;
+        }
+    }
+
     public List<Socio> obtenerTodos() {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             return em.createQuery("SELECT s FROM Socio s", Socio.class).getResultList();

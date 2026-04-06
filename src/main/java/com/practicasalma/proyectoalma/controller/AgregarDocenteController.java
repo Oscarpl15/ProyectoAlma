@@ -35,6 +35,7 @@ public class AgregarDocenteController {
 
     // Checkboxes
     @FXML private CheckBox checkAuth1;
+    @FXML private CheckBox checkProtDatos;
 
     private final DocenteService docenteService = new DocenteService();
 
@@ -56,6 +57,7 @@ public class AgregarDocenteController {
         try {
             Docente docente = new Docente(nombre, apellidos, direccion, dni, telefono, correo, fechaNacimiento);
             docente.setAutoDelitosSexuales(checkAuth1.isSelected());
+            docente.setAutoProteccionDatos(checkProtDatos.isSelected());
             String nacionalidad = txtNacionalidad.getText().trim();
             if (!nacionalidad.isEmpty()) docente.setNacionalidad(nacionalidad);
             String genero = comboGenero.getValue();

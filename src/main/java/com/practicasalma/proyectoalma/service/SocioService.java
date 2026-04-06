@@ -13,6 +13,10 @@ public class SocioService {
         socioDAO.guardar(socio);
     }
 
+    public Socio obtenerCompleto(Long id) {
+        return socioDAO.obtenerCompleto(id);
+    }
+
     public void actualizarSocio(Socio socio) throws Exception {
         socioDAO.actualizar(socio);
     }

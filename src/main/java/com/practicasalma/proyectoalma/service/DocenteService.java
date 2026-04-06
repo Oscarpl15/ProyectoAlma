@@ -13,6 +13,10 @@ public class DocenteService {
         docenteDAO.guardar(docente);
     }
 
+    public Docente obtenerCompleto(Long id) {
+        return docenteDAO.obtenerCompleto(id);
+    }
+
     public void actualizarDocente(Docente docente) throws Exception {
         docenteDAO.actualizar(docente);
     }
