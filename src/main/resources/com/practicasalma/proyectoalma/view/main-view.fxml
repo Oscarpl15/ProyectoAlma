@@ -25,47 +25,52 @@
 
     <BorderPane fx:id="mainLayout">
         <top>
-            <StackPane alignment="CENTER" styleClass="header-panel">
-                <HBox alignment="CENTER_LEFT" spacing="10" HBox.hgrow="ALWAYS">
-                    <ImageView fitHeight="200.0" fitWidth="200.0" preserveRatio="true" styleClass="logo-fundacion">
-                        <image>
-                            <Image url="@../assets/logo.png" />
-                        </image>
-                    </ImageView>
-                </HBox>
-                <VBox alignment="CENTER" spacing="60">
-                    <HBox alignment="CENTER">
-                        <Label styleClass="title-1, titulo-app" text="Fundación Gestión" />
+            <BorderPane styleClass="header-panel">
+                <left>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Button text="Correo" onAction="#configurarCorreo" styleClass="boton-accion" />
+                        <ImageView fitHeight="200.0" fitWidth="200.0" preserveRatio="true" styleClass="logo-fundacion">
+                            <image>
+                                <Image url="@../assets/logo.png" />
+                            </image>
+                        </ImageView>
                     </HBox>
+                </left>
+                <center>
+                    <VBox alignment="CENTER" spacing="60">
+                        <HBox alignment="CENTER">
+                            <Label styleClass="title-1, titulo-app" text="Fundación Gestión" />
+                        </HBox>
 
-                    <fx:define>
-                        <ToggleGroup fx:id="menuGroup"/>
-                    </fx:define>
+                        <fx:define>
+                            <ToggleGroup fx:id="menuGroup"/>
+                        </fx:define>
 
-                    <HBox alignment="BOTTOM_CENTER" spacing="10">
-                        <ToggleButton onAction="#mostrarAlumnos" styleClass="boton-menu" text="ALUMNOS" toggleGroup="$menuGroup" selected="true">
-                            <HBox.margin>
-                                <Insets right="20.0" />
-                            </HBox.margin>
-                        </ToggleButton>
-                        <ToggleButton onAction="#mostrarDocentes" styleClass="boton-menu" text="DOCENTES" toggleGroup="$menuGroup">
-                            <HBox.margin>
-                                <Insets right="10.0" />
-                            </HBox.margin>
-                        </ToggleButton>
-                        <ToggleButton onAction="#mostrarVoluntarios" styleClass="boton-menu" text="VOLUNTARIOS" toggleGroup="$menuGroup">
-                            <HBox.margin>
-                                <Insets left="10.0" />
-                            </HBox.margin>
-                        </ToggleButton>
-                        <ToggleButton onAction="#mostrarSocios" styleClass="boton-menu" text="SOCIOS" toggleGroup="$menuGroup">
-                            <HBox.margin>
-                                <Insets left="20.0" />
-                            </HBox.margin>
-                        </ToggleButton>
-                    </HBox>
-                </VBox>
-            </StackPane>
+                        <HBox alignment="BOTTOM_CENTER" spacing="10">
+                            <ToggleButton onAction="#mostrarAlumnos" styleClass="boton-menu" text="ALUMNOS" toggleGroup="$menuGroup" selected="true">
+                                <HBox.margin>
+                                    <Insets right="20.0" />
+                                </HBox.margin>
+                            </ToggleButton>
+                            <ToggleButton onAction="#mostrarDocentes" styleClass="boton-menu" text="DOCENTES" toggleGroup="$menuGroup">
+                                <HBox.margin>
+                                    <Insets right="10.0" />
+                                </HBox.margin>
+                            </ToggleButton>
+                            <ToggleButton onAction="#mostrarVoluntarios" styleClass="boton-menu" text="VOLUNTARIOS" toggleGroup="$menuGroup">
+                                <HBox.margin>
+                                    <Insets left="10.0" />
+                                </HBox.margin>
+                            </ToggleButton>
+                            <ToggleButton onAction="#mostrarSocios" styleClass="boton-menu" text="SOCIOS" toggleGroup="$menuGroup">
+                                <HBox.margin>
+                                    <Insets left="20.0" />
+                                </HBox.margin>
+                            </ToggleButton>
+                        </HBox>
+                    </VBox>
+                </center>
+            </BorderPane>
         </top>
 
         <center>
