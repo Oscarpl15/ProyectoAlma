@@ -128,6 +128,7 @@
     <bottom>
         <HBox alignment="CENTER_RIGHT" spacing="15" styleClass="padding-pie-ficha">
             <Button fx:id="btnCerrar" text="Cerrar" onAction="#cerrarVentana" styleClass="boton-cancelar"/>
+            <Button fx:id="btnEnviarInforme" text="Enviar informe" onAction="#enviarInforme" styleClass="boton-accion"/>
             <Button fx:id="btnEditar" text="Editar Ficha" onAction="#activarEdicion" styleClass="boton-accion"/>
 
             <Button fx:id="btnCancelarEdicion" text="Cancelar" onAction="#cancelarEdicion" styleClass="boton-cancelar"/>

@@ -22,6 +22,7 @@ public class FichaSocioController {
     @FXML private Button btnGuardar;
     @FXML private Button btnCancelarEdicion;
     @FXML private Button btnCerrar;
+    @FXML private Button btnEnviarInforme;
 
     @FXML private TextField txtNombre;
     @FXML private TextField txtApellidos;
@@ -139,6 +140,8 @@ public class FichaSocioController {
         btnEditar.setManaged(!editable);
         btnCerrar.setVisible(!editable);
         btnCerrar.setManaged(!editable);
+        btnEnviarInforme.setVisible(!editable);
+        btnEnviarInforme.setManaged(!editable);
 
         btnGuardar.setVisible(editable);
         btnGuardar.setManaged(editable);
@@ -229,5 +232,12 @@ public class FichaSocioController {
     private void cerrarVentana() {
         Stage stage = (Stage) btnCerrar.getScene().getWindow();
         stage.close();
+    }
+
+    @FXML
+    private void enviarInforme() {
+        FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION,
+                "Enviar informe",
+                "Botón disponible. La funcionalidad de envío se implementará a continuación.");
     }
 }
