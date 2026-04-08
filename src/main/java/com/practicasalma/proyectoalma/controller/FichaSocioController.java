@@ -2,6 +2,8 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Donacion;
 import com.practicasalma.proyectoalma.model.Socio;
+import com.practicasalma.proyectoalma.service.GeneradorPdfService;
+import com.practicasalma.proyectoalma.service.GestorCorreo;
 import com.practicasalma.proyectoalma.service.SocioService;
 import com.practicasalma.proyectoalma.util.FxUtils;
 import javafx.collections.FXCollections;
@@ -13,6 +15,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FichaSocioController {
 
@@ -57,6 +61,7 @@ public class FichaSocioController {
     private String rutaFotoSeleccionada = null;
 
     private final SocioService socioService = new SocioService();
+    private final GeneradorPdfService generadorPdfService = new GeneradorPdfService();
 
     @FXML
     public void initialize() {
@@ -236,8 +241,44 @@ public class FichaSocioController {
 
     @FXML
     private void enviarInforme() {
-        FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION,
-                "Enviar informe",
-                "Botón disponible. La funcionalidad de envío se implementará a continuación.");
+        if (socioActual == null) {
+            FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Sin socio", "No hay socio cargado para enviar el informe.");
+            return;
+        }
+
+        String correoSocio = socioActual.getCorreo() != null ? socioActual.getCorreo().trim() : "";
+        if (correoSocio.isEmpty()) {
+            FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Correo no disponible", "El socio no tiene correo configurado.");
+            return;
+        }
+
+        if (!GestorCorreo.estaConfigurado()) {
+            FxUtils.mostrarAlerta(Alert.AlertType.WARNING,
+                    "Configurar correo",
+                    "Antes de enviar, configura el correo desde el botón 'Correo' en la pantalla principal.");
+            return;
+        }
+
+        try {
+            Path rutaInforme = Paths.get(System.getProperty("user.home"), "Desktop",
+                    "informe_socio_" + (socioActual.getId() != null ? socioActual.getId() : "sin_id") + ".pdf");
+
+            generadorPdfService.generarInformeSocioConPlantilla(rutaInforme.toString(), socioActual);
+
+            GestorCorreo.mandarEmailConAdjunto(
+                    correoSocio,
+                    "Prueba",
+                    "Prueba",
+                    rutaInforme.toString()
+            );
+
+            FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION,
+                    "Informe enviado",
+                    "Se ha generado y enviado el informe a " + correoSocio + ".");
+        } catch (Exception e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR,
+                    "Error al enviar informe",
+                    "No se pudo generar o enviar el informe: " + e.getMessage());
+        }
     }
 }

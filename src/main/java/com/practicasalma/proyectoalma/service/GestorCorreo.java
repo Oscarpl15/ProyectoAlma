@@ -2,47 +2,91 @@ package com.practicasalma.proyectoalma.service;
 
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 
+import java.io.File;
 import java.util.Properties;
 
 public class GestorCorreo {
 
-    public static void mandarEmail(String destinatario, String asunto, String cuerpo) {
+    private static String correoRemitente = "";
+    private static String contrasenaRemitente = "";
 
-        // 1. Datos de tu cuenta (Remitente)
-        String miCorreo = "tu_correo@gmail.com";
-        String miContrasena = "TU_CONTRASEÑA_DE_APLICACION";
+    public static void configurarCredenciales(String correo, String contrasena) {
+        correoRemitente = correo != null ? correo.trim() : "";
+        contrasenaRemitente = contrasena != null ? contrasena : "";
+    }
 
-        // 2. Configuración del servidor SMTP de Gmail
+    public static boolean estaConfigurado() {
+        return !correoRemitente.isBlank() && !contrasenaRemitente.isBlank();
+    }
+
+    private static Session crearSesion() {
+        if (!estaConfigurado()) {
+            throw new IllegalStateException("Debes configurar correo y contraseña antes de enviar.");
+        }
+
         Properties propiedades = new Properties();
         propiedades.put("mail.smtp.auth", "true");
-        propiedades.put("mail.smtp.starttls.enable", "true"); // Seguridad TLS
-        propiedades.put("mail.smtp.host", "smtp.gmail.com");  // Servidor de Gmail
-        propiedades.put("mail.smtp.port", "587");             // Puerto seguro
+        propiedades.put("mail.smtp.starttls.enable", "true");
+        propiedades.put("mail.smtp.host", "smtp.gmail.com");
+        propiedades.put("mail.smtp.port", "587");
 
-        // 3. Crear la sesión con tus credenciales
-        Session sesion = Session.getInstance(propiedades, new Authenticator() {
+        return Session.getInstance(propiedades, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(miCorreo, miContrasena);
+                return new PasswordAuthentication(correoRemitente, contrasenaRemitente);
             }
         });
+    }
+
+    public static void mandarEmail(String destinatario, String asunto, String cuerpo) {
+        Session sesion = crearSesion();
 
         try {
-            // 4. Crear el mensaje
             Message mensaje = new MimeMessage(sesion);
-            mensaje.setFrom(new InternetAddress(miCorreo));
+            mensaje.setFrom(new InternetAddress(correoRemitente));
             mensaje.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
             mensaje.setSubject(asunto);
             mensaje.setText(cuerpo);
 
-            // 5. Enviar el mensaje
             Transport.send(mensaje);
             System.out.println("¡Correo enviado con éxito a " + destinatario + "!");
 
         } catch (MessagingException e) {
             System.out.println("Error al enviar el correo: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static void mandarEmailConAdjunto(String destinatario, String asunto, String cuerpo, String rutaAdjunto) {
+        Session sesion = crearSesion();
+
+        try {
+            Message mensaje = new MimeMessage(sesion);
+            mensaje.setFrom(new InternetAddress(correoRemitente));
+            mensaje.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
+            mensaje.setSubject(asunto);
+
+            MimeBodyPart cuerpoParte = new MimeBodyPart();
+            cuerpoParte.setText(cuerpo);
+
+            MimeBodyPart adjuntoParte = new MimeBodyPart();
+            File archivo = new File(rutaAdjunto);
+            adjuntoParte.attachFile(archivo);
+
+            MimeMultipart multipart = new MimeMultipart();
+            multipart.addBodyPart(cuerpoParte);
+            multipart.addBodyPart(adjuntoParte);
+
+            mensaje.setContent(multipart);
+
+            Transport.send(mensaje);
+            System.out.println("¡Correo con adjunto enviado con éxito a " + destinatario + "!");
+        } catch (Exception e) {
+            System.out.println("Error al enviar el correo con adjunto: " + e.getMessage());
             e.printStackTrace();
         }
     }
