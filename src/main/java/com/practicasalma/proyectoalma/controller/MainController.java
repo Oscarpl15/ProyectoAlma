@@ -62,6 +62,12 @@ public class MainController {
     }
 
     @FXML
+    protected void mostrarGraficas() {
+        tabPrincipal.getSelectionModel().select(4);
+        System.out.println("Navegando a Graficas...");
+    }
+
+    @FXML
     protected void configurarCorreo() {
         TextInputDialog correoDialog = new TextInputDialog();
         correoDialog.setTitle("Configurar correo");

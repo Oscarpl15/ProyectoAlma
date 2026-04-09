@@ -24,4 +24,8 @@ public class SocioService {
     public List<Socio> obtenerTodos() {
         return socioDAO.obtenerTodos();
     }
+
+    public List<Socio> obtenerTodosConDonaciones() {
+        return socioDAO.obtenerTodosConDonaciones();
+    }
 }

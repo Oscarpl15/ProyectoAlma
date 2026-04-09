@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:id="rootGraficas"
+           fx:controller="com.practicasalma.proyectoalma.controller.GraficasController">
+
+    <ImageView fx:id="imgFondoGraficas" opacity="0.25" preserveRatio="false" mouseTransparent="true">
+        <image>
+            <Image url="@../assets/Fondo1.png"/>
+        </image>
+    </ImageView>
+
+    <BorderPane style="-fx-background-color: rgba(255,255,255,0.82); -fx-background-radius: 10;">
+        <padding>
+            <Insets top="16" right="16" bottom="16" left="16"/>
+        </padding>
+
+        <top>
+            <VBox spacing="10">
+                <Label text="Panel de Graficas" styleClass="titulo-ventana"/>
+
+                <GridPane hgap="12" vgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="20"/>
+                        <ColumnConstraints percentWidth="20"/>
+                        <ColumnConstraints percentWidth="20"/>
+                        <ColumnConstraints percentWidth="20"/>
+                        <ColumnConstraints percentWidth="20"/>
+                    </columnConstraints>
+
+                    <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Entidad" styleClass="etiqueta-campo"/>
+                        <ComboBox fx:id="comboEntidad" maxWidth="1.7976931348623157E308"/>
+                    </VBox>
+
+                    <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Tipo dato" styleClass="etiqueta-campo"/>
+                        <ComboBox fx:id="comboTipoDato" maxWidth="1.7976931348623157E308"/>
+                    </VBox>
+
+                    <VBox spacing="4" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                        <Label text="Ano" styleClass="etiqueta-campo"/>
+                        <ComboBox fx:id="comboAno" maxWidth="1.7976931348623157E308"/>
+                    </VBox>
+
+                    <VBox fx:id="boxTipoSocio" spacing="4" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                        <Label text="Tipo socio" styleClass="etiqueta-campo"/>
+                        <ComboBox fx:id="comboTipoSocio" maxWidth="1.7976931348623157E308"/>
+                    </VBox>
+
+                    <VBox fx:id="boxPeriodicidad" spacing="4" GridPane.columnIndex="4" GridPane.rowIndex="0">
+                        <Label text="Periodicidad" styleClass="etiqueta-campo"/>
+                        <ComboBox fx:id="comboPeriodicidad" maxWidth="1.7976931348623157E308"/>
+                    </VBox>
+                </GridPane>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Visual" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboVisual" prefWidth="180" disable="true"/>
+                    <Label fx:id="lblActualizacion" text="Alumnos: circular | Socios: barras"/>
+                </HBox>
+            </VBox>
+        </top>
+
+        <center>
+            <StackPane prefHeight="480">
+                <BarChart fx:id="barChart" animated="false" legendVisible="false">
+                    <xAxis>
+                        <CategoryAxis fx:id="xAxis"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis fx:id="yAxis"/>
+                    </yAxis>
+                </BarChart>
+
+                <PieChart fx:id="pieChart" visible="false" managed="false" labelsVisible="true" legendVisible="true"/>
+            </StackPane>
+        </center>
+
+        <bottom>
+            <VBox spacing="6" style="-fx-padding: 12 0 0 0;">
+                <Label text="Resumen" styleClass="titulo-seccion"/>
+                <Label fx:id="lblResumen1" text="-"/>
+                <Label fx:id="lblResumen2" text="-"/>
+                <Label fx:id="lblResumen3" text="-"/>
+            </VBox>
+        </bottom>
+    </BorderPane>
+
+</StackPane>

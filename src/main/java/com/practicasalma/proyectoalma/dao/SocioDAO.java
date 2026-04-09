@@ -3,6 +3,10 @@ package com.practicasalma.proyectoalma.dao;
 import com.practicasalma.proyectoalma.model.Socio;
 import com.practicasalma.proyectoalma.util.GestorBBDD;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.JoinType;
 
 import java.util.List;
 
@@ -61,6 +65,22 @@ public class SocioDAO {
             return em.createQuery("SELECT s FROM Socio s", Socio.class).getResultList();
         } catch (Exception e) {
             System.err.println("Error al cargar socios: " + e.getMessage());
+            return List.of();
+        }
+    }
+
+    public List<Socio> obtenerTodosConDonaciones() {
+        try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Socio> query = cb.createQuery(Socio.class);
+            Root<Socio> root = query.from(Socio.class);
+
+            root.fetch("donaciones", JoinType.LEFT);
+            query.select(root).distinct(true);
+
+            return em.createQuery(query).getResultList();
+        } catch (Exception e) {
+            System.err.println("Error al cargar socios con donaciones: " + e.getMessage());
             return List.of();
         }
     }

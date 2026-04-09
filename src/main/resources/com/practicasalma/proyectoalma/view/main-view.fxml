@@ -67,6 +67,11 @@
                                     <Insets left="20.0" />
                                 </HBox.margin>
                             </ToggleButton>
+                            <ToggleButton onAction="#mostrarGraficas" styleClass="boton-menu" text="GRAFICAS" toggleGroup="$menuGroup">
+                                <HBox.margin>
+                                    <Insets left="20.0" />
+                                </HBox.margin>
+                            </ToggleButton>
                         </HBox>
                     </VBox>
                 </center>
@@ -82,6 +87,7 @@
                             <Tab><content><fx:include source="docentes-view.fxml" /></content></Tab>
                             <Tab><content><fx:include source="voluntarios-view.fxml" /></content></Tab>
                             <Tab><content><fx:include source="socios-view.fxml"/></content></Tab>
+                            <Tab><content><fx:include source="graficas-view.fxml"/></content></Tab>
                         </tabs>
                     </TabPane>
                 </center>
