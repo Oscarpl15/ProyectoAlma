@@ -12,14 +12,19 @@ import com.practicasalma.proyectoalma.util.Validador;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.collections.FXCollections;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -127,6 +132,16 @@ public class FichaAlumnoController {
                 c.getValue().getGrupoAsignado() != null ? c.getValue().getGrupoAsignado() : "—"));
         colMatRepeticion.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
                 Boolean.TRUE.equals(c.getValue().getEsRepeticion()) ? "Sí" : "No"));
+
+        // Doble clic en matrícula → abrir ficha de matrícula
+        tablaMatriculas.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                Matricula seleccionada = tablaMatriculas.getSelectionModel().getSelectedItem();
+                if (seleccionada != null) {
+                    abrirFichaMatricula(seleccionada);
+                }
+            }
+        });
 
         // Configurar columnas de Tutores
         colTutorNombre.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getNombre()));
@@ -543,6 +558,37 @@ public class FichaAlumnoController {
     private void cerrarVentana() {
         Stage stage = (Stage) btnCerrar.getScene().getWindow();
         stage.close();
+    }
+
+    private void abrirFichaMatricula(Matricula matricula) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/practicasalma/proyectoalma/view/ficha-matricula.fxml"));
+            Parent root = loader.load();
+
+            FichaMatriculaController controller = loader.getController();
+            String nombreAlumno = (alumnoActual.getNombre() != null ? alumnoActual.getNombre() : "") +
+                    " " + (alumnoActual.getApellidos() != null ? alumnoActual.getApellidos() : "");
+            controller.setMatricula(matricula, nombreAlumno.trim());
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Ficha de Matrícula");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            // Refrescar tabla tras posibles cambios
+            tablaMatriculas.refresh();
+            // Actualizar el campo curso visible si la última matrícula cambió
+            if (alumnoActual.getMatriculas() != null && !alumnoActual.getMatriculas().isEmpty()) {
+                var ultima = alumnoActual.getMatriculas().get(alumnoActual.getMatriculas().size() - 1);
+                txtCurso.setText(ultima.getCurso() != null ? ultima.getCurso() : "Sin curso");
+                txtGrupoLectura.setText(ultima.getGrupoAsignado() != null ? ultima.getGrupoAsignado() : "Sin grupo");
+                comboGrupo.setValue(ultima.getGrupoAsignado());
+            }
+        } catch (Exception e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ficha de matrícula: " + e.getMessage());
+        }
     }
 
     // ── TUTORES ──────────────────────────────────────────────────────────────

@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.controller;
 
 
 import com.practicasalma.proyectoalma.service.GestorCorreo;
+import com.practicasalma.proyectoalma.service.GestorMatriculas;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
@@ -29,6 +30,7 @@ public class MainController {
         if (tabPrincipal != null) {
             tabPrincipal.getSelectionModel().select(0);
         }
+        GestorMatriculas.ejecutar();
     }
 
     // --- MÉTODOS DE LOS BOTONES DEL MENÚ ---
