@@ -85,6 +85,12 @@
                         <TextField fx:id="txtPeriodicidadLectura" styleClass="campo-lectura" editable="false"/>
                         <ComboBox fx:id="comboPeriodicidad" maxWidth="Infinity" visible="false" managed="false"/>
                     </StackPane>
+
+                    <Label text="Ciudad:" GridPane.columnIndex="0" GridPane.rowIndex="6" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCiudad" GridPane.columnIndex="1" GridPane.rowIndex="6" styleClass="campo-lectura"/>
+
+                    <Label text="Cód. Postal:" GridPane.columnIndex="2" GridPane.rowIndex="6" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCodigoPostal" GridPane.columnIndex="3" GridPane.rowIndex="6" styleClass="campo-lectura"/>
                 </GridPane>
 
                 <VBox spacing="10">

@@ -7,6 +7,8 @@ import com.practicasalma.proyectoalma.model.Tutor;
 import com.practicasalma.proyectoalma.service.AlumnoService;
 import com.practicasalma.proyectoalma.service.PersonaAutorizadaService;
 import com.practicasalma.proyectoalma.service.TutorService;
+import com.practicasalma.proyectoalma.util.FxUtils;
+import com.practicasalma.proyectoalma.util.Validador;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -51,10 +53,12 @@ public class FichaAlumnoController {
     @FXML private TextField txtGrupoLectura;
     @FXML private ComboBox<String> comboGrupo;
 
-    // Nacionalidad y Género
+    // Nacionalidad, Género, Ciudad y Código Postal
     @FXML private TextField txtNacionalidad;
     @FXML private TextField txtGeneroLectura;
     @FXML private ComboBox<String> comboGenero;
+    @FXML private TextField txtCiudad;
+    @FXML private TextField txtCodigoPostal;
 
     // Seguimiento y Derivación (Lectura)
     @FXML private VBox boxSeguimientoLectura;
@@ -173,6 +177,8 @@ public class FichaAlumnoController {
             txtNacionalidad.setText(alumnoActual.getNacionalidad() != null ? alumnoActual.getNacionalidad() : "");
             txtGeneroLectura.setText(alumnoActual.getGenero() != null ? alumnoActual.getGenero() : "");
             comboGenero.setValue(alumnoActual.getGenero());
+            txtCiudad.setText(alumnoActual.getCiudad() != null ? alumnoActual.getCiudad() : "");
+            txtCodigoPostal.setText(alumnoActual.getCodigoPostal() != null ? alumnoActual.getCodigoPostal() : "");
             dpFechaNacimiento.setValue(alumnoActual.getFechaNacimiento());
 
             chkAutoDatos.setSelected(Boolean.TRUE.equals(alumnoActual.getAutorizaUsoDatos()));
@@ -286,8 +292,10 @@ public class FichaAlumnoController {
         comboGenero.setVisible(editable);
         comboGenero.setManaged(editable);
 
-        // Nacionalidad editable/no editable
+        // Nacionalidad, Ciudad y Código Postal
         txtNacionalidad.setEditable(editable);
+        txtCiudad.setEditable(editable);
+        txtCodigoPostal.setEditable(editable);
 
         // Truco visual para Seguimiento/Derivación
         boxSeguimientoLectura.setVisible(!editable);
@@ -370,6 +378,13 @@ public class FichaAlumnoController {
             alumnoActual.setDerivadoPor(txtDerivado.getText());
             alumnoActual.setNacionalidad(txtNacionalidad.getText().isBlank() ? null : txtNacionalidad.getText().trim());
             alumnoActual.setGenero(comboGenero.getValue());
+            alumnoActual.setCiudad(txtCiudad.getText().isBlank() ? null : txtCiudad.getText().trim());
+            String cp = txtCodigoPostal.getText().trim();
+            if (!cp.isBlank() && !Validador.esCodigoPostalValido(cp)) {
+                FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Código postal inválido", "El código postal debe tener exactamente 5 dígitos.");
+                return;
+            }
+            alumnoActual.setCodigoPostal(cp.isBlank() ? null : cp);
 
             // 2. Recoger Autorizaciones
             alumnoActual.setAutorizaUsoDatos(chkAutoDatos.isSelected());

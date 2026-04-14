@@ -92,6 +92,12 @@
                     </FXCollections>
                 </items>
             </ComboBox>
+
+            <Label text="Ciudad:" GridPane.rowIndex="6" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+            <TextField fx:id="txtCiudad" promptText="Ej: Madrid" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+            <Label text="Cód. Postal:" GridPane.rowIndex="6" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+            <TextField fx:id="txtCodigoPostal" promptText="Ej: 28001" GridPane.rowIndex="6" GridPane.columnIndex="3"/>
         </GridPane>
 
         <Separator />

@@ -4,6 +4,7 @@ import com.practicasalma.proyectoalma.model.AsignacionPersonal;
 import com.practicasalma.proyectoalma.model.Voluntario;
 import com.practicasalma.proyectoalma.service.VoluntarioService;
 import com.practicasalma.proyectoalma.util.FxUtils;
+import com.practicasalma.proyectoalma.util.Validador;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -34,6 +35,8 @@ public class FichaVoluntarioController {
 
     @FXML private TextField txtGeneroLectura;
     @FXML private ComboBox<String> comboGenero;
+    @FXML private TextField txtCiudad;
+    @FXML private TextField txtCodigoPostal;
 
     @FXML private CheckBox chkDelitosSexuales;
     @FXML private CheckBox chkProteccionDatos;
@@ -75,6 +78,8 @@ public class FichaVoluntarioController {
 
         txtGeneroLectura.setText(voluntarioActual.getGenero() != null ? voluntarioActual.getGenero() : "");
         comboGenero.setValue(voluntarioActual.getGenero());
+        txtCiudad.setText(voluntarioActual.getCiudad() != null ? voluntarioActual.getCiudad() : "");
+        txtCodigoPostal.setText(voluntarioActual.getCodigoPostal() != null ? voluntarioActual.getCodigoPostal() : "");
 
         chkDelitosSexuales.setSelected(Boolean.TRUE.equals(voluntarioActual.getAutoDelitosSexuales()));
         chkProteccionDatos.setSelected(Boolean.TRUE.equals(voluntarioActual.getAutoProteccionDatos()));
@@ -105,9 +110,11 @@ public class FichaVoluntarioController {
         txtCorreo.setEditable(editable);
         txtDireccion.setEditable(editable);
         txtNacionalidad.setEditable(editable);
-        chkDelitosSexuales.setDisable(!editable);
-        chkProteccionDatos.setDisable(!editable);
-        chkActivo.setDisable(!editable);
+        txtCiudad.setEditable(editable);
+        txtCodigoPostal.setEditable(editable);
+        actualizarVistaCheckbox(chkDelitosSexuales, "Cert. Delitos Sexuales", editable);
+        actualizarVistaCheckbox(chkProteccionDatos, "Cert. Protección Datos", editable);
+        actualizarVistaCheckbox(chkActivo, "Activo", editable);
 
         btnCambiarFoto.setVisible(editable);
         btnCambiarFoto.setManaged(editable);
@@ -126,6 +133,22 @@ public class FichaVoluntarioController {
         txtGeneroLectura.setManaged(!editable);
         comboGenero.setVisible(editable);
         comboGenero.setManaged(editable);
+    }
+
+    private void actualizarVistaCheckbox(CheckBox chk, String textoBase, boolean editable) {
+        chk.setDisable(!editable);
+        chk.getStyleClass().removeAll("check-lectura-true", "check-lectura-false");
+        if (!editable) {
+            if (chk.isSelected()) {
+                chk.setText("✔  " + textoBase);
+                chk.getStyleClass().add("check-lectura-true");
+            } else {
+                chk.setText("✘  " + textoBase);
+                chk.getStyleClass().add("check-lectura-false");
+            }
+        } else {
+            chk.setText(textoBase);
+        }
     }
 
     @FXML
@@ -150,6 +173,13 @@ public class FichaVoluntarioController {
         voluntarioActual.setDireccion(txtDireccion.getText().trim());
         voluntarioActual.setNacionalidad(txtNacionalidad.getText().trim());
         voluntarioActual.setGenero(comboGenero.getValue());
+        voluntarioActual.setCiudad(txtCiudad.getText().isBlank() ? null : txtCiudad.getText().trim());
+        String cp = txtCodigoPostal.getText().trim();
+        if (!cp.isBlank() && !Validador.esCodigoPostalValido(cp)) {
+            FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Código postal inválido", "El código postal debe tener exactamente 5 dígitos.");
+            return;
+        }
+        voluntarioActual.setCodigoPostal(cp.isBlank() ? null : cp);
         voluntarioActual.setAutoDelitosSexuales(chkDelitosSexuales.isSelected());
         voluntarioActual.setAutoProteccionDatos(chkProteccionDatos.isSelected());
         voluntarioActual.setActivo(chkActivo.isSelected());
