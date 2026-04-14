@@ -19,6 +19,7 @@
     </top>
 
     <center>
+        <ScrollPane fitToWidth="true" styleClass="fondo-blanco">
         <HBox spacing="20" styleClass="padding-cuerpo-ficha">
 
             <VBox spacing="20" styleClass="panel-lateral-ficha" alignment="TOP_CENTER">
@@ -129,6 +130,7 @@
                 </VBox>
             </VBox>
         </HBox>
+        </ScrollPane>
     </center>
 
     <bottom>

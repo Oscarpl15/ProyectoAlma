@@ -48,7 +48,8 @@ public class FichaMatriculaController {
 
     private void cargarDatosEnVista(String nombreAlumno) {
         txtAlumno.setText(nombreAlumno != null ? nombreAlumno : "");
-        txtAnyoAcademico.setText(matriculaActual.getAnyoAcademico() != null ? matriculaActual.getAnyoAcademico() : "");
+        String anyo = matriculaActual.getAnyoAcademico() != null ? matriculaActual.getAnyoAcademico().replace("-", "/") : "";
+        txtAnyoAcademico.setText(anyo);
         txtCurso.setText(cursoOriginal != null ? cursoOriginal : "");
         txtGrupoLectura.setText(matriculaActual.getGrupoAsignado() != null ? matriculaActual.getGrupoAsignado() : "Sin grupo");
         comboGrupo.setValue(matriculaActual.getGrupoAsignado());
@@ -68,7 +69,6 @@ public class FichaMatriculaController {
         btnEditar.setManaged(!editable);
         btnCerrar.setVisible(!editable);
         btnCerrar.setManaged(!editable);
-
         btnGuardar.setVisible(editable);
         btnGuardar.setManaged(editable);
         btnCancelarEdicion.setVisible(editable);
@@ -79,12 +79,13 @@ public class FichaMatriculaController {
         chk.setDisable(!editable);
         chk.getStyleClass().removeAll("check-lectura-true", "check-lectura-false");
         if (!editable) {
+            // Repetidor: Sí = rojo (malo), No = verde (bien) — lógica invertida
             if (chk.isSelected()) {
-                chk.setText("✔  " + textoBase);
-                chk.getStyleClass().add("check-lectura-true");
-            } else {
-                chk.setText("✘  " + textoBase);
+                chk.setText("✘  Sí");
                 chk.getStyleClass().add("check-lectura-false");
+            } else {
+                chk.setText("✔  No");
+                chk.getStyleClass().add("check-lectura-true");
             }
         } else {
             chk.setText(textoBase);
