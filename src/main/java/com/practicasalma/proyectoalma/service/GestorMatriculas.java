@@ -14,16 +14,23 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class GestorMatriculas {
 
     private static final List<String> CURSOS = List.of(
+            "1º Infantil", "2º Infantil", "3º Infantil",
             "1º Primaria", "2º Primaria", "3º Primaria",
             "4º Primaria", "5º Primaria", "6º Primaria"
     );
+
+    private static final String RUTA_POSTPONED = "datos/postponed_matriculas.properties";
 
     public static void ejecutar() {
         if (!esPeriodoGeneracion()) return;
@@ -41,8 +48,20 @@ public class GestorMatriculas {
 
         if (sinMatricula.isEmpty()) return;
 
+        Properties postponed = cargarPostponed();
+        LocalDate hoy = LocalDate.now();
+
         List<Alumno> enSexto = sinMatricula.stream()
                 .filter(a -> "6º Primaria".equals(obtenerUltimoCurso(a)))
+                .filter(a -> {
+                    String fechaStr = postponed.getProperty(String.valueOf(a.getId()));
+                    if (fechaStr == null) return true;
+                    LocalDate fechaPostponer = LocalDate.parse(fechaStr);
+                    if (hoy.isBefore(fechaPostponer)) return false;
+                    postponed.remove(String.valueOf(a.getId()));
+                    guardarPostponed(postponed);
+                    return true;
+                })
                 .collect(Collectors.toList());
 
         List<Alumno> resto = sinMatricula.stream()
@@ -63,7 +82,7 @@ public class GestorMatriculas {
         }
 
         if (!enSexto.isEmpty()) {
-            mostrarDialogoSexto(enSexto, anyoActual, matriculaDAO, alumnoDAO);
+            mostrarDialogoSexto(enSexto, anyoActual, matriculaDAO, alumnoDAO, postponed);
         }
     }
 
@@ -111,8 +130,33 @@ public class GestorMatriculas {
         return alumno.getMatriculas().get(alumno.getMatriculas().size() - 1).getCurso();
     }
 
+    private static Properties cargarPostponed() {
+        Properties props = new Properties();
+        File f = new File(RUTA_POSTPONED);
+        if (f.exists()) {
+            try (FileInputStream fis = new FileInputStream(f)) {
+                props.load(fis);
+            } catch (Exception e) {
+                System.err.println("Error cargando postponed: " + e.getMessage());
+            }
+        }
+        return props;
+    }
+
+    private static void guardarPostponed(Properties props) {
+        try {
+            new File("datos").mkdirs();
+            try (FileOutputStream fos = new FileOutputStream(RUTA_POSTPONED)) {
+                props.store(fos, null);
+            }
+        } catch (Exception e) {
+            System.err.println("Error guardando postponed: " + e.getMessage());
+        }
+    }
+
     private static void mostrarDialogoSexto(List<Alumno> alumnos, String anyoAcademico,
-                                            MatriculaDAO matriculaDAO, AlumnoDAO alumnoDAO) {
+                                            MatriculaDAO matriculaDAO, AlumnoDAO alumnoDAO,
+                                            Properties postponed) {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Alumnos finalizando 6º Primaria");
@@ -125,28 +169,34 @@ public class GestorMatriculas {
         listaAlumnos.getChildren().add(titulo);
 
         for (Alumno alumno : alumnos) {
-            HBox fila = construirFilaAlumno(alumno, anyoAcademico, matriculaDAO, alumnoDAO, listaAlumnos, stage);
+            HBox fila = construirFilaAlumno(alumno, anyoAcademico, matriculaDAO, alumnoDAO,
+                    listaAlumnos, stage, postponed);
             listaAlumnos.getChildren().add(fila);
         }
 
-        Scene scene = new Scene(listaAlumnos, 550, Math.min(80 + alumnos.size() * 50, 500));
+        Scene scene = new Scene(listaAlumnos, 600, Math.min(80 + alumnos.size() * 50, 500));
         stage.setScene(scene);
         stage.showAndWait();
     }
 
     private static HBox construirFilaAlumno(Alumno alumno, String anyoAcademico,
                                             MatriculaDAO matriculaDAO, AlumnoDAO alumnoDAO,
-                                            VBox lista, Stage stage) {
+                                            VBox lista, Stage stage, Properties postponed) {
         HBox fila = new HBox(15);
         fila.setAlignment(Pos.CENTER_LEFT);
 
         String nombreCompleto = (alumno.getNombre() != null ? alumno.getNombre() : "") +
                 " " + (alumno.getApellidos() != null ? alumno.getApellidos() : "");
         Label nombre = new Label(nombreCompleto.trim());
-        nombre.setPrefWidth(250);
+        nombre.setPrefWidth(220);
 
         Button btnRepite = new Button("Sí repite");
         Button btnBaja = new Button("No repite");
+        Button btnPostponer = new Button("Postponer");
+
+        btnRepite.setMinWidth(Button.USE_PREF_SIZE);
+        btnBaja.setMinWidth(Button.USE_PREF_SIZE);
+        btnPostponer.setMinWidth(Button.USE_PREF_SIZE);
 
         btnRepite.setOnAction(e -> {
             try {
@@ -171,12 +221,19 @@ public class GestorMatriculas {
             cerrarSiVacio(lista, stage);
         });
 
-        fila.getChildren().addAll(nombre, btnRepite, btnBaja);
+        btnPostponer.setOnAction(e -> {
+            String fechaPostponer = LocalDate.now().plusDays(7).toString();
+            postponed.setProperty(String.valueOf(alumno.getId()), fechaPostponer);
+            guardarPostponed(postponed);
+            lista.getChildren().remove(fila);
+            cerrarSiVacio(lista, stage);
+        });
+
+        fila.getChildren().addAll(nombre, btnRepite, btnBaja, btnPostponer);
         return fila;
     }
 
     private static void cerrarSiVacio(VBox lista, Stage stage) {
-        // Only the title label remains → all decisions made
         long filas = lista.getChildren().stream()
                 .filter(n -> n instanceof HBox)
                 .count();
