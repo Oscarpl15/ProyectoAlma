@@ -6,6 +6,7 @@ import com.practicasalma.proyectoalma.service.GeneradorPdfService;
 import com.practicasalma.proyectoalma.service.GestorCorreo;
 import com.practicasalma.proyectoalma.service.SocioService;
 import com.practicasalma.proyectoalma.util.FxUtils;
+import com.practicasalma.proyectoalma.util.Validador;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -13,6 +14,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import javafx.application.Platform;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -39,6 +42,8 @@ public class FichaSocioController {
 
     @FXML private TextField txtGeneroLectura;
     @FXML private ComboBox<String> comboGenero;
+    @FXML private TextField txtCiudad;
+    @FXML private TextField txtCodigoPostal;
 
     @FXML private TextField txtTipoEntidadLectura;
     @FXML private ComboBox<String> comboTipoEntidad;
@@ -81,6 +86,7 @@ public class FichaSocioController {
         this.socioActual = socio;
         cargarDatosEnVista();
         cambiarModoEdicion(false);
+        Platform.runLater(() -> btnEditar.requestFocus());
     }
 
     private void cargarDatosEnVista() {
@@ -95,6 +101,8 @@ public class FichaSocioController {
 
         txtGeneroLectura.setText(socioActual.getGenero() != null ? socioActual.getGenero() : "");
         comboGenero.setValue(socioActual.getGenero());
+        txtCiudad.setText(socioActual.getCiudad() != null ? socioActual.getCiudad() : "");
+        txtCodigoPostal.setText(socioActual.getCodigoPostal() != null ? socioActual.getCodigoPostal() : "");
 
         txtTipoEntidadLectura.setText(socioActual.getTipoEntidad() != null ? socioActual.getTipoEntidad() : "");
         comboTipoEntidad.setValue(socioActual.getTipoEntidad());
@@ -136,7 +144,9 @@ public class FichaSocioController {
         txtCuentaBancaria.setEditable(editable);
         txtCodigoBic.setEditable(editable);
         txtTipoBanco.setEditable(editable);
-        chkActivo.setDisable(!editable);
+        actualizarVistaCheckbox(chkActivo, "Activo", editable);
+        txtCiudad.setEditable(editable);
+        txtCodigoPostal.setEditable(editable);
 
         btnCambiarFoto.setVisible(editable);
         btnCambiarFoto.setManaged(editable);
@@ -172,6 +182,22 @@ public class FichaSocioController {
         comboPeriodicidad.setManaged(editable);
     }
 
+    private void actualizarVistaCheckbox(CheckBox chk, String textoBase, boolean editable) {
+        chk.setDisable(!editable);
+        chk.getStyleClass().removeAll("check-lectura-true", "check-lectura-false");
+        if (!editable) {
+            if (chk.isSelected()) {
+                chk.setText("✔  " + textoBase);
+                chk.getStyleClass().add("check-lectura-true");
+            } else {
+                chk.setText("✘  " + textoBase);
+                chk.getStyleClass().add("check-lectura-false");
+            }
+        } else {
+            chk.setText(textoBase);
+        }
+    }
+
     @FXML
     private void activarEdicion() {
         cambiarModoEdicion(true);
@@ -193,6 +219,13 @@ public class FichaSocioController {
         socioActual.setDireccion(txtDireccion.getText().trim());
         socioActual.setNacionalidad(txtNacionalidad.getText().trim());
         socioActual.setGenero(comboGenero.getValue());
+        socioActual.setCiudad(txtCiudad.getText().isBlank() ? null : txtCiudad.getText().trim());
+        String cp = txtCodigoPostal.getText().trim();
+        if (!cp.isBlank() && !Validador.esCodigoPostalValido(cp)) {
+            FxUtils.mostrarAlerta(javafx.scene.control.Alert.AlertType.WARNING, "Código postal inválido", "El código postal debe tener exactamente 5 dígitos.");
+            return;
+        }
+        socioActual.setCodigoPostal(cp.isBlank() ? null : cp);
         socioActual.setTipoEntidad(comboTipoEntidad.getValue());
         socioActual.setPeriodicidad(comboPeriodicidad.getValue());
         socioActual.setActivo(chkActivo.isSelected());

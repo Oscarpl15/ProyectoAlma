@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Voluntario;
 import com.practicasalma.proyectoalma.service.VoluntarioService;
+import com.practicasalma.proyectoalma.util.Validador;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -25,6 +26,8 @@ public class AgregarVoluntarioController {
     @FXML private DatePicker dpFechaNacimiento;
     @FXML private TextField txtNacionalidad;
     @FXML private ComboBox<String> comboGenero;
+    @FXML private TextField txtCiudad;
+    @FXML private TextField txtCodigoPostal;
     @FXML private CheckBox checkDelitos;
     @FXML private CheckBox checkProtDatos;
 
@@ -53,6 +56,16 @@ public class AgregarVoluntarioController {
             if (!nacionalidad.isEmpty()) voluntario.setNacionalidad(nacionalidad);
             String genero = comboGenero.getValue();
             if (genero != null) voluntario.setGenero(genero);
+            String ciudad = txtCiudad.getText().trim();
+            if (!ciudad.isEmpty()) voluntario.setCiudad(ciudad);
+            String cp = txtCodigoPostal.getText().trim();
+            if (!cp.isEmpty()) {
+                if (!Validador.esCodigoPostalValido(cp)) {
+                    mostrarError("El código postal debe tener exactamente 5 dígitos.");
+                    return;
+                }
+                voluntario.setCodigoPostal(cp);
+            }
             voluntarioService.guardarVoluntario(voluntario);
             cerrarVentana(event);
         } catch (Exception e) {

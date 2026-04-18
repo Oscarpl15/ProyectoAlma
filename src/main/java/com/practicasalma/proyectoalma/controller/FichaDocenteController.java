@@ -4,6 +4,7 @@ import com.practicasalma.proyectoalma.model.AsignacionPersonal;
 import com.practicasalma.proyectoalma.model.Docente;
 import com.practicasalma.proyectoalma.service.DocenteService;
 import com.practicasalma.proyectoalma.util.FxUtils;
+import com.practicasalma.proyectoalma.util.Validador;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -11,6 +12,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import javafx.application.Platform;
 
 import java.io.File;
 
@@ -35,6 +38,8 @@ public class FichaDocenteController {
 
     @FXML private TextField txtGeneroLectura;
     @FXML private ComboBox<String> comboGenero;
+    @FXML private TextField txtCiudad;
+    @FXML private TextField txtCodigoPostal;
 
     @FXML private CheckBox chkDelitosSexuales;
     @FXML private CheckBox chkProteccionDatos;
@@ -62,6 +67,7 @@ public class FichaDocenteController {
         this.docenteActual = docente;
         cargarDatosEnVista();
         cambiarModoEdicion(false);
+        Platform.runLater(() -> btnEditar.requestFocus());
     }
 
     private void cargarDatosEnVista() {
@@ -77,6 +83,8 @@ public class FichaDocenteController {
 
         txtGeneroLectura.setText(docenteActual.getGenero() != null ? docenteActual.getGenero() : "");
         comboGenero.setValue(docenteActual.getGenero());
+        txtCiudad.setText(docenteActual.getCiudad() != null ? docenteActual.getCiudad() : "");
+        txtCodigoPostal.setText(docenteActual.getCodigoPostal() != null ? docenteActual.getCodigoPostal() : "");
 
         chkDelitosSexuales.setSelected(Boolean.TRUE.equals(docenteActual.getAutoDelitosSexuales()));
         chkProteccionDatos.setSelected(Boolean.TRUE.equals(docenteActual.getAutoProteccionDatos()));
@@ -108,9 +116,11 @@ public class FichaDocenteController {
         txtDireccion.setEditable(editable);
         txtTitulacion.setEditable(editable);
         txtNacionalidad.setEditable(editable);
-        chkDelitosSexuales.setDisable(!editable);
-        chkProteccionDatos.setDisable(!editable);
-        chkActivo.setDisable(!editable);
+        txtCiudad.setEditable(editable);
+        txtCodigoPostal.setEditable(editable);
+        actualizarVistaCheckbox(chkDelitosSexuales, "Cert. Delitos Sexuales", editable);
+        actualizarVistaCheckbox(chkProteccionDatos, "Cert. Protección Datos", editable);
+        actualizarVistaCheckbox(chkActivo, "Activo", editable);
 
         btnCambiarFoto.setVisible(editable);
         btnCambiarFoto.setManaged(editable);
@@ -129,6 +139,22 @@ public class FichaDocenteController {
         txtGeneroLectura.setManaged(!editable);
         comboGenero.setVisible(editable);
         comboGenero.setManaged(editable);
+    }
+
+    private void actualizarVistaCheckbox(CheckBox chk, String textoBase, boolean editable) {
+        chk.setDisable(!editable);
+        chk.getStyleClass().removeAll("check-lectura-true", "check-lectura-false");
+        if (!editable) {
+            if (chk.isSelected()) {
+                chk.setText("✔  " + textoBase);
+                chk.getStyleClass().add("check-lectura-true");
+            } else {
+                chk.setText("✘  " + textoBase);
+                chk.getStyleClass().add("check-lectura-false");
+            }
+        } else {
+            chk.setText(textoBase);
+        }
     }
 
     @FXML
@@ -154,6 +180,13 @@ public class FichaDocenteController {
         docenteActual.setTitulacion(txtTitulacion.getText().trim());
         docenteActual.setNacionalidad(txtNacionalidad.getText().trim());
         docenteActual.setGenero(comboGenero.getValue());
+        docenteActual.setCiudad(txtCiudad.getText().isBlank() ? null : txtCiudad.getText().trim());
+        String cp = txtCodigoPostal.getText().trim();
+        if (!cp.isBlank() && !Validador.esCodigoPostalValido(cp)) {
+            FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Código postal inválido", "El código postal debe tener exactamente 5 dígitos.");
+            return;
+        }
+        docenteActual.setCodigoPostal(cp.isBlank() ? null : cp);
         docenteActual.setAutoDelitosSexuales(chkDelitosSexuales.isSelected());
         docenteActual.setAutoProteccionDatos(chkProteccionDatos.isSelected());
         docenteActual.setActivo(chkActivo.isSelected());

@@ -10,9 +10,9 @@ public class UtilFecha {
         int mesActual = hoy.getMonthValue();
 
         if (mesActual >= 6) {
-            return anyoActual + "-" + (anyoActual + 1);
+            return anyoActual + "/" + (anyoActual + 1);
         }
 
-        return (anyoActual - 1) + "-" + anyoActual;
+        return (anyoActual - 1) + "/" + anyoActual;
     }
 }

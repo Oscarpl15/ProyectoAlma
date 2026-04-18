@@ -8,7 +8,6 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.practicasalma.proyectoalma.controller.FichaDocenteController"
             stylesheets="@../css/estilos.css"
-            prefWidth="1000" prefHeight="700"
             styleClass="fondo-blanco">
 
     <top>
@@ -19,6 +18,7 @@
     </top>
 
     <center>
+        <ScrollPane fitToWidth="true" styleClass="fondo-blanco">
         <HBox spacing="20" styleClass="padding-cuerpo-ficha">
 
             <VBox spacing="20" styleClass="panel-lateral-ficha" alignment="TOP_CENTER">
@@ -84,6 +84,12 @@
                         <TextField fx:id="txtGeneroLectura" styleClass="campo-lectura" editable="false"/>
                         <ComboBox fx:id="comboGenero" maxWidth="Infinity" visible="false" managed="false"/>
                     </StackPane>
+
+                    <Label text="Ciudad:" GridPane.columnIndex="0" GridPane.rowIndex="5" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCiudad" GridPane.columnIndex="1" GridPane.rowIndex="5" styleClass="campo-lectura"/>
+
+                    <Label text="Cód. Postal:" GridPane.columnIndex="2" GridPane.rowIndex="5" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCodigoPostal" GridPane.columnIndex="3" GridPane.rowIndex="5" styleClass="campo-lectura"/>
                 </GridPane>
 
                 <VBox spacing="10">
@@ -105,6 +111,7 @@
                 </VBox>
             </VBox>
         </HBox>
+        </ScrollPane>
     </center>
 
     <bottom>

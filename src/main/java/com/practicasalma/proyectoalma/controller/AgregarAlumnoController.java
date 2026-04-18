@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.service.AlumnoService;
+import com.practicasalma.proyectoalma.util.Validador;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -36,6 +37,8 @@ public class AgregarAlumnoController {
     // Opcionales
     @FXML private TextField txtNacionalidad;
     @FXML private ComboBox<String> comboGenero;
+    @FXML private TextField txtCiudad;
+    @FXML private TextField txtCodigoPostal;
 
     // Seguimiento
     @FXML private CheckBox chkSeguimientoSS;
@@ -123,6 +126,18 @@ public class AgregarAlumnoController {
         if (nacionalidad != null) alumno.setNacionalidad(nacionalidad);
         String genero = comboGenero.getValue();
         if (genero != null) alumno.setGenero(genero);
+
+        String ciudad = limpiarTexto(txtCiudad.getText());
+        if (ciudad != null) alumno.setCiudad(ciudad);
+
+        String cp = limpiarTexto(txtCodigoPostal.getText());
+        if (cp != null) {
+            if (!Validador.esCodigoPostalValido(cp)) {
+                mostrarMensaje("Código postal inválido", "El código postal debe tener exactamente 5 dígitos.", Alert.AlertType.WARNING);
+                return;
+            }
+            alumno.setCodigoPostal(cp);
+        }
 
         // Delegar la responsabilidad al Servicio
         try {

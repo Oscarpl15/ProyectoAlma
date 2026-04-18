@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.util;
 
 import com.practicasalma.proyectoalma.Launcher;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -9,6 +10,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -29,6 +31,12 @@ public class FxUtils {
         stage.setTitle(titulo);
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
+
+        Rectangle2D pantalla = Screen.getPrimary().getVisualBounds();
+        stage.setMaxWidth(pantalla.getWidth() * 0.92);
+        stage.setMaxHeight(pantalla.getHeight() * 0.92);
+        stage.centerOnScreen();
+
         try {
             stage.getIcons().add(new Image(FxUtils.class.getResourceAsStream(RUTA_ICONO)));
         } catch (Exception ignored) {}

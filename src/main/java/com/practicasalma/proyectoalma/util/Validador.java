@@ -59,6 +59,11 @@ public class Validador {
         return soloDigitos.matches("^[0-9]{9}$");
     }
 
+    public static boolean esCodigoPostalValido(String cp) {
+        if (cp == null) return false;
+        return cp.trim().matches("^[0-9]{5}$");
+    }
+
     public static boolean esEmailValido(String email) {
 
         if (email == null) {
