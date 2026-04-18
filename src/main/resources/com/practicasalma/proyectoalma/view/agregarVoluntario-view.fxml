@@ -8,7 +8,6 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.practicasalma.proyectoalma.controller.AgregarVoluntarioController"
-            prefWidth="700.0"
             styleClass="fondo-blanco"
             stylesheets="@../css/estilos.css">
 

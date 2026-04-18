@@ -9,7 +9,6 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.practicasalma.proyectoalma.controller.AgregarAlumnoController"
-            prefWidth="800.0"
             styleClass="fondo-blanco"
             stylesheets="@../css/estilos.css">
 
