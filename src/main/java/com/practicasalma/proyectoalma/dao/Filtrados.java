@@ -1,16 +1,14 @@
 package com.practicasalma.proyectoalma.dao;
 
 import com.practicasalma.proyectoalma.model.Alumno;
+import com.practicasalma.proyectoalma.model.Matricula;
 import com.practicasalma.proyectoalma.model.Socio;
 import com.practicasalma.proyectoalma.util.GestorBBDD;
 import com.practicasalma.proyectoalma.util.UtilFecha;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 

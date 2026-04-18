@@ -1,9 +1,9 @@
 package com.practicasalma.proyectoalma.controller;
 
-import com.practicasalma.proyectoalma.Launcher;
 import com.practicasalma.proyectoalma.model.Voluntario;
 import com.practicasalma.proyectoalma.service.VoluntarioService;
 import com.practicasalma.proyectoalma.util.FxUtils;
+import com.practicasalma.proyectoalma.util.VoluntarioFiltro;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -12,15 +12,12 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import java.time.LocalDate;
 
 public class VoluntariosController {
 
@@ -30,15 +27,17 @@ public class VoluntariosController {
     @FXML private TableColumn<Voluntario, String> colTelefono;
     @FXML private TableColumn<Voluntario, String> colDni;
     @FXML private TableColumn<Voluntario, String> colCorreo;
-
-    // Documentación y Estado
     @FXML private TableColumn<Voluntario, Boolean> colDelitos;
     @FXML private TableColumn<Voluntario, Boolean> colProtDatos;
     @FXML private TableColumn<Voluntario, String> colAB;
+
+    @FXML private ComboBox<String> comboCursoFiltro;
+    @FXML private ComboBox<String> comboEstadoFiltro;
     @FXML private TextField txtBuscar;
 
     private final VoluntarioService voluntarioService = new VoluntarioService();
     private final ObservableList<Voluntario> listaMaestra = FXCollections.observableArrayList();
+    private FilteredList<Voluntario> listaFiltrada;
 
     @FXML
     public void initialize() {
@@ -48,9 +47,9 @@ public class VoluntariosController {
         colDni.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDocumentoIdentidad()));
         colCorreo.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCorreo()));
 
-        // Booleanos comentados temporalmente hasta asegurar que tienes los getters en el modelo Voluntario
-        colDelitos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoDelitosSexuales() != null ? cellData.getValue().getAutoDelitosSexuales() : false));
-        colDelitos.setCellFactory(tc -> new javafx.scene.control.TableCell<>() {
+        colDelitos.setCellValueFactory(cellData -> new SimpleBooleanProperty(
+                cellData.getValue().getAutoDelitosSexuales() != null ? cellData.getValue().getAutoDelitosSexuales() : false));
+        colDelitos.setCellFactory(tc -> new TableCell<>() {
             @Override protected void updateItem(Boolean item, boolean empty) {
                 super.updateItem(item, empty);
                 getStyleClass().removeAll("celda-booleana-true", "celda-booleana-false");
@@ -59,8 +58,9 @@ public class VoluntariosController {
             }
         });
 
-        colProtDatos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoProteccionDatos() != null ? cellData.getValue().getAutoProteccionDatos() : false));
-        colProtDatos.setCellFactory(tc -> new javafx.scene.control.TableCell<>() {
+        colProtDatos.setCellValueFactory(cellData -> new SimpleBooleanProperty(
+                cellData.getValue().getAutoProteccionDatos() != null ? cellData.getValue().getAutoProteccionDatos() : false));
+        colProtDatos.setCellFactory(tc -> new TableCell<>() {
             @Override protected void updateItem(Boolean item, boolean empty) {
                 super.updateItem(item, empty);
                 getStyleClass().removeAll("celda-booleana-true", "celda-booleana-false");
@@ -70,34 +70,60 @@ public class VoluntariosController {
         });
 
         colAB.setCellValueFactory(cellData ->
-                new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Baja"));
+                new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Inactivo"));
         colAB.setCellFactory(FxUtils.celdaEstado());
 
-        FilteredList<Voluntario> listaFiltrada = new FilteredList<>(listaMaestra, v -> true);
-        txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
-            listaFiltrada.setPredicate(voluntario -> {
-                if (newVal == null || newVal.isBlank()) return true;
-                String filtro = newVal.toLowerCase();
-                return voluntario.getNombre().toLowerCase().contains(filtro)
-                        || voluntario.getApellidos().toLowerCase().contains(filtro);
-            });
-        });
+        poblarCursoEscolar();
+        poblarEstado();
+
+        listaFiltrada = new FilteredList<>(listaMaestra, v -> true);
+
+        txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> aplicarFiltros());
+        comboCursoFiltro.valueProperty().addListener((obs, oldVal, newVal) -> aplicarFiltros());
+        comboEstadoFiltro.valueProperty().addListener((obs, oldVal, newVal) -> aplicarFiltros());
+
         SortedList<Voluntario> listaSortable = new SortedList<>(listaFiltrada);
         listaSortable.comparatorProperty().bind(tablaVoluntarios.comparatorProperty());
         tablaVoluntarios.setItems(listaSortable);
 
-        cargarVoluntariosEnTabla();
-
         tablaVoluntarios.setRowFactory(tv -> {
             TableRow<Voluntario> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
-                    Voluntario voluntarioSeleccionado = row.getItem();
-                    abrirFichaVoluntario(voluntarioSeleccionado);
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    abrirFichaVoluntario(row.getItem());
                 }
             });
-            return row ;
+            return row;
         });
+
+        cargarVoluntariosEnTabla();
+    }
+
+    private void poblarCursoEscolar() {
+        LocalDate hoy = LocalDate.now();
+        int anyoInicio = 2022;
+        int anyoActual = (hoy.getMonthValue() >= 9) ? hoy.getYear() : hoy.getYear() - 1;
+
+        ObservableList<String> cursos = FXCollections.observableArrayList();
+        cursos.add("Todos");
+        for (int anyo = anyoInicio; anyo <= anyoActual; anyo++) {
+            cursos.add(anyo + "/" + (anyo + 1));
+        }
+        comboCursoFiltro.setItems(cursos);
+        comboCursoFiltro.setValue("Todos");
+    }
+
+    private void poblarEstado() {
+        comboEstadoFiltro.setItems(FXCollections.observableArrayList("Todos", "Activo", "Inactivo"));
+        comboEstadoFiltro.setValue("Todos");
+    }
+
+    private void aplicarFiltros() {
+        listaFiltrada.setPredicate(VoluntarioFiltro.construir(
+                txtBuscar.getText(),
+                comboCursoFiltro.getValue(),
+                comboEstadoFiltro.getValue()
+        ));
     }
 
     public void cargarVoluntariosEnTabla() {
@@ -126,7 +152,6 @@ public class VoluntariosController {
             cargarVoluntariosEnTabla();
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Error al abrir la ficha: " + e.getMessage());
         }
     }
 

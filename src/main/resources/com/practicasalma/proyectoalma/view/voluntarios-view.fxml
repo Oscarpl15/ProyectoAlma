@@ -8,6 +8,12 @@
       spacing="15" styleClass="contenedor-padding-estandar">
 
     <BorderPane>
+        <left>
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <ComboBox fx:id="comboCursoFiltro" prefWidth="130"/>
+                <ComboBox fx:id="comboEstadoFiltro" prefWidth="110"/>
+            </HBox>
+        </left>
         <right>
             <HBox alignment="CENTER_RIGHT">
                 <TextField fx:id="txtBuscar" promptText="Buscar voluntario..." prefWidth="250"/>

@@ -58,7 +58,9 @@ public class DocenteDAO {
 
     public List<Docente> obtenerTodos() {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
-            return em.createQuery("SELECT d FROM Docente d", Docente.class).getResultList();
+            return em.createQuery(
+                    "SELECT DISTINCT d FROM Docente d LEFT JOIN FETCH d.historialAsignaciones",
+                    Docente.class).getResultList();
         } catch (Exception e) {
             System.err.println("Error al cargar docentes: " + e.getMessage());
             return List.of();

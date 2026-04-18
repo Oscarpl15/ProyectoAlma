@@ -51,28 +51,24 @@ public class MainController {
     protected void mostrarAlumnos() {
         // Selecciona la primera pestaña (Índice 0)
         tabPrincipal.getSelectionModel().select(0);
-        System.out.println("Navegando a Alumnos...");
     }
 
     @FXML
     protected void mostrarDocentes() {
         // Selecciona la segunda pestaña (Índice 1)
         tabPrincipal.getSelectionModel().select(1);
-        System.out.println("Navegando a Docentes...");
     }
 
     @FXML
     protected void mostrarVoluntarios() {
         // Selecciona la tercera pestaña (Índice 2)
         tabPrincipal.getSelectionModel().select(2);
-        System.out.println("Navegando a Voluntarios...");
     }
 
     @FXML
     protected void mostrarSocios() {
         // Selecciona la tercera pestaña (Índice 2)
         tabPrincipal.getSelectionModel().select(3);
-        System.out.println("Navegando a Socios...");
     }
 
     @FXML

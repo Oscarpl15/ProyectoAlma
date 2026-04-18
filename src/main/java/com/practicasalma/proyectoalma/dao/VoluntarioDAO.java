@@ -58,7 +58,9 @@ public class VoluntarioDAO {
 
     public List<Voluntario> obtenerTodos() {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
-            return em.createQuery("SELECT v FROM Voluntario v", Voluntario.class).getResultList();
+            return em.createQuery(
+                    "SELECT DISTINCT v FROM Voluntario v LEFT JOIN FETCH v.historialAsignaciones",
+                    Voluntario.class).getResultList();
         } catch (Exception e) {
             System.err.println("Error al cargar voluntarios: " + e.getMessage());
             return List.of();

@@ -2,8 +2,6 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 
 <VBox xmlns="http://javafx.com/javafx"
@@ -13,27 +11,16 @@
 
     <BorderPane>
         <left>
-            <HBox alignment="CENTER_LEFT" spacing="15">
-                <ComboBox fx:id="comboCursoFiltro" prefWidth="150" promptText="Curso">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="2024-2025"/>
-                            <String fx:value="2025-2026"/>
-                            <String fx:value="2026-2027"/>
-                        </FXCollections>
-                    </items>
-                </ComboBox>
-
-                <ComboBox fx:id="comboGrupoFiltro" prefWidth="150" promptText="Grupo Asignado">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="G1 Lunes"/>
-                            <String fx:value="G1 Martes"/>
-                            <String fx:value="G2 Lunes"/>
-                            <String fx:value="G2 Martes"/>
-                        </FXCollections>
-                    </items>
-                </ComboBox>
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <ComboBox fx:id="comboCursoFiltro" prefWidth="130"/>
+                <ComboBox fx:id="comboCursoAlumnoFiltro" prefWidth="140"/>
+                <ComboBox fx:id="comboGrupoFiltro" prefWidth="175"/><ComboBox fx:id="comboEstadoFiltro" prefWidth="110"/>
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <HBox.margin><Insets left="20"/></HBox.margin>
+                    <Label text="Seguimiento:" styleClass="etiqueta-campo"/>
+                    <CheckBox fx:id="chkSeguimientoSS" text="Servicios Sociales"/>
+                    <CheckBox fx:id="chkSeguimientoSAF" text="SAF"/>
+                </HBox>
             </HBox>
         </left>
         <right>
