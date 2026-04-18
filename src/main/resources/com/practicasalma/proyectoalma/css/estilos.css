@@ -451,3 +451,17 @@
 .table-view .table-row-cell:filled:selected .celda-baja {
     -fx-text-fill: #e74c3c;
 }
+
+/* === BOTÓN DE AJUSTES (Cabecera principal) === */
+.boton-ajustes {
+    -fx-background-color: transparent;
+    -fx-background-radius: 50%;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.boton-ajustes:hover {
+    -fx-background-color: rgba(46, 83, 116, 0.15);
+    -fx-background-radius: 50%;
+}

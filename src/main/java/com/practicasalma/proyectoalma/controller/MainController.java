@@ -4,7 +4,10 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.service.GestorCorreo;
 import com.practicasalma.proyectoalma.service.GestorMatriculas;
 import javafx.fxml.FXML;
+import javafx.geometry.Side;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputDialog;
@@ -20,6 +23,9 @@ public class MainController {
 
     @FXML private StackPane rootPane;
     @FXML private ImageView imgFondo;
+    @FXML private Button btnAjustes;
+
+    private ContextMenu menuAjustes;
 
     @FXML
     public void initialize() {
@@ -31,6 +37,12 @@ public class MainController {
             tabPrincipal.getSelectionModel().select(0);
         }
         GestorMatriculas.ejecutar();
+        menuAjustes = new ContextMenu();
+    }
+
+    @FXML
+    private void abrirMenuAjustes() {
+        menuAjustes.show(btnAjustes, Side.BOTTOM, 0, 4);
     }
 
     // --- MÉTODOS DE LOS BOTONES DEL MENÚ ---

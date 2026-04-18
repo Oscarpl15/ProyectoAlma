@@ -70,6 +70,18 @@
                         </HBox>
                     </VBox>
                 </center>
+                <right>
+                    <HBox alignment="TOP_RIGHT">
+                        <padding><Insets top="20" right="15"/></padding>
+                        <Button fx:id="btnAjustes" onAction="#abrirMenuAjustes" styleClass="boton-ajustes">
+                            <graphic>
+                                <ImageView fitWidth="46" fitHeight="46" preserveRatio="true">
+                                    <image><Image url="@../assets/ajustes.png"/></image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                    </HBox>
+                </right>
             </BorderPane>
         </top>
 

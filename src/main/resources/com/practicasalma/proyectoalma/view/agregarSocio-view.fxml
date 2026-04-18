@@ -5,95 +5,102 @@
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
+<BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.practicasalma.proyectoalma.controller.AgregarSocioController"
             prefWidth="700.0"
             styleClass="fondo-blanco"
             stylesheets="@../css/estilos.css">
 
-    <VBox spacing="20.0" AnchorPane.topAnchor="20.0" AnchorPane.bottomAnchor="20.0"
-          AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
-
-        <VBox spacing="5">
+    <top>
+        <VBox spacing="5" styleClass="padding-cabecera-ficha">
             <Label text="Añadir Nuevo Socio" styleClass="titulo-ventana"/>
             <Label text="Rellena los datos personales y la información de cuota." styleClass="subtitulo-ventana"/>
+            <Separator/>
         </VBox>
+    </top>
 
-        <GridPane vgap="15.0" hgap="15.0">
-            <columnConstraints>
-                <ColumnConstraints hgrow="NEVER" minWidth="90.0" halignment="RIGHT"/>
-                <ColumnConstraints hgrow="ALWAYS" prefWidth="200.0"/>
-                <ColumnConstraints hgrow="NEVER" minWidth="90.0" halignment="RIGHT"/>
-                <ColumnConstraints hgrow="ALWAYS" prefWidth="200.0"/>
-            </columnConstraints>
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="fondo-blanco">
+            <VBox spacing="20" styleClass="padding-cuerpo-ficha">
 
-            <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-            <TextField fx:id="txtNombre" promptText="Ej: Javier" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <GridPane vgap="15.0" hgap="15.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" minWidth="90.0" halignment="RIGHT"/>
+                        <ColumnConstraints hgrow="ALWAYS" prefWidth="200.0"/>
+                        <ColumnConstraints hgrow="NEVER" minWidth="90.0" halignment="RIGHT"/>
+                        <ColumnConstraints hgrow="ALWAYS" prefWidth="200.0"/>
+                    </columnConstraints>
 
-            <Label text="Apellidos:" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
-            <TextField fx:id="txtApellidos" promptText="Ej: Sánchez Pérez" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+                    <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtNombre" promptText="Ej: Javier" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-            <Label text="DNI:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-            <TextField fx:id="txtDni" promptText="Ej: 00000000X" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <Label text="Apellidos:" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtApellidos" promptText="Ej: Sánchez Pérez" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
 
-            <Label text="Dirección:" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
-            <TextField fx:id="txtDireccion" promptText="C/ Ejemplo 12" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+                    <Label text="DNI:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtDni" promptText="Ej: 00000000X" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-            <Label text="Cuota (€):" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-            <TextField fx:id="txtCuota" promptText="Ej: 0.0" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    <Label text="Dirección:" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtDireccion" promptText="C/ Ejemplo 12" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
 
-            <Label text="Tipo Entidad:" GridPane.rowIndex="2" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
-            <ComboBox fx:id="comboTipoEntidad" promptText="Seleccione..." GridPane.rowIndex="2" GridPane.columnIndex="3" maxWidth="Infinity">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Física"/>
-                        <String fx:value="Empresa"/>
-                        <String fx:value="Asociación"/>
-                    </FXCollections>
-                </items>
-            </ComboBox>
+                    <Label text="Cuota (€):" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCuota" promptText="Ej: 0.0" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-            <Label text="Periodicidad:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-            <ComboBox fx:id="comboPeriodicidad" promptText="Seleccione..." GridPane.rowIndex="3" GridPane.columnIndex="1" maxWidth="Infinity">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Mensual"/>
-                        <String fx:value="Trimestral"/>
-                        <String fx:value="Anual"/>
-                        <String fx:value="Puntual"/>
-                    </FXCollections>
-                </items>
-            </ComboBox>
+                    <Label text="Tipo Entidad:" GridPane.rowIndex="2" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboTipoEntidad" promptText="Seleccione..." GridPane.rowIndex="2" GridPane.columnIndex="3" maxWidth="Infinity">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Física"/>
+                                <String fx:value="Empresa"/>
+                                <String fx:value="Asociación"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
 
-            <Label text="Nacionalidad:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-            <TextField fx:id="txtNacionalidad" promptText="Ej: Española" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                    <Label text="Periodicidad:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboPeriodicidad" promptText="Seleccione..." GridPane.rowIndex="3" GridPane.columnIndex="1" maxWidth="Infinity">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Mensual"/>
+                                <String fx:value="Trimestral"/>
+                                <String fx:value="Anual"/>
+                                <String fx:value="Puntual"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
 
-            <Label text="Género:" GridPane.rowIndex="4" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
-            <ComboBox fx:id="comboGenero" promptText="Seleccione..." GridPane.rowIndex="4" GridPane.columnIndex="3" maxWidth="Infinity">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Masculino"/>
-                        <String fx:value="Femenino"/>
-                        <String fx:value="No binario"/>
-                        <String fx:value="Prefiero no especificar"/>
-                    </FXCollections>
-                </items>
-            </ComboBox>
+                    <Label text="Nacionalidad:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtNacionalidad" promptText="Ej: Española" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
-            <Label text="Ciudad:" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-            <TextField fx:id="txtCiudad" promptText="Ej: Madrid" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                    <Label text="Género:" GridPane.rowIndex="4" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboGenero" promptText="Seleccione..." GridPane.rowIndex="4" GridPane.columnIndex="3" maxWidth="Infinity">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Masculino"/>
+                                <String fx:value="Femenino"/>
+                                <String fx:value="No binario"/>
+                                <String fx:value="Prefiero no especificar"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
 
-            <Label text="Cód. Postal:" GridPane.rowIndex="5" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
-            <TextField fx:id="txtCodigoPostal" promptText="Ej: 28001" GridPane.rowIndex="5" GridPane.columnIndex="3"/>
-        </GridPane>
+                    <Label text="Ciudad:" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCiudad" promptText="Ej: Madrid" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
 
-        <Region VBox.vgrow="ALWAYS"/>
+                    <Label text="Cód. Postal:" GridPane.rowIndex="5" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCodigoPostal" promptText="Ej: 28001" GridPane.rowIndex="5" GridPane.columnIndex="3"/>
+                </GridPane>
 
-        <HBox spacing="15.0" alignment="CENTER_RIGHT">
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <HBox spacing="15.0" alignment="CENTER_RIGHT" styleClass="padding-pie-ficha">
             <Button text="Cancelar" onAction="#cancelar" styleClass="boton-cancelar"/>
             <Button text="GUARDAR SOCIO" onAction="#guardarSocio" styleClass="boton-accion"/>
         </HBox>
+    </bottom>
 
-    </VBox>
-</AnchorPane>
+</BorderPane>
