@@ -20,6 +20,7 @@
             <Label text="Rellena los datos personales y marca las autorizaciones correspondientes." styleClass="subtitulo-ventana"/>
         </VBox>
 
+        <ScrollPane fitToWidth="true" styleClass="fondo-blanco">
         <GridPane vgap="15.0" hgap="15.0">
             <columnConstraints>
                 <ColumnConstraints hgrow="NEVER" minWidth="90.0" halignment="RIGHT"/>
@@ -99,6 +100,7 @@
             <Label text="Cód. Postal:" GridPane.rowIndex="6" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
             <TextField fx:id="txtCodigoPostal" promptText="Ej: 28001" GridPane.rowIndex="6" GridPane.columnIndex="3"/>
         </GridPane>
+        </ScrollPane>
 
         <Separator />
 
