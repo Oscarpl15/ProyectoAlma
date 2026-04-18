@@ -15,6 +15,8 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javafx.application.Platform;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -84,6 +86,7 @@ public class FichaSocioController {
         this.socioActual = socio;
         cargarDatosEnVista();
         cambiarModoEdicion(false);
+        Platform.runLater(() -> btnEditar.requestFocus());
     }
 
     private void cargarDatosEnVista() {

@@ -13,6 +13,8 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javafx.application.Platform;
+
 import java.io.File;
 
 public class FichaVoluntarioController {
@@ -64,6 +66,7 @@ public class FichaVoluntarioController {
         this.voluntarioActual = voluntario;
         cargarDatosEnVista();
         cambiarModoEdicion(false);
+        Platform.runLater(() -> btnEditar.requestFocus());
     }
 
     private void cargarDatosEnVista() {

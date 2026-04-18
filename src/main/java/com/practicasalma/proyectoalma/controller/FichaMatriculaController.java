@@ -4,6 +4,7 @@ import com.practicasalma.proyectoalma.model.Matricula;
 import com.practicasalma.proyectoalma.service.GestorMatriculas;
 import com.practicasalma.proyectoalma.service.MatriculaService;
 import com.practicasalma.proyectoalma.util.FxUtils;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -44,6 +45,7 @@ public class FichaMatriculaController {
         this.repeticionOriginal = Boolean.TRUE.equals(matricula.getEsRepeticion());
         cargarDatosEnVista(nombreAlumno);
         cambiarModoEdicion(false);
+        Platform.runLater(() -> btnEditar.requestFocus());
     }
 
     private void cargarDatosEnVista(String nombreAlumno) {

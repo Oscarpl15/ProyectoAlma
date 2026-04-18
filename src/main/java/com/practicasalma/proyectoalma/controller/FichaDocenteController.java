@@ -13,6 +13,8 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javafx.application.Platform;
+
 import java.io.File;
 
 public class FichaDocenteController {
@@ -65,6 +67,7 @@ public class FichaDocenteController {
         this.docenteActual = docente;
         cargarDatosEnVista();
         cambiarModoEdicion(false);
+        Platform.runLater(() -> btnEditar.requestFocus());
     }
 
     private void cargarDatosEnVista() {
