@@ -110,7 +110,7 @@ public class DocentesController {
             cursos.add(anyo + "/" + (anyo + 1));
         }
         comboCursoFiltro.setItems(cursos);
-        comboCursoFiltro.setValue("Todos");
+        comboCursoFiltro.setValue(anyoActual + "/" + (anyoActual + 1));
     }
 
     private void poblarEstado() {

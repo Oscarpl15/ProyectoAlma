@@ -30,6 +30,7 @@ public class FichaSocioController {
     @FXML private Button btnCancelarEdicion;
     @FXML private Button btnCerrar;
     @FXML private Button btnEnviarInforme;
+    @FXML private Button btnBajaAlta;
 
     @FXML private TextField txtNombre;
     @FXML private TextField txtApellidos;
@@ -51,7 +52,7 @@ public class FichaSocioController {
     @FXML private TextField txtPeriodicidadLectura;
     @FXML private ComboBox<String> comboPeriodicidad;
 
-    @FXML private CheckBox chkActivo;
+    @FXML private Label lblEstado;
 
     @FXML private TextField txtCuentaBancaria;
     @FXML private TextField txtCodigoBic;
@@ -110,7 +111,7 @@ public class FichaSocioController {
         txtPeriodicidadLectura.setText(socioActual.getPeriodicidad() != null ? socioActual.getPeriodicidad() : "");
         comboPeriodicidad.setValue(socioActual.getPeriodicidad());
 
-        chkActivo.setSelected(Boolean.TRUE.equals(socioActual.getActivo()));
+        actualizarLabelEstado(Boolean.TRUE.equals(socioActual.getActivo()));
 
         txtCuentaBancaria.setText(socioActual.getCuentaBancaria() != null ? socioActual.getCuentaBancaria() : "");
         txtCodigoBic.setText(socioActual.getCodigoBic() != null ? socioActual.getCodigoBic() : "");
@@ -121,6 +122,7 @@ public class FichaSocioController {
         }
 
         cargarFoto();
+        actualizarBotonBajaAlta();
     }
 
     private void cargarFoto() {
@@ -144,7 +146,6 @@ public class FichaSocioController {
         txtCuentaBancaria.setEditable(editable);
         txtCodigoBic.setEditable(editable);
         txtTipoBanco.setEditable(editable);
-        actualizarVistaCheckbox(chkActivo, "Activo", editable);
         txtCiudad.setEditable(editable);
         txtCodigoPostal.setEditable(editable);
 
@@ -180,6 +181,17 @@ public class FichaSocioController {
         txtPeriodicidadLectura.setManaged(!editable);
         comboPeriodicidad.setVisible(editable);
         comboPeriodicidad.setManaged(editable);
+    }
+
+    private void actualizarLabelEstado(boolean activo) {
+        lblEstado.getStyleClass().removeAll("celda-activo", "celda-baja");
+        if (activo) {
+            lblEstado.setText("✔  Activo");
+            lblEstado.getStyleClass().add("celda-activo");
+        } else {
+            lblEstado.setText("✘  Inactivo");
+            lblEstado.getStyleClass().add("celda-baja");
+        }
     }
 
     private void actualizarVistaCheckbox(CheckBox chk, String textoBase, boolean editable) {
@@ -228,7 +240,6 @@ public class FichaSocioController {
         socioActual.setCodigoPostal(cp.isBlank() ? null : cp);
         socioActual.setTipoEntidad(comboTipoEntidad.getValue());
         socioActual.setPeriodicidad(comboPeriodicidad.getValue());
-        socioActual.setActivo(chkActivo.isSelected());
         socioActual.setCuentaBancaria(txtCuentaBancaria.getText().trim());
         socioActual.setCodigoBic(txtCodigoBic.getText().trim());
         socioActual.setTipoBanco(txtTipoBanco.getText().trim());
@@ -264,6 +275,41 @@ public class FichaSocioController {
             rutaFotoSeleccionada = file.getAbsolutePath();
             imgFoto.setImage(new Image(file.toURI().toString()));
         }
+    }
+
+    private void actualizarBotonBajaAlta() {
+        boolean activo = Boolean.TRUE.equals(socioActual.getActivo());
+        btnBajaAlta.getStyleClass().removeAll("boton-baja", "boton-guardar-exito");
+        if (activo) {
+            btnBajaAlta.setText("Dar de baja");
+            btnBajaAlta.getStyleClass().add("boton-baja");
+        } else {
+            btnBajaAlta.setText("Dar de alta");
+            btnBajaAlta.getStyleClass().add("boton-guardar-exito");
+        }
+    }
+
+    @FXML
+    private void toggleBajaAlta() {
+        boolean activo = Boolean.TRUE.equals(socioActual.getActivo());
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle(activo ? "Dar de baja" : "Dar de alta");
+        confirm.setHeaderText((activo ? "¿Dar de baja a " : "¿Dar de alta a ") + socioActual.getNombre() + "?");
+        confirm.showAndWait().ifPresent(r -> {
+            if (r == ButtonType.OK) {
+                try {
+                    if (activo) {
+                        socioService.darDeBaja(socioActual.getId());
+                    } else {
+                        socioService.darDeAlta(socioActual.getId());
+                    }
+                    socioActual = socioService.obtenerCompleto(socioActual.getId());
+                    cargarDatosEnVista();
+                } catch (Exception e) {
+                    FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", e.getMessage());
+                }
+            }
+        });
     }
 
     @FXML

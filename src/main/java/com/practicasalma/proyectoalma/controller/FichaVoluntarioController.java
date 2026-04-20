@@ -25,6 +25,7 @@ public class FichaVoluntarioController {
     @FXML private Button btnGuardar;
     @FXML private Button btnCancelarEdicion;
     @FXML private Button btnCerrar;
+    @FXML private Button btnBajaAlta;
 
     @FXML private TextField txtNombre;
     @FXML private TextField txtApellidos;
@@ -42,7 +43,7 @@ public class FichaVoluntarioController {
 
     @FXML private CheckBox chkDelitosSexuales;
     @FXML private CheckBox chkProteccionDatos;
-    @FXML private CheckBox chkActivo;
+    @FXML private Label lblEstado;
 
     @FXML private TableView<AsignacionPersonal> tablaAsignaciones;
     @FXML private TableColumn<AsignacionPersonal, String> colAsiAnyo;
@@ -86,13 +87,14 @@ public class FichaVoluntarioController {
 
         chkDelitosSexuales.setSelected(Boolean.TRUE.equals(voluntarioActual.getAutoDelitosSexuales()));
         chkProteccionDatos.setSelected(Boolean.TRUE.equals(voluntarioActual.getAutoProteccionDatos()));
-        chkActivo.setSelected(Boolean.TRUE.equals(voluntarioActual.getActivo()));
+        actualizarLabelEstado(Boolean.TRUE.equals(voluntarioActual.getActivo()));
 
         if (voluntarioActual.getHistorialAsignaciones() != null) {
             tablaAsignaciones.setItems(FXCollections.observableArrayList(voluntarioActual.getHistorialAsignaciones()));
         }
 
         cargarFoto();
+        actualizarBotonBajaAlta();
     }
 
     private void cargarFoto() {
@@ -117,7 +119,6 @@ public class FichaVoluntarioController {
         txtCodigoPostal.setEditable(editable);
         actualizarVistaCheckbox(chkDelitosSexuales, "Cert. Delitos Sexuales", editable);
         actualizarVistaCheckbox(chkProteccionDatos, "Cert. Protección Datos", editable);
-        actualizarVistaCheckbox(chkActivo, "Activo", editable);
 
         btnCambiarFoto.setVisible(editable);
         btnCambiarFoto.setManaged(editable);
@@ -136,6 +137,17 @@ public class FichaVoluntarioController {
         txtGeneroLectura.setManaged(!editable);
         comboGenero.setVisible(editable);
         comboGenero.setManaged(editable);
+    }
+
+    private void actualizarLabelEstado(boolean activo) {
+        lblEstado.getStyleClass().removeAll("celda-activo", "celda-baja");
+        if (activo) {
+            lblEstado.setText("✔  Activo");
+            lblEstado.getStyleClass().add("celda-activo");
+        } else {
+            lblEstado.setText("✘  Inactivo");
+            lblEstado.getStyleClass().add("celda-baja");
+        }
     }
 
     private void actualizarVistaCheckbox(CheckBox chk, String textoBase, boolean editable) {
@@ -185,7 +197,6 @@ public class FichaVoluntarioController {
         voluntarioActual.setCodigoPostal(cp.isBlank() ? null : cp);
         voluntarioActual.setAutoDelitosSexuales(chkDelitosSexuales.isSelected());
         voluntarioActual.setAutoProteccionDatos(chkProteccionDatos.isSelected());
-        voluntarioActual.setActivo(chkActivo.isSelected());
 
         try {
             voluntarioService.actualizarVoluntario(voluntarioActual);
@@ -206,6 +217,41 @@ public class FichaVoluntarioController {
         if (file != null) {
             imgFoto.setImage(new Image(file.toURI().toString()));
         }
+    }
+
+    private void actualizarBotonBajaAlta() {
+        boolean activo = Boolean.TRUE.equals(voluntarioActual.getActivo());
+        btnBajaAlta.getStyleClass().removeAll("boton-baja", "boton-guardar-exito");
+        if (activo) {
+            btnBajaAlta.setText("Dar de baja");
+            btnBajaAlta.getStyleClass().add("boton-baja");
+        } else {
+            btnBajaAlta.setText("Dar de alta");
+            btnBajaAlta.getStyleClass().add("boton-guardar-exito");
+        }
+    }
+
+    @FXML
+    private void toggleBajaAlta() {
+        boolean activo = Boolean.TRUE.equals(voluntarioActual.getActivo());
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle(activo ? "Dar de baja" : "Dar de alta");
+        confirm.setHeaderText((activo ? "¿Dar de baja a " : "¿Dar de alta a ") + voluntarioActual.getNombre() + "?");
+        confirm.showAndWait().ifPresent(r -> {
+            if (r == ButtonType.OK) {
+                try {
+                    if (activo) {
+                        voluntarioService.darDeBaja(voluntarioActual.getId());
+                    } else {
+                        voluntarioService.darDeAlta(voluntarioActual.getId());
+                    }
+                    voluntarioActual = voluntarioService.obtenerCompleto(voluntarioActual.getId());
+                    cargarDatosEnVista();
+                } catch (Exception e) {
+                    FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", e.getMessage());
+                }
+            }
+        });
     }
 
     @FXML

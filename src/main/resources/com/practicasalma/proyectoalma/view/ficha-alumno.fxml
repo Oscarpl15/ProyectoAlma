@@ -37,6 +37,13 @@
                     <CheckBox fx:id="chkAutoComunicaciones" text="Comunicaciones"/>
                     <CheckBox fx:id="chkAutoIrseSolo" text="Autoriza Irse Solo"/>
                 </VBox>
+
+                <Separator/>
+
+                <VBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="Estado" styleClass="titulo-seccion"/>
+                    <Label fx:id="lblEstado" styleClass="texto-lectura-simple"/>
+                </VBox>
             </VBox>
 
             <VBox spacing="20" HBox.hgrow="ALWAYS">
@@ -70,7 +77,10 @@
                     <TextField fx:id="txtColegio" GridPane.columnIndex="1" GridPane.rowIndex="3" styleClass="campo-lectura"/>
 
                     <Label text="Curso Actual:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtCurso" GridPane.columnIndex="1" GridPane.rowIndex="4" styleClass="campo-lectura" editable="false"/>
+                    <StackPane GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="CENTER_LEFT">
+                        <TextField fx:id="txtCurso" styleClass="campo-lectura" editable="false"/>
+                        <ComboBox fx:id="comboCurso" maxWidth="Infinity" visible="false" managed="false"/>
+                    </StackPane>
 
                     <Label text="Grupo Asignado:" GridPane.columnIndex="2" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
                     <StackPane GridPane.columnIndex="3" GridPane.rowIndex="4" alignment="CENTER_LEFT">
@@ -196,7 +206,9 @@
     </center>
 
     <bottom>
-        <HBox alignment="CENTER_RIGHT" spacing="15" styleClass="padding-pie-ficha">
+        <HBox spacing="15" styleClass="padding-pie-ficha">
+            <Button fx:id="btnBajaAlta" text="Dar de baja" onAction="#toggleBajaAlta" styleClass="boton-baja"/>
+            <Region HBox.hgrow="ALWAYS"/>
             <Button fx:id="btnCerrar" text="Cerrar" onAction="#cerrarVentana" styleClass="boton-cancelar"/>
             <Button fx:id="btnEditar" text="Editar Ficha" onAction="#activarEdicion" styleClass="boton-accion"/>
 

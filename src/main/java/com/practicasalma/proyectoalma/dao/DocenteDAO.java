@@ -56,6 +56,23 @@ public class DocenteDAO {
         }
     }
 
+    public void actualizarActivo(Long id, boolean activo) throws Exception {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+            Docente d = em.find(Docente.class, id);
+            if (d == null) throw new Exception("Docente con id " + id + " no encontrado.");
+            d.setActivo(activo);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw new Exception("Error al actualizar estado del docente: " + e.getMessage());
+        } finally {
+            if (em != null) em.close();
+        }
+    }
+
     public List<Docente> obtenerTodos() {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             return em.createQuery(
