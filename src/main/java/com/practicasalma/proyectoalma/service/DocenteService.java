@@ -41,6 +41,22 @@ public class DocenteService {
         asignacionDAO.guardar(new AsignacionPersonal(docente, anyoAcademico));
     }
 
+    public void darDeBaja(Long id) throws Exception {
+        docenteDAO.actualizarActivo(id, false);
+    }
+
+    public void darDeAlta(Long id) throws Exception {
+        docenteDAO.actualizarActivo(id, true);
+        Docente docente = docenteDAO.obtenerCompleto(id);
+        String anyo = UtilFecha.calcularCursoAcademicoPersonal();
+        boolean yaExiste = docente.getHistorialAsignaciones() != null &&
+                docente.getHistorialAsignaciones().stream()
+                        .anyMatch(a -> anyo.equals(a.getAnyoAcademico()));
+        if (!yaExiste) {
+            registrarContinuacion(docente, anyo);
+        }
+    }
+
     public List<Docente> obtenerTodos() {
         return docenteDAO.obtenerTodos();
     }

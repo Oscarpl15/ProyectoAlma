@@ -45,6 +45,7 @@ public class FichaAlumnoController {
     @FXML private CheckBox chkAutoActividades;
     @FXML private CheckBox chkAutoComunicaciones;
     @FXML private CheckBox chkAutoIrseSolo;
+    @FXML private Label lblEstado;
 
     // Botones de acción
     @FXML private Button btnCambiarFoto;
@@ -52,9 +53,11 @@ public class FichaAlumnoController {
     @FXML private Button btnGuardar;
     @FXML private Button btnCancelarEdicion;
     @FXML private Button btnCerrar;
+    @FXML private Button btnBajaAlta;
 
     // Curso y Grupo
     @FXML private TextField txtCurso;
+    @FXML private ComboBox<String> comboCurso;
     @FXML private TextField txtGrupoLectura;
     @FXML private ComboBox<String> comboGrupo;
 
@@ -120,6 +123,11 @@ public class FichaAlumnoController {
                 "g2 lunes/miercoles",
                 "g1 martes/jueves",
                 "g2 martes/jueves"
+        );
+        comboCurso.getItems().addAll(
+                "1º Infantil", "2º Infantil", "3º Infantil",
+                "1º Primaria", "2º Primaria", "3º Primaria",
+                "4º Primaria", "5º Primaria", "6º Primaria"
         );
         comboGenero.getItems().addAll(
                 "Masculino", "Femenino", "No binario", "Prefiero no especificar"
@@ -201,17 +209,19 @@ public class FichaAlumnoController {
             chkAutoActividades.setSelected(Boolean.TRUE.equals(alumnoActual.getAutorizaActividades()));
             chkAutoComunicaciones.setSelected(Boolean.TRUE.equals(alumnoActual.getAutorizaComunicaciones()));
             chkAutoIrseSolo.setSelected(Boolean.TRUE.equals(alumnoActual.getAutorizaIrseSolo()));
-
+            actualizarLabelEstado(Boolean.TRUE.equals(alumnoActual.getActivo()));
 
             // --- CARGAR CURSO Y GRUPO DESDE MATRÍCULA ---
             // Buscamos la última matrícula activa (asumimos la última de la lista)
             if (alumnoActual.getMatriculas() != null && !alumnoActual.getMatriculas().isEmpty()) {
                 var ultimaMatricula = alumnoActual.getMatriculas().get(alumnoActual.getMatriculas().size() - 1);
                 txtCurso.setText(ultimaMatricula.getCurso() != null ? ultimaMatricula.getCurso() : "Sin curso");
+                comboCurso.setValue(ultimaMatricula.getCurso());
                 txtGrupoLectura.setText(ultimaMatricula.getGrupoAsignado() != null ? ultimaMatricula.getGrupoAsignado() : "Sin grupo");
                 comboGrupo.setValue(ultimaMatricula.getGrupoAsignado());
             } else {
                 txtCurso.setText("Sin matricular");
+                comboCurso.setValue(null);
                 txtGrupoLectura.setText("Sin grupo");
                 comboGrupo.setValue(null);
             }
@@ -249,6 +259,7 @@ public class FichaAlumnoController {
             } else {
                 cargarFotoPorDefecto();
             }
+            actualizarBotonBajaAlta();
         }
     }
 
@@ -295,6 +306,15 @@ public class FichaAlumnoController {
         actualizarVistaCheckbox(chkAutoComunicaciones, "Comunicaciones", editable);
         actualizarVistaCheckbox(chkAutoIrseSolo, "Autoriza Irse Solo", editable);
 
+        // Truco visual para el Curso Actual
+        boolean tieneMatriculas = alumnoActual != null
+                && alumnoActual.getMatriculas() != null
+                && !alumnoActual.getMatriculas().isEmpty();
+        txtCurso.setVisible(!editable || !tieneMatriculas);
+        txtCurso.setManaged(!editable || !tieneMatriculas);
+        comboCurso.setVisible(editable && tieneMatriculas);
+        comboCurso.setManaged(editable && tieneMatriculas);
+
         // Truco visual para el Grupo (Intercambiar Textfield por Combo)
         txtGrupoLectura.setVisible(!editable);
         txtGrupoLectura.setManaged(!editable);
@@ -336,6 +356,10 @@ public class FichaAlumnoController {
             // Al volver a modo lectura, actualizamos los textos resumen por si ha cambiado algún check
             actualizarTextosSeguimiento();
 
+            // Sincronizamos el texto de lectura del curso
+            if (comboCurso.getValue() != null) {
+                txtCurso.setText(comboCurso.getValue());
+            }
             // Sincronizamos el texto de lectura del grupo con lo que se haya elegido en el desplegable
             if (comboGrupo.getValue() != null) {
                 txtGrupoLectura.setText(comboGrupo.getValue());
@@ -423,9 +447,12 @@ public class FichaAlumnoController {
                 alumnoActual.setRutaFotoPerfil(rutaFotoSeleccionada);
             }
 
-            // 5. Actualizar la matrícula (Grupo)
+            // 5. Actualizar la matrícula (Curso y Grupo)
             if (alumnoActual.getMatriculas() != null && !alumnoActual.getMatriculas().isEmpty()) {
                 var ultimaMatricula = alumnoActual.getMatriculas().get(alumnoActual.getMatriculas().size() - 1);
+                if (comboCurso.getValue() != null) {
+                    ultimaMatricula.setCurso(comboCurso.getValue());
+                }
                 if (comboGrupo.getValue() != null) {
                     ultimaMatricula.setGrupoAsignado(comboGrupo.getValue());
                 }
@@ -466,6 +493,56 @@ public class FichaAlumnoController {
             rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
             imgFoto.setImage(new Image(archivoSeleccionado.toURI().toString()));
         }
+    }
+
+    private void actualizarLabelEstado(boolean activo) {
+        lblEstado.getStyleClass().removeAll("celda-activo", "celda-baja");
+        if (activo) {
+            lblEstado.setText("✔  Activo");
+            lblEstado.getStyleClass().add("celda-activo");
+        } else {
+            lblEstado.setText("✘  Inactivo");
+            lblEstado.getStyleClass().add("celda-baja");
+        }
+    }
+
+    private void actualizarBotonBajaAlta() {
+        boolean activo = Boolean.TRUE.equals(alumnoActual.getActivo());
+        btnBajaAlta.getStyleClass().removeAll("boton-baja", "boton-guardar-exito");
+        if (activo) {
+            btnBajaAlta.setText("Dar de baja");
+            btnBajaAlta.getStyleClass().add("boton-baja");
+        } else {
+            btnBajaAlta.setText("Dar de alta");
+            btnBajaAlta.getStyleClass().add("boton-guardar-exito");
+        }
+    }
+
+    @FXML
+    private void toggleBajaAlta() {
+        boolean activo = Boolean.TRUE.equals(alumnoActual.getActivo());
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle(activo ? "Dar de baja" : "Dar de alta");
+        confirm.setHeaderText((activo ? "¿Dar de baja a " : "¿Dar de alta a ") + alumnoActual.getNombre() + "?");
+        if (!activo) {
+            confirm.setContentText("Se generará una nueva matrícula para el curso actual.");
+        }
+        confirm.showAndWait().ifPresent(r -> {
+            if (r == ButtonType.OK) {
+                try {
+                    if (activo) {
+                        alumnoService.darDeBaja(alumnoActual.getId());
+                    } else {
+                        alumnoService.darDeAlta(alumnoActual.getId());
+                    }
+                    alumnoActual = alumnoService.obtenerCompleto(alumnoActual.getId());
+                    cargarDatosEnVista();
+                    cambiarModoEdicion(false);
+                } catch (Exception e) {
+                    FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", e.getMessage());
+                }
+            }
+        });
     }
 
     private void actualizarTextosSeguimiento() {

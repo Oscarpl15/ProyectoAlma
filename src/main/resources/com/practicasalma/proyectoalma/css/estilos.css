@@ -376,6 +376,20 @@
     -fx-background-color: #2ecc71;
 }
 
+/* Botón rojo para Dar de baja */
+.boton-baja {
+    -fx-background-color: #c0392b;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 15px;
+    -fx-cursor: hand;
+}
+
+.boton-baja:hover {
+    -fx-background-color: #e74c3c;
+}
+
 /* ESTADO DE CHECKBOXES EN MODO LECTURA */
 
 /* 1. Cuando el check es TRUE (Verde) */

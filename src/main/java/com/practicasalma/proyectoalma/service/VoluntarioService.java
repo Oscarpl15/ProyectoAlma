@@ -41,6 +41,22 @@ public class VoluntarioService {
         asignacionDAO.guardar(new AsignacionPersonal(voluntario, anyoAcademico));
     }
 
+    public void darDeBaja(Long id) throws Exception {
+        voluntarioDAO.actualizarActivo(id, false);
+    }
+
+    public void darDeAlta(Long id) throws Exception {
+        voluntarioDAO.actualizarActivo(id, true);
+        Voluntario voluntario = voluntarioDAO.obtenerCompleto(id);
+        String anyo = UtilFecha.calcularCursoAcademicoPersonal();
+        boolean yaExiste = voluntario.getHistorialAsignaciones() != null &&
+                voluntario.getHistorialAsignaciones().stream()
+                        .anyMatch(a -> anyo.equals(a.getAnyoAcademico()));
+        if (!yaExiste) {
+            registrarContinuacion(voluntario, anyo);
+        }
+    }
+
     public List<Voluntario> obtenerTodos() {
         return voluntarioDAO.obtenerTodos();
     }

@@ -39,7 +39,7 @@
 
                 <VBox spacing="12" alignment="CENTER_LEFT">
                     <Label text="Estado" styleClass="titulo-seccion"/>
-                    <CheckBox fx:id="chkActivo" text="Activo"/>
+                    <Label fx:id="lblEstado" styleClass="texto-lectura-simple"/>
                 </VBox>
             </VBox>
 
@@ -115,7 +115,9 @@
     </center>
 
     <bottom>
-        <HBox alignment="CENTER_RIGHT" spacing="15" styleClass="padding-pie-ficha">
+        <HBox spacing="15" styleClass="padding-pie-ficha">
+            <Button fx:id="btnBajaAlta" text="Dar de baja" onAction="#toggleBajaAlta" styleClass="boton-baja"/>
+            <Region HBox.hgrow="ALWAYS"/>
             <Button fx:id="btnCerrar" text="Cerrar" onAction="#cerrarVentana" styleClass="boton-cancelar"/>
             <Button fx:id="btnEditar" text="Editar Ficha" onAction="#activarEdicion" styleClass="boton-accion"/>
 
