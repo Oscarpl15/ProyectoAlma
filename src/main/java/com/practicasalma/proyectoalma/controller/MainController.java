@@ -1,6 +1,7 @@
 package com.practicasalma.proyectoalma.controller;
 
 
+import com.practicasalma.proyectoalma.service.GestorAsignaciones;
 import com.practicasalma.proyectoalma.service.GestorCorreo;
 import com.practicasalma.proyectoalma.service.GestorMatriculas;
 import javafx.fxml.FXML;
@@ -19,12 +20,15 @@ import java.util.Optional;
 
 public class MainController {
 
-    @FXML
-    private TabPane tabPrincipal; // Se conecta con el fx:id del FXML
-
+    @FXML private TabPane tabPrincipal;
     @FXML private StackPane rootPane;
     @FXML private ImageView imgFondo;
     @FXML private Button btnAjustes;
+
+    // Sub-controladores inyectados automáticamente por JavaFX gracias al fx:id de fx:include
+    @FXML private AlumnosController alumnosController;
+    @FXML private DocentesController docentesController;
+    @FXML private VoluntariosController voluntariosController;
 
     private ContextMenu menuAjustes;
 
@@ -37,7 +41,14 @@ public class MainController {
         if (tabPrincipal != null) {
             tabPrincipal.getSelectionModel().select(0);
         }
-        GestorMatriculas.ejecutar();
+        GestorMatriculas.DatosDialogo datosSexto = GestorMatriculas.ejecutar();
+        GestorAsignaciones.DatosPersonal datosPersonal = GestorAsignaciones.prepararDatos();
+        if (datosSexto != null || datosPersonal != null) {
+            RenovacionController.mostrar(datosSexto, datosPersonal);
+            alumnosController.cargarAlumnosEnTabla();
+            docentesController.cargarDocentesEnTabla();
+            voluntariosController.cargarVoluntariosEnTabla();
+        }
         menuAjustes = new ContextMenu();
         MenuItem itemCredenciales = new MenuItem("Credenciales correo");
         itemCredenciales.setOnAction(e -> configurarCorreo());

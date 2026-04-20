@@ -75,9 +75,9 @@
                 <center>
                     <TabPane fx:id="tabPrincipal" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="0" tabMinHeight="0">
                         <tabs>
-                            <Tab><content><fx:include source="alumnos-view.fxml" /></content></Tab>
-                            <Tab><content><fx:include source="docentes-view.fxml" /></content></Tab>
-                            <Tab><content><fx:include source="voluntarios-view.fxml" /></content></Tab>
+                            <Tab><content><fx:include fx:id="alumnos" source="alumnos-view.fxml" /></content></Tab>
+                            <Tab><content><fx:include fx:id="docentes" source="docentes-view.fxml" /></content></Tab>
+                            <Tab><content><fx:include fx:id="voluntarios" source="voluntarios-view.fxml" /></content></Tab>
                             <Tab><content><fx:include source="socios-view.fxml"/></content></Tab>
                         </tabs>
                     </TabPane>

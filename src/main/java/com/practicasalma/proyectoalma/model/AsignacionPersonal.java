@@ -31,17 +31,33 @@ public class AsignacionPersonal {
     public AsignacionPersonal() {}
 
     // Constructor para cuando se asigna a un DOCENTE
-    public AsignacionPersonal( String grupoAsignado, Docente docente) {
+    public AsignacionPersonal(String grupoAsignado, Docente docente) {
         this.anyoAcademico = UtilFecha.calcularCursoAcademico();
         this.grupoAsignado = grupoAsignado;
         this.docente = docente;
-        this.voluntario = null; // Nos aseguramos de que el otro quede vacío
+        this.voluntario = null;
     }
 
     // Constructor para cuando se asigna a un VOLUNTARIO
-    public AsignacionPersonal( String grupoAsignado, Voluntario voluntario) {
+    public AsignacionPersonal(String grupoAsignado, Voluntario voluntario) {
         this.anyoAcademico = UtilFecha.calcularCursoAcademico();
         this.grupoAsignado = grupoAsignado;
+        this.voluntario = voluntario;
+        this.docente = null;
+    }
+
+    // Constructor de autogeneración para un DOCENTE (grupo pendiente de asignar)
+    public AsignacionPersonal(Docente docente, String anyoAcademico) {
+        this.anyoAcademico = anyoAcademico;
+        this.grupoAsignado = "Sin asignar";
+        this.docente = docente;
+        this.voluntario = null;
+    }
+
+    // Constructor de autogeneración para un VOLUNTARIO (grupo pendiente de asignar)
+    public AsignacionPersonal(Voluntario voluntario, String anyoAcademico) {
+        this.anyoAcademico = anyoAcademico;
+        this.grupoAsignado = "Sin asignar";
         this.voluntario = voluntario;
         this.docente = null;
     }

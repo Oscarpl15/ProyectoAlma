@@ -452,6 +452,24 @@
     -fx-text-fill: #e74c3c;
 }
 
+/* === DIÁLOGOS DE GESTIÓN (Matrículas / Asignaciones) === */
+
+.titulo-dialogo-gestion {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2E5374;
+    -fx-wrap-text: true;
+}
+
+.etiqueta-tipo-persona {
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+    -fx-background-color: #2E5374;
+    -fx-background-radius: 4px;
+    -fx-padding: 2px 7px;
+    -fx-font-weight: bold;
+}
+
 /* === BOTÓN DE AJUSTES (Cabecera principal) === */
 .boton-ajustes {
     -fx-background-color: transparent;

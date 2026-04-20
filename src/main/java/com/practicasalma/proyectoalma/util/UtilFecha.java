@@ -15,4 +15,17 @@ public class UtilFecha {
 
         return (anyoActual - 1) + "/" + anyoActual;
     }
+
+    // Para docentes/voluntarios: el nuevo año empieza en julio
+    public static String calcularCursoAcademicoPersonal() {
+        LocalDate hoy = LocalDate.now();
+        int anyoActual = hoy.getYear();
+        int mesActual = hoy.getMonthValue();
+
+        if (mesActual >= 7) {
+            return anyoActual + "/" + (anyoActual + 1);
+        }
+
+        return (anyoActual - 1) + "/" + anyoActual;
+    }
 }

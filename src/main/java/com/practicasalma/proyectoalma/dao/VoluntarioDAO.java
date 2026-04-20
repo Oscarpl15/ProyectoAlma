@@ -56,6 +56,23 @@ public class VoluntarioDAO {
         }
     }
 
+    public void actualizarActivo(Long id, boolean activo) throws Exception {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+            Voluntario v = em.find(Voluntario.class, id);
+            if (v == null) throw new Exception("Voluntario con id " + id + " no encontrado.");
+            v.setActivo(activo);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw new Exception("Error al actualizar estado del voluntario: " + e.getMessage());
+        } finally {
+            if (em != null) em.close();
+        }
+    }
+
     public List<Voluntario> obtenerTodos() {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             return em.createQuery(

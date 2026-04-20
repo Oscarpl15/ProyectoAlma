@@ -4,20 +4,12 @@ import com.practicasalma.proyectoalma.dao.AlumnoDAO;
 import com.practicasalma.proyectoalma.dao.MatriculaDAO;
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.model.Matricula;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -32,8 +24,30 @@ public class GestorMatriculas {
 
     private static final String RUTA_POSTPONED = "datos/postponed_matriculas.properties";
 
-    public static void ejecutar() {
-        if (!esPeriodoGeneracion()) return;
+    // Datos necesarios para que RenovacionController construya las filas del diálogo
+    public static class DatosDialogo {
+        public final List<Alumno> alumnosSexto;
+        public final String anyoAcademico;
+        public final MatriculaDAO matriculaDAO;
+        public final AlumnoDAO alumnoDAO;
+        public final Properties postponed;
+
+        DatosDialogo(List<Alumno> alumnosSexto, String anyoAcademico,
+                     MatriculaDAO matriculaDAO, AlumnoDAO alumnoDAO, Properties postponed) {
+            this.alumnosSexto = alumnosSexto;
+            this.anyoAcademico = anyoAcademico;
+            this.matriculaDAO = matriculaDAO;
+            this.alumnoDAO = alumnoDAO;
+            this.postponed = postponed;
+        }
+
+        public boolean isEmpty() { return alumnosSexto.isEmpty(); }
+    }
+
+    // Retorna los datos para el diálogo (o null si no es período o no hay nada que mostrar).
+    // Auto-genera matrículas para los alumnos que NO están en 6º.
+    public static DatosDialogo ejecutar() {
+        if (!esPeriodoGeneracion()) return null;
 
         String anyoActual = calcularAnyoAcademico();
         AlumnoDAO alumnoDAO = new AlumnoDAO();
@@ -46,7 +60,7 @@ public class GestorMatriculas {
                 .filter(a -> !yaExisteMatricula(a, anyoActual))
                 .collect(Collectors.toList());
 
-        if (sinMatricula.isEmpty()) return;
+        if (sinMatricula.isEmpty()) return null;
 
         Properties postponed = cargarPostponed();
         LocalDate hoy = LocalDate.now();
@@ -81,9 +95,8 @@ public class GestorMatriculas {
             }
         }
 
-        if (!enSexto.isEmpty()) {
-            mostrarDialogoSexto(enSexto, anyoActual, matriculaDAO, alumnoDAO, postponed);
-        }
+        if (enSexto.isEmpty()) return null;
+        return new DatosDialogo(enSexto, anyoActual, matriculaDAO, alumnoDAO, postponed);
     }
 
     public static boolean esPeriodoGeneracion() {
@@ -130,7 +143,7 @@ public class GestorMatriculas {
         return alumno.getMatriculas().get(alumno.getMatriculas().size() - 1).getCurso();
     }
 
-    private static Properties cargarPostponed() {
+    public static Properties cargarPostponed() {
         Properties props = new Properties();
         File f = new File(RUTA_POSTPONED);
         if (f.exists()) {
@@ -143,7 +156,7 @@ public class GestorMatriculas {
         return props;
     }
 
-    private static void guardarPostponed(Properties props) {
+    public static void guardarPostponed(Properties props) {
         try {
             new File("datos").mkdirs();
             try (FileOutputStream fos = new FileOutputStream(RUTA_POSTPONED)) {
@@ -152,91 +165,5 @@ public class GestorMatriculas {
         } catch (Exception e) {
             System.err.println("Error guardando postponed: " + e.getMessage());
         }
-    }
-
-    private static void mostrarDialogoSexto(List<Alumno> alumnos, String anyoAcademico,
-                                            MatriculaDAO matriculaDAO, AlumnoDAO alumnoDAO,
-                                            Properties postponed) {
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Alumnos finalizando 6º Primaria");
-
-        VBox listaAlumnos = new VBox(10);
-        listaAlumnos.setPadding(new Insets(15));
-
-        Label titulo = new Label("Los siguientes alumnos terminan 6º Primaria. ¿Repiten o causan baja?");
-        titulo.setStyle("-fx-font-weight: bold; -fx-font-size: 14;");
-        listaAlumnos.getChildren().add(titulo);
-
-        for (Alumno alumno : alumnos) {
-            HBox fila = construirFilaAlumno(alumno, anyoAcademico, matriculaDAO, alumnoDAO,
-                    listaAlumnos, stage, postponed);
-            listaAlumnos.getChildren().add(fila);
-        }
-
-        Scene scene = new Scene(listaAlumnos, 600, Math.min(80 + alumnos.size() * 50, 500));
-        stage.setScene(scene);
-        stage.showAndWait();
-    }
-
-    private static HBox construirFilaAlumno(Alumno alumno, String anyoAcademico,
-                                            MatriculaDAO matriculaDAO, AlumnoDAO alumnoDAO,
-                                            VBox lista, Stage stage, Properties postponed) {
-        HBox fila = new HBox(15);
-        fila.setAlignment(Pos.CENTER_LEFT);
-
-        String nombreCompleto = (alumno.getNombre() != null ? alumno.getNombre() : "") +
-                " " + (alumno.getApellidos() != null ? alumno.getApellidos() : "");
-        Label nombre = new Label(nombreCompleto.trim());
-        nombre.setPrefWidth(220);
-
-        Button btnRepite = new Button("Sí repite");
-        Button btnBaja = new Button("No repite");
-        Button btnPostponer = new Button("Postponer");
-
-        btnRepite.setMinWidth(Button.USE_PREF_SIZE);
-        btnBaja.setMinWidth(Button.USE_PREF_SIZE);
-        btnPostponer.setMinWidth(Button.USE_PREF_SIZE);
-
-        btnRepite.setOnAction(e -> {
-            try {
-                Matricula m = new Matricula("6º Primaria", alumno);
-                m.setAnyoAcademico(anyoAcademico);
-                m.setEsRepeticion(true);
-                matriculaDAO.guardar(m);
-            } catch (Exception ex) {
-                System.err.println("Error al guardar matrícula de repetición: " + ex.getMessage());
-            }
-            lista.getChildren().remove(fila);
-            cerrarSiVacio(lista, stage);
-        });
-
-        btnBaja.setOnAction(e -> {
-            try {
-                alumnoDAO.actualizarActivo(alumno.getId(), false);
-            } catch (Exception ex) {
-                System.err.println("Error al dar de baja alumno: " + ex.getMessage());
-            }
-            lista.getChildren().remove(fila);
-            cerrarSiVacio(lista, stage);
-        });
-
-        btnPostponer.setOnAction(e -> {
-            String fechaPostponer = LocalDate.now().plusDays(7).toString();
-            postponed.setProperty(String.valueOf(alumno.getId()), fechaPostponer);
-            guardarPostponed(postponed);
-            lista.getChildren().remove(fila);
-            cerrarSiVacio(lista, stage);
-        });
-
-        fila.getChildren().addAll(nombre, btnRepite, btnBaja, btnPostponer);
-        return fila;
-    }
-
-    private static void cerrarSiVacio(VBox lista, Stage stage) {
-        long filas = lista.getChildren().stream()
-                .filter(n -> n instanceof HBox)
-                .count();
-        if (filas == 0) stage.close();
     }
 }
