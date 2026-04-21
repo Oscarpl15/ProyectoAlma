@@ -485,15 +485,32 @@ public class FichaAlumnoController {
     private void seleccionarFoto(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Selecciona foto del alumno");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Imagen", "*.png", "*.jpg", "*.jpeg"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg"));
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         File archivoSeleccionado = fileChooser.showOpenDialog(stage);
 
         if (archivoSeleccionado != null) {
-            rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
-            imgFoto.setImage(new Image(archivoSeleccionado.toURI().toString()));
+            File dir = GestorDocumentos.getDirectorio("Alumnos", txtNombre.getText(), txtApellidos.getText());
+            if (dir != null) {
+                File destino = new File(dir, "foto" + obtenerExtension(archivoSeleccionado.getName()));
+                try {
+                    java.nio.file.Files.copy(archivoSeleccionado.toPath(), destino.toPath(),
+                            java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    rutaFotoSeleccionada = destino.getAbsolutePath();
+                } catch (java.io.IOException e) {
+                    rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
+                }
+            } else {
+                rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
+            }
+            imgFoto.setImage(new Image(new File(rutaFotoSeleccionada).toURI().toString()));
         }
+    }
+
+    private String obtenerExtension(String nombreArchivo) {
+        int punto = nombreArchivo.lastIndexOf('.');
+        return punto >= 0 ? nombreArchivo.substring(punto) : "";
     }
 
     private void actualizarLabelEstado(boolean activo) {
@@ -638,12 +655,12 @@ public class FichaAlumnoController {
         chooser.setTitle("Seleccionar documento");
         File archivo = chooser.showOpenDialog(btnCerrar.getScene().getWindow());
         if (archivo == null) return;
-        GestorDocumentos.copiarDocumento(archivo, "Alumno", txtNombre.getText(), txtApellidos.getText());
+        GestorDocumentos.copiarDocumento(archivo, "Alumnos", txtNombre.getText(), txtApellidos.getText());
     }
 
     @FXML
     private void verDocumentos() {
-        GestorDocumentos.abrirDirectorio("Alumno", txtNombre.getText(), txtApellidos.getText());
+        GestorDocumentos.abrirDirectorio("Alumnos", txtNombre.getText(), txtApellidos.getText());
     }
 
     @FXML

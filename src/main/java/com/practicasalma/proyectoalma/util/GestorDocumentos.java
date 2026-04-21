@@ -6,7 +6,9 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Comparator;
 
 public class GestorDocumentos {
 
@@ -34,6 +36,43 @@ public class GestorDocumentos {
         } catch (IOException e) {
             mostrarError("No se pudo abrir el directorio: " + e.getMessage());
         }
+    }
+
+    public static void moverContenido(File origen, File destino) {
+        if (!origen.exists() || !origen.isDirectory()) return;
+        try {
+            Files.walk(origen.toPath())
+                    .forEach(src -> {
+                        Path dst = destino.toPath().resolve(origen.toPath().relativize(src));
+                        try {
+                            if (Files.isDirectory(src)) {
+                                Files.createDirectories(dst);
+                            } else {
+                                Files.createDirectories(dst.getParent());
+                                Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING);
+                            }
+                        } catch (IOException e) {
+                            System.err.println("Error moviendo " + src + ": " + e.getMessage());
+                        }
+                    });
+            // Borrar origen tras copiar
+            Files.walk(origen.toPath())
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (IOException e) {
+            mostrarError("Error al mover el contenido: " + e.getMessage());
+        }
+    }
+
+    public static boolean tieneContenido(File dir) {
+        if (dir == null || !dir.exists() || !dir.isDirectory()) return false;
+        String[] contenido = dir.list();
+        return contenido != null && contenido.length > 0;
+    }
+
+    public static File getDirectorio(String tipo, String nombre, String apellidos) {
+        return resolverDirectorio(tipo, nombre, apellidos);
     }
 
     private static File resolverDirectorio(String tipo, String nombre, String apellidos) {

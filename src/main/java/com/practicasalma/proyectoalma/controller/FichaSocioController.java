@@ -127,11 +127,16 @@ public class FichaSocioController {
     }
 
     private void cargarFoto() {
-        try {
-            imgFoto.setImage(new Image(getClass().getResource(
-                    "/com/practicasalma/proyectoalma/assets/default.png").toExternalForm()));
-        } catch (Exception e) {
-            System.out.println("No se encontró imagen por defecto.");
+        String ruta = socioActual.getRutaFotoPerfil();
+        if (ruta != null && !ruta.isBlank() && new File(ruta).exists()) {
+            imgFoto.setImage(new Image(new File(ruta).toURI().toString()));
+        } else {
+            try {
+                imgFoto.setImage(new Image(getClass().getResource(
+                        "/com/practicasalma/proyectoalma/assets/default.png").toExternalForm()));
+            } catch (Exception e) {
+                System.out.println("No se encontró imagen por defecto.");
+            }
         }
     }
 
@@ -244,6 +249,10 @@ public class FichaSocioController {
         socioActual.setCuentaBancaria(txtCuentaBancaria.getText().trim());
         socioActual.setCodigoBic(txtCodigoBic.getText().trim());
         socioActual.setTipoBanco(txtTipoBanco.getText().trim());
+        if (rutaFotoSeleccionada != null) {
+            socioActual.setRutaFotoPerfil(rutaFotoSeleccionada);
+            rutaFotoSeleccionada = null;
+        }
 
         String cuotaTexto = txtCuota.getText().trim();
         if (!cuotaTexto.isEmpty()) {
@@ -273,9 +282,27 @@ public class FichaSocioController {
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg"));
         File file = chooser.showOpenDialog(imgFoto.getScene().getWindow());
         if (file != null) {
-            rutaFotoSeleccionada = file.getAbsolutePath();
-            imgFoto.setImage(new Image(file.toURI().toString()));
+            File dir = GestorDocumentos.getDirectorio("Socios", txtNombre.getText(), txtApellidos.getText());
+            String ext = obtenerExtension(file.getName());
+            if (dir != null) {
+                File destino = new File(dir, "foto" + ext);
+                try {
+                    java.nio.file.Files.copy(file.toPath(), destino.toPath(),
+                            java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    rutaFotoSeleccionada = destino.getAbsolutePath();
+                } catch (java.io.IOException e) {
+                    rutaFotoSeleccionada = file.getAbsolutePath();
+                }
+            } else {
+                rutaFotoSeleccionada = file.getAbsolutePath();
+            }
+            imgFoto.setImage(new Image(new File(rutaFotoSeleccionada).toURI().toString()));
         }
+    }
+
+    private String obtenerExtension(String nombreArchivo) {
+        int punto = nombreArchivo.lastIndexOf('.');
+        return punto >= 0 ? nombreArchivo.substring(punto) : "";
     }
 
     private void actualizarBotonBajaAlta() {
@@ -319,12 +346,12 @@ public class FichaSocioController {
         chooser.setTitle("Seleccionar documento");
         File archivo = chooser.showOpenDialog(btnCerrar.getScene().getWindow());
         if (archivo == null) return;
-        GestorDocumentos.copiarDocumento(archivo, "Socio", txtNombre.getText(), txtApellidos.getText());
+        GestorDocumentos.copiarDocumento(archivo, "Socios", txtNombre.getText(), txtApellidos.getText());
     }
 
     @FXML
     private void verDocumentos() {
-        GestorDocumentos.abrirDirectorio("Socio", txtNombre.getText(), txtApellidos.getText());
+        GestorDocumentos.abrirDirectorio("Socios", txtNombre.getText(), txtApellidos.getText());
     }
 
     @FXML

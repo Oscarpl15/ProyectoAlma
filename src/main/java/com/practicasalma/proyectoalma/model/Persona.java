@@ -104,9 +104,15 @@ public abstract class Persona {
     @Column
     private String genero;
 
+    @Column(name = "ruta_foto_perfil")
+    private String rutaFotoPerfil;
+
     public String getNacionalidad() {return nacionalidad;}
     public void setNacionalidad(String nacionalidad) {this.nacionalidad = nacionalidad;}
 
     public String getGenero() {return genero;}
     public void setGenero(String genero) {this.genero = genero;}
+
+    public String getRutaFotoPerfil() {return rutaFotoPerfil;}
+    public void setRutaFotoPerfil(String rutaFotoPerfil) {this.rutaFotoPerfil = rutaFotoPerfil;}
 }

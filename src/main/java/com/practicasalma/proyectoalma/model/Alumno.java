@@ -13,10 +13,6 @@ public class Alumno extends Persona {
     @Column(name = "fecha_nacimiento", nullable = false)
     private LocalDate fechaNacimiento;
 
-    // Rutas específicas para el alumno (OneDrive)
-    @Column(name = "ruta_foto_perfil")
-    private String rutaFotoPerfil;
-
     @Column(name = "auto_uso_datos")
     private Boolean autorizaUsoDatos = false;
 
@@ -127,9 +123,6 @@ public class Alumno extends Persona {
 
     public LocalDate getFechaNacimiento() { return fechaNacimiento; }
     public void setFechaNacimiento(LocalDate fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
-
-    public String getRutaFotoPerfil() { return rutaFotoPerfil; }
-    public void setRutaFotoPerfil(String rutaFotoPerfil) { this.rutaFotoPerfil = rutaFotoPerfil; }
 
     public Boolean getAutorizaImagen() { return autorizaImagen; }
     public void setAutorizaImagen(Boolean autorizaImagen) { this.autorizaImagen = autorizaImagen; }

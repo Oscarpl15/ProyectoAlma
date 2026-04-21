@@ -5,6 +5,7 @@ import com.practicasalma.proyectoalma.service.GestorAsignaciones;
 import com.practicasalma.proyectoalma.service.GestorCorreo;
 import com.practicasalma.proyectoalma.service.GestorMatriculas;
 import com.practicasalma.proyectoalma.util.GestorConfig;
+import com.practicasalma.proyectoalma.util.GestorDocumentos;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.control.Alert;
@@ -99,22 +100,38 @@ public class MainController {
 
     @FXML
     private void cambiarDirectorioDocs() {
+        String rutaActual = GestorConfig.getRutaDocumentos();
+        File dirActual = (rutaActual != null && !rutaActual.isBlank()) ? new File(rutaActual) : null;
+
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Seleccionar directorio de documentos");
-        String actual = GestorConfig.getRutaDocumentos();
-        if (actual != null && !actual.isBlank()) {
-            File dirActual = new File(actual);
-            if (dirActual.exists()) chooser.setInitialDirectory(dirActual);
+        if (dirActual != null && dirActual.exists()) chooser.setInitialDirectory(dirActual);
+
+        File dirNuevo = chooser.showDialog(btnAjustes.getScene().getWindow());
+        if (dirNuevo == null) return;
+
+        if (dirActual != null && GestorDocumentos.tieneContenido(dirActual)
+                && !dirActual.getAbsolutePath().equals(dirNuevo.getAbsolutePath())) {
+            Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmacion.setTitle("Mover contenido");
+            confirmacion.setHeaderText("Se encontró contenido en el directorio actual.");
+            confirmacion.setContentText("¿Deseas mover todos los archivos al nuevo directorio?");
+            confirmacion.getButtonTypes().setAll(
+                    javafx.scene.control.ButtonType.YES,
+                    javafx.scene.control.ButtonType.NO);
+            confirmacion.showAndWait().ifPresent(respuesta -> {
+                if (respuesta == javafx.scene.control.ButtonType.YES) {
+                    GestorDocumentos.moverContenido(dirActual, dirNuevo);
+                }
+            });
         }
-        File dir = chooser.showDialog(btnAjustes.getScene().getWindow());
-        if (dir != null) {
-            GestorConfig.setRutaDocumentos(dir.getAbsolutePath());
-            Alert ok = new Alert(Alert.AlertType.INFORMATION);
-            ok.setTitle("Directorio actualizado");
-            ok.setHeaderText(null);
-            ok.setContentText("Directorio de documentos actualizado correctamente.");
-            ok.showAndWait();
-        }
+
+        GestorConfig.setRutaDocumentos(dirNuevo.getAbsolutePath());
+        Alert ok = new Alert(Alert.AlertType.INFORMATION);
+        ok.setTitle("Directorio actualizado");
+        ok.setHeaderText(null);
+        ok.setContentText("Directorio de documentos actualizado correctamente.");
+        ok.showAndWait();
     }
 
     @FXML
