@@ -1,14 +1,15 @@
 package com.practicasalma.proyectoalma.dao;
 
+import com.practicasalma.proyectoalma.exception.PersistenciaException;
 import com.practicasalma.proyectoalma.model.AsignacionPersonal;
 import com.practicasalma.proyectoalma.model.Docente;
 import com.practicasalma.proyectoalma.model.Voluntario;
-import com.practicasalma.proyectoalma.util.GestorBBDD;
+import com.practicasalma.proyectoalma.util.config.GestorBBDD;
 import jakarta.persistence.EntityManager;
 
 public class AsignacionPersonalDAO {
 
-    public void guardar(AsignacionPersonal asig) throws Exception {
+    public void guardar(AsignacionPersonal asig) {
         EntityManager em = null;
         try {
             em = GestorBBDD.getEntityManagerFactory().createEntityManager();
@@ -25,7 +26,7 @@ public class AsignacionPersonalDAO {
             em.getTransaction().commit();
         } catch (Exception e) {
             if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
-            throw new Exception("Error al guardar asignación: " + e.getMessage());
+            throw new PersistenciaException("Error al guardar la asignación: " + e.getMessage(), e);
         } finally {
             if (em != null) em.close();
         }

@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.service;
 
 import com.practicasalma.proyectoalma.dao.AlumnoDAO;
 import com.practicasalma.proyectoalma.dao.MatriculaDAO;
+import com.practicasalma.proyectoalma.exception.PersistenciaException;
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.model.Matricula;
 
@@ -24,7 +25,6 @@ public class GestorMatriculas {
 
     private static final String RUTA_POSTPONED = "datos/postponed_matriculas.properties";
 
-    // Datos necesarios para que RenovacionController construya las filas del diálogo
     public static class DatosDialogo {
         public final List<Alumno> alumnosSexto;
         public final String anyoAcademico;
@@ -44,8 +44,6 @@ public class GestorMatriculas {
         public boolean isEmpty() { return alumnosSexto.isEmpty(); }
     }
 
-    // Retorna los datos para el diálogo (o null si no es período o no hay nada que mostrar).
-    // Auto-genera matrículas para los alumnos que NO están en 6º.
     public static DatosDialogo ejecutar() {
         if (!esPeriodoGeneracion()) return null;
 
@@ -90,8 +88,8 @@ public class GestorMatriculas {
                 Matricula m = new Matricula(nuevoCurso, a);
                 m.setAnyoAcademico(anyoActual);
                 matriculaDAO.guardar(m);
-            } catch (Exception e) {
-                System.err.println("Error al generar matrícula para " + a.getNombre() + ": " + e.getMessage());
+            } catch (PersistenciaException e) {
+                // Continuar con el resto si una matrícula individual falla
             }
         }
 
@@ -103,18 +101,17 @@ public class GestorMatriculas {
         LocalDate hoy = LocalDate.now();
         int mes = hoy.getMonthValue();
         int dia = hoy.getDayOfMonth();
-        //return mes == 7 || mes == 8 || (mes == 9 && dia <= 10);
-        return mes == 4;
+        return mes == 7 || mes == 8 || (mes == 9 && dia <= 10);
     }
 
     public static String calcularAnyoAcademico() {
         LocalDate hoy = LocalDate.now();
         int anyo = hoy.getYear();
         int mes = hoy.getMonthValue();
-        //if (mes >= 6) {
+        if (mes >= 6) {
             return anyo + "/" + (anyo + 1);
-        //}
-        //return (anyo - 1) + "/" + anyo;
+        }
+        return (anyo - 1) + "/" + anyo;
     }
 
     public static boolean yaExisteMatricula(Alumno alumno, String anyoAcademico) {
@@ -149,9 +146,7 @@ public class GestorMatriculas {
         if (f.exists()) {
             try (FileInputStream fis = new FileInputStream(f)) {
                 props.load(fis);
-            } catch (Exception e) {
-                System.err.println("Error cargando postponed: " + e.getMessage());
-            }
+            } catch (Exception ignored) {}
         }
         return props;
     }
@@ -162,8 +157,6 @@ public class GestorMatriculas {
             try (FileOutputStream fos = new FileOutputStream(RUTA_POSTPONED)) {
                 props.store(fos, null);
             }
-        } catch (Exception e) {
-            System.err.println("Error guardando postponed: " + e.getMessage());
-        }
+        } catch (Exception ignored) {}
     }
 }

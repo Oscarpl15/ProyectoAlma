@@ -1,4 +1,4 @@
-package com.practicasalma.proyectoalma.util;
+package com.practicasalma.proyectoalma.util.filtro;
 
 import com.practicasalma.proyectoalma.model.Voluntario;
 
@@ -9,7 +9,6 @@ public class VoluntarioFiltro {
     public static Predicate<Voluntario> construir(String texto, String cursoEscolar, String estado) {
         return voluntario -> {
 
-            // Texto: nombre o apellidos
             if (texto != null && !texto.isBlank()) {
                 String filtro = texto.toLowerCase();
                 boolean coincide =
@@ -18,7 +17,6 @@ public class VoluntarioFiltro {
                 if (!coincide) return false;
             }
 
-            // Curso escolar: tiene alguna asignación con ese año académico
             if (cursoEscolar != null && !"Todos".equals(cursoEscolar)) {
                 String altFormato = cursoEscolar.replace("/", "-");
                 if (voluntario.getHistorialAsignaciones() == null || voluntario.getHistorialAsignaciones().isEmpty())
@@ -28,7 +26,6 @@ public class VoluntarioFiltro {
                 if (!tieneAsignacion) return false;
             }
 
-            // Estado: Activo / Baja
             if (estado != null && !"Todos".equals(estado)) {
                 boolean activo = Boolean.TRUE.equals(voluntario.getActivo());
                 if ("Activo".equals(estado) && !activo) return false;

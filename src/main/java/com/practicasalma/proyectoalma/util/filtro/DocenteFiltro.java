@@ -1,4 +1,4 @@
-package com.practicasalma.proyectoalma.util;
+package com.practicasalma.proyectoalma.util.filtro;
 
 import com.practicasalma.proyectoalma.model.Docente;
 
@@ -9,7 +9,6 @@ public class DocenteFiltro {
     public static Predicate<Docente> construir(String texto, String cursoEscolar, String estado) {
         return docente -> {
 
-            // Texto: nombre o apellidos
             if (texto != null && !texto.isBlank()) {
                 String filtro = texto.toLowerCase();
                 boolean coincide =
@@ -18,7 +17,6 @@ public class DocenteFiltro {
                 if (!coincide) return false;
             }
 
-            // Curso escolar: tiene alguna asignación con ese año académico
             if (cursoEscolar != null && !"Todos".equals(cursoEscolar)) {
                 String altFormato = cursoEscolar.replace("/", "-");
                 if (docente.getHistorialAsignaciones() == null || docente.getHistorialAsignaciones().isEmpty())
@@ -28,7 +26,6 @@ public class DocenteFiltro {
                 if (!tieneAsignacion) return false;
             }
 
-            // Estado: Activo / Baja
             if (estado != null && !"Todos".equals(estado)) {
                 boolean activo = Boolean.TRUE.equals(docente.getActivo());
                 if ("Activo".equals(estado) && !activo) return false;

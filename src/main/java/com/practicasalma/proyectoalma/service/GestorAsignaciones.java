@@ -16,7 +16,6 @@ public class GestorAsignaciones {
 
     private static final String RUTA_POSTPONED = "datos/postponed_asignaciones.properties";
 
-    // DTO con los datos necesarios para mostrar el diálogo de renovación
     public static class DatosPersonal {
         public final List<Docente> docentes;
         public final List<Voluntario> voluntarios;
@@ -36,7 +35,6 @@ public class GestorAsignaciones {
         }
     }
 
-    // Prepara los datos para el diálogo. Devuelve null si no es período o no hay pendientes.
     public static DatosPersonal prepararDatos() {
         if (!esPeriodoGeneracion()) return null;
 
@@ -86,8 +84,9 @@ public class GestorAsignaciones {
     }
 
     public static boolean esPeriodoGeneracion() {
-        return LocalDate.now().getMonthValue() >= 4;
-    } // Aquí iría 7
+        int mes = LocalDate.now().getMonthValue();
+        return mes >= 7;
+    }
 
     public static String calcularNuevoCursoAcademico() {
         int anyo = LocalDate.now().getYear();
@@ -107,9 +106,7 @@ public class GestorAsignaciones {
         if (f.exists()) {
             try (InputStream is = new FileInputStream(f)) {
                 props.load(is);
-            } catch (IOException e) {
-                System.err.println("No se pudo cargar postponed_asignaciones.properties: " + e.getMessage());
-            }
+            } catch (IOException ignored) {}
         }
         return props;
     }
@@ -117,8 +114,6 @@ public class GestorAsignaciones {
     public static void guardarPostponed(Properties props) {
         try (OutputStream os = new FileOutputStream(RUTA_POSTPONED)) {
             props.store(os, null);
-        } catch (IOException e) {
-            System.err.println("No se pudo guardar postponed_asignaciones.properties: " + e.getMessage());
-        }
+        } catch (IOException ignored) {}
     }
 }

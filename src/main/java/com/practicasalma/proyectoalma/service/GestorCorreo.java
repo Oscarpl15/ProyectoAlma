@@ -53,11 +53,9 @@ public class GestorCorreo {
             mensaje.setText(cuerpo);
 
             Transport.send(mensaje);
-            System.out.println("¡Correo enviado con éxito a " + destinatario + "!");
 
         } catch (MessagingException e) {
-            System.out.println("Error al enviar el correo: " + e.getMessage());
-            e.printStackTrace();
+            throw new com.practicasalma.proyectoalma.exception.AlmaException("Error al enviar el correo: " + e.getMessage(), e);
         }
     }
 
@@ -84,10 +82,8 @@ public class GestorCorreo {
             mensaje.setContent(multipart);
 
             Transport.send(mensaje);
-            System.out.println("¡Correo con adjunto enviado con éxito a " + destinatario + "!");
         } catch (Exception e) {
-            System.out.println("Error al enviar el correo con adjunto: " + e.getMessage());
-            e.printStackTrace();
+            throw new com.practicasalma.proyectoalma.exception.AlmaException("Error al enviar el correo con adjunto: " + e.getMessage(), e);
         }
     }
 }

@@ -1,5 +1,7 @@
-package com.practicasalma.proyectoalma.util;
+package com.practicasalma.proyectoalma.util.doc;
 
+import com.practicasalma.proyectoalma.exception.DocumentoException;
+import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import javafx.scene.control.Alert;
 
 import java.awt.Desktop;
@@ -52,10 +54,9 @@ public class GestorDocumentos {
                                 Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING);
                             }
                         } catch (IOException e) {
-                            System.err.println("Error moviendo " + src + ": " + e.getMessage());
+                            throw new DocumentoException("Error moviendo " + src.getFileName() + ": " + e.getMessage(), e);
                         }
                     });
-            // Borrar origen tras copiar
             Files.walk(origen.toPath())
                     .sorted(Comparator.reverseOrder())
                     .map(Path::toFile)

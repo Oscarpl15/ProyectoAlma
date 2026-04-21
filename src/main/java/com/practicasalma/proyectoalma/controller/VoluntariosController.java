@@ -2,8 +2,8 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Voluntario;
 import com.practicasalma.proyectoalma.service.VoluntarioService;
-import com.practicasalma.proyectoalma.util.FxUtils;
-import com.practicasalma.proyectoalma.util.VoluntarioFiltro;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
+import com.practicasalma.proyectoalma.util.filtro.VoluntarioFiltro;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -133,7 +133,6 @@ public class VoluntariosController {
     private void abrirFichaVoluntario(Voluntario voluntarioTabla) {
         try {
             Voluntario voluntario = voluntarioService.obtenerCompleto(voluntarioTabla.getId());
-            if (voluntario == null) return;
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
                     "/com/practicasalma/proyectoalma/view/ficha-voluntario.fxml"));
@@ -150,8 +149,8 @@ public class VoluntariosController {
             stage.showAndWait();
 
             cargarVoluntariosEnTabla();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ficha: " + e.getMessage());
         }
     }
 
@@ -161,7 +160,7 @@ public class VoluntariosController {
             FxUtils.abrirModal("agregarVoluntario-view.fxml", "Agregar voluntario");
             cargarVoluntariosEnTabla();
         } catch (IOException e) {
-            System.err.println("Error al abrir el pop-up: " + e.getMessage());
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir el formulario: " + e.getMessage());
         }
     }
 }

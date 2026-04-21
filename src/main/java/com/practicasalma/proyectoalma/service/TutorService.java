@@ -9,7 +9,7 @@ public class TutorService {
 
     private final TutorDAO tutorDAO = new TutorDAO();
 
-    public void guardarTutor(Tutor tutor) throws Exception {
+    public void guardarTutor(Tutor tutor) {
         tutorDAO.guardar(tutor);
     }
 

@@ -1,7 +1,7 @@
 package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.Launcher;
-import com.practicasalma.proyectoalma.util.GestorConfig;
+import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

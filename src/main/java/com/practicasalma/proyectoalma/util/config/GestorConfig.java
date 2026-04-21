@@ -1,4 +1,4 @@
-package com.practicasalma.proyectoalma.util;
+package com.practicasalma.proyectoalma.util.config;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,7 +64,8 @@ public class GestorConfig {
         try (FileOutputStream fos = new FileOutputStream(f)) {
             props.store(fos, "Configuracion Fundacion Alma");
         } catch (IOException e) {
-            System.err.println("Error al guardar configuracion: " + e.getMessage());
+            throw new com.practicasalma.proyectoalma.exception.ConfiguracionException(
+                    "Error al guardar la configuración: " + e.getMessage(), e);
         }
     }
 }

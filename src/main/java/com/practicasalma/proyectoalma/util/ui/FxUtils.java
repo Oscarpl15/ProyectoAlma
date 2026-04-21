@@ -1,4 +1,4 @@
-package com.practicasalma.proyectoalma.util;
+package com.practicasalma.proyectoalma.util.ui;
 
 import com.practicasalma.proyectoalma.Launcher;
 import javafx.fxml.FXMLLoader;
@@ -20,10 +20,6 @@ public class FxUtils {
 
     private static final String RUTA_ICONO = "/com/practicasalma/proyectoalma/assets/logo.png";
 
-    /**
-     * Abre un formulario emergente (modal) y espera a que se cierre.
-     * Uso: FxUtils.abrirModal("agregarAlumno-view.fxml", "Agregar alumno");
-     */
     public static void abrirModal(String nombreFxml, String titulo) throws IOException {
         FXMLLoader loader = new FXMLLoader(Launcher.class.getResource("view/" + nombreFxml));
         Parent root = loader.load();
@@ -43,10 +39,6 @@ public class FxUtils {
         stage.showAndWait();
     }
 
-    /**
-     * Devuelve el CellFactory para columnas de Estado (Activo / Baja) con sus estilos CSS.
-     * Uso: columna.setCellFactory(FxUtils.celdaEstado());
-     */
     public static <T> Callback<TableColumn<T, String>, TableCell<T, String>> celdaEstado() {
         return col -> new TableCell<>() {
             @Override
@@ -63,10 +55,6 @@ public class FxUtils {
         };
     }
 
-    /**
-     * Muestra un Alert informativo, de aviso o de error.
-     * Uso: FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Título", "Mensaje");
-     */
     public static void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alert = new Alert(tipo);
         alert.setTitle(titulo);

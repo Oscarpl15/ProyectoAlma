@@ -3,7 +3,7 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.model.Matricula;
 import com.practicasalma.proyectoalma.service.GestorMatriculas;
 import com.practicasalma.proyectoalma.service.MatriculaService;
-import com.practicasalma.proyectoalma.util.FxUtils;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;

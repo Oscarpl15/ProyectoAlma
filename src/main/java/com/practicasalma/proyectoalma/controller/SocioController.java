@@ -2,8 +2,8 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Socio;
 import com.practicasalma.proyectoalma.service.SocioService;
-import com.practicasalma.proyectoalma.util.FxUtils;
-import com.practicasalma.proyectoalma.util.SocioFiltro;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
+import com.practicasalma.proyectoalma.util.filtro.SocioFiltro;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -115,7 +115,7 @@ public class SocioController {
             FxUtils.abrirModal("agregarSocio-view.fxml", "Agregar nuevo socio");
             cargarSociosEnTabla();
         } catch (IOException e) {
-            System.err.println("Error al abrir el pop-up: " + e.getMessage());
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir el formulario: " + e.getMessage());
         }
     }
 
@@ -126,7 +126,6 @@ public class SocioController {
     private void abrirFichaSocio(Socio socioTabla) {
         try {
             Socio socio = socioService.obtenerCompleto(socioTabla.getId());
-            if (socio == null) return;
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
                     "/com/practicasalma/proyectoalma/view/ficha-socio.fxml"));
@@ -143,8 +142,8 @@ public class SocioController {
             stage.showAndWait();
 
             cargarSociosEnTabla();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ficha: " + e.getMessage());
         }
     }
 }

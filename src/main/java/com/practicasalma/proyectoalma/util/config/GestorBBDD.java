@@ -1,5 +1,6 @@
-package com.practicasalma.proyectoalma.util;
+package com.practicasalma.proyectoalma.util.config;
 
+import com.practicasalma.proyectoalma.exception.ConfiguracionException;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
@@ -16,14 +17,13 @@ public class GestorBBDD {
         try {
             emf = Persistence.createEntityManagerFactory("ProyectoAlma", props);
         } catch (Throwable ex) {
-            System.err.println("Error al inicializar JPA: " + ex);
-            throw new ExceptionInInitializerError(ex);
+            throw new ConfiguracionException("Error al inicializar la base de datos: " + ex.getMessage(), ex);
         }
     }
 
     public static EntityManagerFactory getEntityManagerFactory() {
         if (emf == null) {
-            throw new IllegalStateException("GestorBBDD no ha sido inicializado. Llama a inicializar() primero.");
+            throw new ConfiguracionException("La base de datos no ha sido inicializada. Comprueba la configuración.");
         }
         return emf;
     }

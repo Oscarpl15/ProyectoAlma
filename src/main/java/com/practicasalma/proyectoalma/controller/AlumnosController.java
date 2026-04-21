@@ -2,8 +2,8 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.service.AlumnoService;
-import com.practicasalma.proyectoalma.util.AlumnoFiltro;
-import com.practicasalma.proyectoalma.util.FxUtils;
+import com.practicasalma.proyectoalma.util.filtro.AlumnoFiltro;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -186,17 +186,13 @@ public class AlumnosController {
             FxUtils.abrirModal("agregarAlumno-view.fxml", "Agregar alumno");
             cargarAlumnosEnTabla();
         } catch (IOException e) {
-            System.err.println("Error al abrir el pop-up: " + e.getMessage());
+            FxUtils.mostrarAlerta(javafx.scene.control.Alert.AlertType.ERROR, "Error", "No se pudo abrir el formulario: " + e.getMessage());
         }
     }
 
     private void abrirFichaAlumno(Alumno alumnoTabla) {
         try {
             Alumno alumnoCompleto = alumnoService.obtenerCompleto(alumnoTabla.getId());
-            if (alumnoCompleto == null) {
-                System.err.println("No se ha podido cargar la información completa del alumno.");
-                return;
-            }
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
                     "/com/practicasalma/proyectoalma/view/ficha-alumno.fxml"));
@@ -212,8 +208,8 @@ public class AlumnosController {
             stage.showAndWait();
 
             cargarAlumnosEnTabla();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            FxUtils.mostrarAlerta(javafx.scene.control.Alert.AlertType.ERROR, "Error", "No se pudo abrir la ficha: " + e.getMessage());
         }
     }
 }

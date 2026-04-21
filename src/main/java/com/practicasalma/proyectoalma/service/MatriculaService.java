@@ -7,11 +7,11 @@ public class MatriculaService {
 
     private final MatriculaDAO matriculaDAO = new MatriculaDAO();
 
-    public void guardar(Matricula matricula) throws Exception {
+    public void guardar(Matricula matricula) {
         matriculaDAO.guardar(matricula);
     }
 
-    public void actualizar(Long id, String curso, String grupoAsignado, boolean esRepeticion) throws Exception {
+    public void actualizar(Long id, String curso, String grupoAsignado, boolean esRepeticion) {
         matriculaDAO.actualizar(id, curso, grupoAsignado, esRepeticion);
     }
 }

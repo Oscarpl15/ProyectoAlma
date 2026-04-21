@@ -2,8 +2,8 @@ package com.practicasalma.proyectoalma;
 
 import atlantafx.base.theme.PrimerLight;
 import com.practicasalma.proyectoalma.controller.ConfiguracionInicialController;
-import com.practicasalma.proyectoalma.util.GestorBBDD;
-import com.practicasalma.proyectoalma.util.GestorConfig;
+import com.practicasalma.proyectoalma.util.config.GestorBBDD;
+import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -32,7 +32,6 @@ public class Launcher extends Application {
             ConfiguracionInicialController.mostrar();
             rutaBBDD = GestorConfig.getRutaBBDD();
             if (rutaBBDD == null || rutaBBDD.isBlank()) {
-                System.err.println("Configuracion incompleta. La aplicacion no puede arrancar.");
                 return;
             }
         }
@@ -41,8 +40,7 @@ public class Launcher extends Application {
 
         URL fxmlUrl = Launcher.class.getResource("/com/practicasalma/proyectoalma/view/main-view.fxml");
         if (fxmlUrl == null) {
-            System.err.println("ERROR FATAL: No se encuentra el archivo FXML principal.");
-            return;
+            throw new IllegalStateException("No se encuentra el archivo FXML principal.");
         }
 
         Scene scene = new Scene(new FXMLLoader(fxmlUrl).load());
@@ -51,9 +49,7 @@ public class Launcher extends Application {
 
         try {
             stage.getIcons().add(new Image(getClass().getResourceAsStream("/com/practicasalma/proyectoalma/assets/logo.png")));
-        } catch (Exception e) {
-            System.err.println("AVISO: No se pudo cargar el logo de la aplicacion.");
-        }
+        } catch (Exception ignored) {}
 
         stage.setScene(scene);
 
