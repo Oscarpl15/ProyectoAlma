@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.practicasalma.proyectoalma.controller.ConfiguracionInicialController"
+            styleClass="fondo-blanco"
+            stylesheets="@../css/estilos.css"
+            prefWidth="620" prefHeight="480">
+
+    <top>
+        <VBox spacing="5" styleClass="padding-cabecera-ficha">
+            <Label fx:id="lblTitulo" styleClass="titulo-ventana"/>
+            <Label fx:id="lblSubtitulo" styleClass="subtitulo-ventana"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="fondo-blanco">
+        <VBox spacing="14" styleClass="padding-cuerpo-ficha">
+
+            <!-- Sección 1: Base de datos -->
+            <Label text="1. Base de datos" styleClass="titulo-seccion"/>
+
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="Directorio:" prefWidth="110" styleClass="etiqueta-campo"/>
+                <TextField fx:id="txtDirectorioBBDD" promptText="Selecciona un directorio..." editable="false" styleClass="campo-lectura" HBox.hgrow="ALWAYS"/>
+                <Button text="Examinar" onAction="#seleccionarDirectorioBBDD" styleClass="boton-secundario"/>
+            </HBox>
+
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <RadioButton fx:id="rbImportar" text="Importar BD existente"/>
+                <RadioButton fx:id="rbNueva" text="Nueva base de datos"/>
+            </HBox>
+
+            <!-- Panel importar (visible solo con rbImportar) -->
+            <HBox fx:id="panelImportar" spacing="8" alignment="CENTER_LEFT">
+                <Label text="Archivo .db:" prefWidth="110" styleClass="etiqueta-campo"/>
+                <TextField fx:id="txtArchivoImportar" promptText="Selecciona el archivo .db..." editable="false" styleClass="campo-lectura" HBox.hgrow="ALWAYS"/>
+                <Button text="Seleccionar" onAction="#seleccionarArchivoImportar" styleClass="boton-secundario"/>
+            </HBox>
+
+            <!-- Panel nueva BD (visible solo con rbNueva) -->
+            <HBox fx:id="panelNueva" spacing="8" alignment="CENTER_LEFT">
+                <Label text="Nombre:" prefWidth="110" styleClass="etiqueta-campo"/>
+                <TextField fx:id="txtNombreBBDD" promptText="ej: FundacionAlma" styleClass="campo-lectura" HBox.hgrow="ALWAYS"/>
+                <Label text=".db" styleClass="etiqueta-campo"/>
+            </HBox>
+
+            <!-- Sección 2: Documentos (oculta en modo cambio BD) -->
+            <VBox fx:id="seccionDocumentos" spacing="14">
+                <Separator/>
+                <Label text="2. Directorio de documentos" styleClass="titulo-seccion"/>
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="Directorio:" prefWidth="110" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtDirectorioDocs" promptText="Selecciona un directorio..." editable="false" styleClass="campo-lectura" HBox.hgrow="ALWAYS"/>
+                    <Button text="Examinar" onAction="#seleccionarDirectorioDocs" styleClass="boton-secundario"/>
+                </HBox>
+            </VBox>
+
+        </VBox>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" styleClass="padding-pie-ficha">
+            <Button fx:id="btnConfirmar" text="Confirmar" onAction="#confirmar" styleClass="boton-accion" disable="true"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

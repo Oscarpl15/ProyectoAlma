@@ -3,13 +3,18 @@ package com.practicasalma.proyectoalma.util;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
-public class GestorBBDD {
-    private static final EntityManagerFactory emf = buildEntityManagerFactory();
+import java.util.HashMap;
+import java.util.Map;
 
-    private static EntityManagerFactory buildEntityManagerFactory() {
+public class GestorBBDD {
+
+    private static EntityManagerFactory emf;
+
+    public static void inicializar(String rutaAbsoluta) {
+        Map<String, Object> props = new HashMap<>();
+        props.put("jakarta.persistence.jdbc.url", "jdbc:sqlite:" + rutaAbsoluta);
         try {
-            
-            return Persistence.createEntityManagerFactory("ProyectoAlma");
+            emf = Persistence.createEntityManagerFactory("ProyectoAlma", props);
         } catch (Throwable ex) {
             System.err.println("Error al inicializar JPA: " + ex);
             throw new ExceptionInInitializerError(ex);
@@ -17,6 +22,9 @@ public class GestorBBDD {
     }
 
     public static EntityManagerFactory getEntityManagerFactory() {
+        if (emf == null) {
+            throw new IllegalStateException("GestorBBDD no ha sido inicializado. Llama a inicializar() primero.");
+        }
         return emf;
     }
 }

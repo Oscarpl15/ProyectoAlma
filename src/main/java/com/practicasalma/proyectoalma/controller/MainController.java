@@ -4,18 +4,20 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.service.GestorAsignaciones;
 import com.practicasalma.proyectoalma.service.GestorCorreo;
 import com.practicasalma.proyectoalma.service.GestorMatriculas;
+import com.practicasalma.proyectoalma.util.GestorConfig;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.stage.DirectoryChooser;
 
+import java.io.File;
 import java.util.Optional;
 
 public class MainController {
@@ -30,14 +32,12 @@ public class MainController {
     @FXML private DocentesController docentesController;
     @FXML private VoluntariosController voluntariosController;
 
-    private ContextMenu menuAjustes;
+    @FXML private ContextMenu menuAjustes;
 
     @FXML
     public void initialize() {
-        // Hace que la imagen persiga dinámicamente el ancho y alto de la ventana
         imgFondo.fitWidthProperty().bind(rootPane.widthProperty());
         imgFondo.fitHeightProperty().bind(rootPane.heightProperty());
-        // Opcional: Asegurarnos de que arranca en la pestaña 0
         if (tabPrincipal != null) {
             tabPrincipal.getSelectionModel().select(0);
         }
@@ -49,10 +49,6 @@ public class MainController {
             docentesController.cargarDocentesEnTabla();
             voluntariosController.cargarVoluntariosEnTabla();
         }
-        menuAjustes = new ContextMenu();
-        MenuItem itemCredenciales = new MenuItem("Credenciales correo");
-        itemCredenciales.setOnAction(e -> configurarCorreo());
-        menuAjustes.getItems().add(itemCredenciales);
     }
 
     @FXML
@@ -88,6 +84,40 @@ public class MainController {
         tabPrincipal.getSelectionModel().select(3);
     }
 
+    @FXML
+    private void cambiarDirectorioBBDD() {
+        ConfiguracionInicialController.mostrarCambioBBDD();
+        String nuevaRuta = GestorConfig.getRutaBBDD();
+        if (nuevaRuta != null && !nuevaRuta.isBlank()) {
+            Alert info = new Alert(Alert.AlertType.INFORMATION);
+            info.setTitle("Cambio pendiente");
+            info.setHeaderText(null);
+            info.setContentText("El cambio de base de datos se aplicará al reiniciar la aplicación.");
+            info.showAndWait();
+        }
+    }
+
+    @FXML
+    private void cambiarDirectorioDocs() {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Seleccionar directorio de documentos");
+        String actual = GestorConfig.getRutaDocumentos();
+        if (actual != null && !actual.isBlank()) {
+            File dirActual = new File(actual);
+            if (dirActual.exists()) chooser.setInitialDirectory(dirActual);
+        }
+        File dir = chooser.showDialog(btnAjustes.getScene().getWindow());
+        if (dir != null) {
+            GestorConfig.setRutaDocumentos(dir.getAbsolutePath());
+            Alert ok = new Alert(Alert.AlertType.INFORMATION);
+            ok.setTitle("Directorio actualizado");
+            ok.setHeaderText(null);
+            ok.setContentText("Directorio de documentos actualizado correctamente.");
+            ok.showAndWait();
+        }
+    }
+
+    @FXML
     private void configurarCorreo() {
         TextInputDialog correoDialog = new TextInputDialog();
         correoDialog.setTitle("Configurar correo");
