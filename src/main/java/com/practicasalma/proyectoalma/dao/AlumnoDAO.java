@@ -12,8 +12,27 @@ import jakarta.persistence.criteria.Root;
 
 import java.util.List;
 
+/**
+ * Acceso a datos para la entidad {@link Alumno}.
+ * <p>
+ * Encapsula todas las operaciones de persistencia JPA relativas a alumnos:
+ * inserción, actualización, consulta con eager-loading de colecciones y
+ * verificación de duplicados por DNI. Todos los métodos usan su propio
+ * {@code EntityManager} de corta vida y hacen rollback automático en caso de error.
+ * </p>
+ * <p>
+ * Los errores de base de datos se envuelven en {@link com.practicasalma.proyectoalma.exception.PersistenciaException};
+ * los accesos a IDs inexistentes lanzan {@link com.practicasalma.proyectoalma.exception.EntidadNoEncontradaException}.
+ * </p>
+ */
 public class AlumnoDAO {
 
+    /**
+     * Persiste un nuevo alumno en la base de datos.
+     *
+     * @param alumno entidad a insertar (sin ID asignado)
+     * @throws com.practicasalma.proyectoalma.exception.PersistenciaException si Hibernate no puede persistir
+     */
     public void guardar(Alumno alumno) {
         EntityManager em = null;
         try {
@@ -29,6 +48,11 @@ public class AlumnoDAO {
         }
     }
 
+    /**
+     * Actualiza un alumno existente (merge JPA).
+     *
+     * @param alumno entidad con los campos modificados y el ID ya asignado
+     */
     public void actualizar(Alumno alumno) {
         EntityManager em = null;
         try {
@@ -44,6 +68,12 @@ public class AlumnoDAO {
         }
     }
 
+    /**
+     * Devuelve todos los alumnos con sus matrículas pre-cargadas (LEFT JOIN FETCH).
+     * El DISTINCT evita duplicados provocados por el join.
+     *
+     * @return lista de alumnos, vacía si no hay ninguno
+     */
     public List<Alumno> obtenerTodos() {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -57,6 +87,13 @@ public class AlumnoDAO {
         }
     }
 
+    /**
+     * Cambia el estado activo/baja de un alumno sin tocar el resto de sus datos.
+     *
+     * @param id     identificador del alumno
+     * @param activo {@code true} para reactivar, {@code false} para dar de baja
+     * @throws com.practicasalma.proyectoalma.exception.EntidadNoEncontradaException si el ID no existe
+     */
     public void actualizarActivo(Long id, boolean activo) {
         EntityManager em = null;
         try {
@@ -77,6 +114,15 @@ public class AlumnoDAO {
         }
     }
 
+    /**
+     * Carga un alumno con todas sus colecciones inicializadas:
+     * matrículas, personas autorizadas a recogerle y tutores.
+     * Se hace forzando la inicialización de cada lazy collection dentro del mismo contexto JPA.
+     *
+     * @param id identificador del alumno
+     * @return alumno con colecciones listas para usar fuera del EntityManager
+     * @throws com.practicasalma.proyectoalma.exception.EntidadNoEncontradaException si el ID no existe
+     */
     public Alumno obtenerCompleto(Long id) {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             Alumno alumno = em.find(Alumno.class, id);
@@ -92,6 +138,13 @@ public class AlumnoDAO {
         }
     }
 
+    /**
+     * Comprueba si ya existe un alumno con ese documento de identidad (sin distinguir mayúsculas).
+     * Solo busca en la tabla {@code Alumno} — el mismo DNI puede existir en otras tablas (Socio, Docente…).
+     *
+     * @param dni documento de identidad a verificar
+     * @return {@code true} si ya hay un alumno con ese DNI
+     */
     public boolean existeDni(String dni) {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             Long count = em.createQuery(

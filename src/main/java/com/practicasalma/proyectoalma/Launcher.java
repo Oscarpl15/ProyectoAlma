@@ -16,6 +16,26 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+/**
+ * Punto de entrada de la aplicación JavaFX.
+ * <p>
+ * Secuencia de arranque:
+ * <ol>
+ *   <li>Aplica el tema visual AtlantaFX {@code PrimerLight}.</li>
+ *   <li>Lee la configuración de {@link com.practicasalma.proyectoalma.util.config.GestorConfig}.
+ *       Si no está configurado, muestra el asistente de configuración inicial.</li>
+ *   <li>Inicializa {@link com.practicasalma.proyectoalma.util.config.GestorBBDD} con la ruta de la BD.</li>
+ *   <li>Ejecuta {@link com.practicasalma.proyectoalma.service.GestorMatriculas} y
+ *       {@link com.practicasalma.proyectoalma.service.GestorAsignaciones} para procesar
+ *       renovaciones automáticas de inicio de curso.</li>
+ *   <li>Carga y muestra la vista principal ({@code main-view.fxml}).</li>
+ * </ol>
+ * </p>
+ * <p>
+ * {@link MainLauncher} es el wrapper de entrada real que llama a este {@code main()} —
+ * necesario para evitar el error de módulos de JavaFX al ejecutar sin {@code module-info.java}.
+ * </p>
+ */
 public class Launcher extends Application {
 
     @Override

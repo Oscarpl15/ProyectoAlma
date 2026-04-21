@@ -11,6 +11,14 @@ import com.practicasalma.proyectoalma.util.validacion.Validador;
 
 import java.util.List;
 
+/**
+ * Lógica de negocio para la gestión de voluntarios.
+ * <p>
+ * Idéntica en estructura a {@link DocenteService}: valida datos (DNI/NIE, teléfono,
+ * correo, fecha de nacimiento), verifica duplicados por DNI y asigna automáticamente
+ * el curso académico actual al dar de alta o reactivar un voluntario.
+ * </p>
+ */
 public class VoluntarioService {
 
     private final VoluntarioDAO voluntarioDAO = new VoluntarioDAO();
@@ -33,6 +41,13 @@ public class VoluntarioService {
         }
     }
 
+    /**
+     * Persiste un voluntario nuevo validando sus datos y creando su primera asignación.
+     *
+     * @param voluntario voluntario a persistir (sin ID)
+     * @throws com.practicasalma.proyectoalma.exception.ValidacionException       si algún dato no supera las validaciones
+     * @throws com.practicasalma.proyectoalma.exception.EntidadDuplicadaException si ya existe un voluntario con ese DNI
+     */
     public void guardarVoluntario(Voluntario voluntario) {
         validarVoluntario(voluntario);
 
@@ -65,6 +80,12 @@ public class VoluntarioService {
         voluntarioDAO.actualizarActivo(id, activo);
     }
 
+    /**
+     * Registra una nueva asignación de continuación para un voluntario en el año académico indicado.
+     *
+     * @param voluntario    voluntario que continúa
+     * @param anyoAcademico año académico en formato {@code "AAAA/AAAA+1"}
+     */
     public void registrarContinuacion(Voluntario voluntario, String anyoAcademico) {
         AsignacionPersonalDAO asignacionDAO = new AsignacionPersonalDAO();
         asignacionDAO.guardar(new AsignacionPersonal(voluntario, anyoAcademico));

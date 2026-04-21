@@ -15,6 +15,13 @@ import javafx.stage.Stage;
 
 import java.time.LocalDate;
 
+/**
+ * Controlador JavaFX del formulario de alta de un nuevo docente ({@code agregarDocente-view.fxml}).
+ * <p>
+ * Recoge los datos del formulario y los pasa a {@link com.practicasalma.proyectoalma.service.DocenteService}.
+ * Se abre como modal desde {@link DocentesController}.
+ * </p>
+ */
 public class AgregarDocenteController {
 
     @FXML

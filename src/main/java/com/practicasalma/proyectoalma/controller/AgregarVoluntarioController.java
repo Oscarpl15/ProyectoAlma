@@ -15,6 +15,13 @@ import javafx.stage.Stage;
 
 import java.time.LocalDate;
 
+/**
+ * Controlador JavaFX del formulario de alta de un nuevo voluntario ({@code agregarVoluntario-view.fxml}).
+ * <p>
+ * Recoge los datos del formulario y los pasa a {@link com.practicasalma.proyectoalma.service.VoluntarioService}.
+ * Se abre como modal desde {@link VoluntariosController}.
+ * </p>
+ */
 public class AgregarVoluntarioController {
 
     @FXML private TextField txtNombre;

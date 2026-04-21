@@ -3,6 +3,15 @@ package com.practicasalma.proyectoalma.model;
 import com.practicasalma.proyectoalma.util.UtilFecha;
 import jakarta.persistence.*;
 
+/**
+ * Entidad JPA que registra la participación de un docente o voluntario en un curso académico.
+ * <p>
+ * Exactamente una de las dos referencias ({@code docente} o {@code voluntario}) debe ser no nula.
+ * El campo {@code grupoAsignado} describe la actividad concreta (p. ej., "Apoyo 3º Primaria").
+ * Cada vez que un docente o voluntario comienza un nuevo curso, se crea una nueva asignación,
+ * lo que permite ver el historial completo de participación.
+ * </p>
+ */
 @Entity
 @Table(name = "asignaciones_personal")
 public class AsignacionPersonal {

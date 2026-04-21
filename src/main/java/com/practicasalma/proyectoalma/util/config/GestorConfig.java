@@ -6,6 +6,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * Gestor de la configuración persistente de la aplicación.
+ * <p>
+ * Lee y escribe el fichero {@code ~/.alma/config.properties} que almacena:
+ * <ul>
+ *   <li>{@code ruta.bbdd} — ruta absoluta al fichero SQLite de la base de datos.</li>
+ *   <li>{@code ruta.documentos} — ruta absoluta al directorio raíz de documentos.</li>
+ * </ul>
+ * El directorio {@code ~/.alma/} se crea automáticamente si no existe.
+ * </p>
+ * <p>
+ * Singleton estático — no debe instanciarse.
+ * </p>
+ */
 public class GestorConfig {
 
     private static final String CONFIG_DIR = System.getProperty("user.home") + "/.alma";
@@ -13,22 +27,49 @@ public class GestorConfig {
     private static final String CLAVE_BBDD = "ruta.bbdd";
     private static final String CLAVE_DOCUMENTOS = "ruta.documentos";
 
+    private GestorConfig() {}
+
+    /**
+     * Devuelve la ruta absoluta configurada para la base de datos.
+     *
+     * @return ruta al fichero {@code .db}, o {@code null} si no está configurada
+     */
     public static String getRutaBBDD() {
         return leerPropiedad(CLAVE_BBDD);
     }
 
+    /**
+     * Devuelve la ruta absoluta configurada para el directorio de documentos.
+     *
+     * @return ruta al directorio raíz de documentos, o {@code null} si no está configurada
+     */
     public static String getRutaDocumentos() {
         return leerPropiedad(CLAVE_DOCUMENTOS);
     }
 
+    /**
+     * Guarda (o actualiza) la ruta de la base de datos en el fichero de configuración.
+     *
+     * @param ruta ruta absoluta al fichero {@code .db}
+     */
     public static void setRutaBBDD(String ruta) {
         guardarPropiedad(CLAVE_BBDD, ruta);
     }
 
+    /**
+     * Guarda (o actualiza) la ruta del directorio de documentos en el fichero de configuración.
+     *
+     * @param ruta ruta absoluta al directorio raíz de documentos
+     */
     public static void setRutaDocumentos(String ruta) {
         guardarPropiedad(CLAVE_DOCUMENTOS, ruta);
     }
 
+    /**
+     * Indica si tanto la ruta de BD como la de documentos están configuradas.
+     *
+     * @return {@code true} si ambas rutas tienen valor no vacío
+     */
     public static boolean estaConfigurado() {
         String rutaBBDD = getRutaBBDD();
         String rutaDocs = getRutaDocumentos();
@@ -36,6 +77,7 @@ public class GestorConfig {
                 && rutaDocs != null && !rutaDocs.isBlank();
     }
 
+    // Lee una clave del fichero de propiedades. Devuelve null si el fichero no existe o hay error.
     private static String leerPropiedad(String clave) {
         File f = new File(CONFIG_FILE);
         if (!f.exists()) return null;
@@ -48,6 +90,7 @@ public class GestorConfig {
         }
     }
 
+    // Escribe o actualiza una clave en el fichero de propiedades, creando el directorio si hace falta.
     private static void guardarPropiedad(String clave, String valor) {
         File dir = new File(CONFIG_DIR);
         if (!dir.exists()) dir.mkdirs();

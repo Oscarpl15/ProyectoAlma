@@ -30,6 +30,14 @@ import javafx.stage.Stage;
 
 import java.io.File;
 
+/**
+ * Controlador JavaFX de la ficha de detalle de un alumno ({@code fichaAlumno-view.fxml}).
+ * <p>
+ * Permite ver y editar todos los datos del alumno: datos personales, matrículas,
+ * tutores legales, personas autorizadas a recogerle, familiares, autorizaciones
+ * y documentación adjunta. Se abre como modal desde {@link AlumnosController}.
+ * </p>
+ */
 public class FichaAlumnoController {
 
     @FXML private ImageView imgFoto;

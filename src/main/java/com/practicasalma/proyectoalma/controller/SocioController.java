@@ -21,6 +21,13 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Controlador JavaFX de la pestaña de socios ({@code socios-view.fxml}).
+ * <p>
+ * Gestiona la tabla de socios con filtrado, acceso a la ficha de detalle
+ * y las operaciones de alta/baja.
+ * </p>
+ */
 public class SocioController {
 
     @FXML private TableView<Socio> tablaSocios;

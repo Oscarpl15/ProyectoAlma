@@ -3,6 +3,13 @@ package com.practicasalma.proyectoalma.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+/**
+ * Entidad JPA que registra un intervalo de tiempo en que una persona estuvo activa en la fundación.
+ * <p>
+ * Permite llevar un historial de altas y bajas de alumnos, docentes, socios y voluntarios.
+ * Si {@code fechaBaja} es {@code null}, el periodo está abierto (persona activa actualmente).
+ * </p>
+ */
 @Entity
 @Table(name = "periodos_actividad")
 public class PeriodoActividad {

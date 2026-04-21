@@ -25,6 +25,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
+/**
+ * Controlador JavaFX del asistente de configuración inicial ({@code configuracionInicial-view.fxml}).
+ * <p>
+ * Se muestra la primera vez que se abre la aplicación (o cuando no hay rutas configuradas)
+ * para guiar al usuario a seleccionar la ruta de la base de datos y el directorio de documentos.
+ * Una vez configurado, guarda las rutas en {@link com.practicasalma.proyectoalma.util.config.GestorConfig}
+ * e inicializa Hibernate con la base de datos seleccionada.
+ * </p>
+ */
 public class ConfiguracionInicialController {
 
     @FXML private Label lblTitulo;

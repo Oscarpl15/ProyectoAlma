@@ -18,6 +18,13 @@ import javafx.application.Platform;
 
 import java.io.File;
 
+/**
+ * Controlador JavaFX de la ficha de detalle de un voluntario ({@code fichaVoluntario-view.fxml}).
+ * <p>
+ * Permite ver y editar los datos del voluntario, su historial de asignaciones y su
+ * documentación adjunta. Se abre como modal desde {@link VoluntariosController}.
+ * </p>
+ */
 public class FichaVoluntarioController {
 
     @FXML private ImageView imgFoto;

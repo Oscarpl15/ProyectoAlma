@@ -11,6 +11,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+/**
+ * Controlador JavaFX del formulario de alta de un nuevo socio ({@code agregarSocio-view.fxml}).
+ * <p>
+ * Recoge los datos del formulario y los pasa a {@link com.practicasalma.proyectoalma.service.SocioService}.
+ * Se abre como modal desde {@link SocioController}.
+ * </p>
+ */
 public class AgregarSocioController {
 
     @FXML private TextField txtNombre;

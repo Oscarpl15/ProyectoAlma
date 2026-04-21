@@ -19,6 +19,13 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDate;
 
+/**
+ * Controlador JavaFX de la pestaña de docentes ({@code docentes-view.fxml}).
+ * <p>
+ * Gestiona la tabla de docentes con filtrado, acceso a la ficha de detalle
+ * y las operaciones de alta/baja.
+ * </p>
+ */
 public class DocentesController {
 
     @FXML private TableView<Docente> tablaDocentes;

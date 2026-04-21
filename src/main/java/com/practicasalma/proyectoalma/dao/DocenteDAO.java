@@ -8,8 +8,21 @@ import jakarta.persistence.EntityManager;
 
 import java.util.List;
 
+/**
+ * Acceso a datos para la entidad {@link Docente}.
+ * <p>
+ * Cubre las operaciones CRUD básicas y la carga del historial de asignaciones del docente.
+ * El patrón de manejo de {@code EntityManager} es idéntico al resto de DAOs:
+ * apertura, transacción, rollback en caso de error y cierre garantizado en {@code finally}.
+ * </p>
+ */
 public class DocenteDAO {
 
+    /**
+     * Persiste un nuevo docente en la base de datos.
+     *
+     * @param docente entidad a insertar (sin ID asignado)
+     */
     public void guardar(Docente docente) {
         EntityManager em = null;
         try {
@@ -25,6 +38,11 @@ public class DocenteDAO {
         }
     }
 
+    /**
+     * Actualiza un docente existente (merge JPA).
+     *
+     * @param docente entidad con los campos modificados y el ID ya asignado
+     */
     public void actualizar(Docente docente) {
         EntityManager em = null;
         try {
@@ -40,6 +58,13 @@ public class DocenteDAO {
         }
     }
 
+    /**
+     * Carga un docente con su historial de asignaciones y periodos de actividad inicializados.
+     *
+     * @param id identificador del docente
+     * @return docente con colecciones listas para usar fuera del EntityManager
+     * @throws com.practicasalma.proyectoalma.exception.EntidadNoEncontradaException si el ID no existe
+     */
     public Docente obtenerCompleto(Long id) {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             Docente docente = em.find(Docente.class, id);
@@ -54,6 +79,13 @@ public class DocenteDAO {
         }
     }
 
+    /**
+     * Cambia el estado activo/baja de un docente.
+     *
+     * @param id     identificador del docente
+     * @param activo {@code true} para reactivar, {@code false} para dar de baja
+     * @throws com.practicasalma.proyectoalma.exception.EntidadNoEncontradaException si el ID no existe
+     */
     public void actualizarActivo(Long id, boolean activo) {
         EntityManager em = null;
         try {
@@ -74,6 +106,11 @@ public class DocenteDAO {
         }
     }
 
+    /**
+     * Devuelve todos los docentes con su historial de asignaciones pre-cargado.
+     *
+     * @return lista de docentes, vacía si no hay ninguno
+     */
     public List<Docente> obtenerTodos() {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             return em.createQuery(
@@ -84,6 +121,12 @@ public class DocenteDAO {
         }
     }
 
+    /**
+     * Comprueba si ya existe un docente con ese documento de identidad (sin distinguir mayúsculas).
+     *
+     * @param dni documento de identidad a verificar
+     * @return {@code true} si ya hay un docente con ese DNI
+     */
     public boolean existeDni(String dni) {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             Long count = em.createQuery(

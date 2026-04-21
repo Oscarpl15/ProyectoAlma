@@ -21,6 +21,15 @@ import javafx.stage.DirectoryChooser;
 import java.io.File;
 import java.util.Optional;
 
+/**
+ * Controlador principal de la aplicación ({@code main-view.fxml}).
+ * <p>
+ * Gestiona la navegación por pestañas entre Alumnos, Docentes, Socios y Voluntarios,
+ * y coordina los diálogos automáticos de inicio de curso (renovación de matrículas
+ * y asignaciones de personal). También expone el menú de Ajustes para cambiar
+ * el directorio de documentos y configurar credenciales de correo.
+ * </p>
+ */
 public class MainController {
 
     @FXML private TabPane tabPrincipal;

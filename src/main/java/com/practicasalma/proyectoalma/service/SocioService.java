@@ -8,6 +8,14 @@ import com.practicasalma.proyectoalma.util.validacion.Validador;
 
 import java.util.List;
 
+/**
+ * Lógica de negocio para la gestión de socios.
+ * <p>
+ * Valida los datos del socio (DNI/NIE, teléfono, IBAN) antes de persistir.
+ * Nota: {@code Socio} no tiene campo {@code fechaNacimiento}, por lo que
+ * esa validación no aplica aquí a diferencia de otros tipos de persona.
+ * </p>
+ */
 public class SocioService {
 
     private final SocioDAO socioDAO = new SocioDAO();
@@ -27,6 +35,13 @@ public class SocioService {
         }
     }
 
+    /**
+     * Persiste un socio nuevo tras validar sus datos y comprobar que el DNI no está duplicado.
+     *
+     * @param socio socio a persistir (sin ID)
+     * @throws com.practicasalma.proyectoalma.exception.ValidacionException       si algún dato no supera las validaciones
+     * @throws com.practicasalma.proyectoalma.exception.EntidadDuplicadaException si ya existe un socio con ese DNI
+     */
     public void guardarSocio(Socio socio) {
         validarSocio(socio);
 

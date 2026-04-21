@@ -10,6 +10,15 @@ import com.practicasalma.proyectoalma.util.validacion.Validador;
 
 import java.util.List;
 
+/**
+ * Lógica de negocio para la gestión de alumnos.
+ * <p>
+ * Coordina las validaciones de datos (DNI, teléfono, fecha de nacimiento),
+ * la comprobación de duplicados y la creación automática de matrículas.
+ * Al dar de alta a un alumno ya existente se calcula su próximo curso
+ * según los años transcurridos desde la última matrícula.
+ * </p>
+ */
 public class AlumnoService {
 
     private static final List<String> CURSOS_PRIMARIA = List.of(
@@ -34,6 +43,15 @@ public class AlumnoService {
         }
     }
 
+    /**
+     * Registra un alumno nuevo junto con su matrícula inicial para el curso académico actual.
+     *
+     * @param alumno alumno a persistir (sin ID)
+     * @param curso  nombre del curso (p. ej., "1º Primaria")
+     * @param grupo  grupo asignado, puede ser {@code null}
+     * @throws com.practicasalma.proyectoalma.exception.ValidacionException      si algún dato no supera las validaciones
+     * @throws com.practicasalma.proyectoalma.exception.EntidadDuplicadaException si ya existe un alumno con ese DNI
+     */
     public void matricularNuevoAlumno(Alumno alumno, String curso, String grupo) {
         validarAlumno(alumno);
 
@@ -66,12 +84,23 @@ public class AlumnoService {
         return alumnoDAO.obtenerCompleto(id);
     }
 
+    /**
+     * Marca un alumno como inactivo (baja) sin eliminar sus datos ni matrículas.
+     *
+     * @param id identificador del alumno
+     */
     public void darDeBaja(Long id) {
         Alumno alumno = alumnoDAO.obtenerCompleto(id);
         alumno.setActivo(false);
         alumnoDAO.actualizar(alumno);
     }
 
+    /**
+     * Reactiva un alumno y, si no tiene matrícula para el curso actual, crea una nueva
+     * calculando automáticamente el nivel según los años transcurridos.
+     *
+     * @param id identificador del alumno
+     */
     public void darDeAlta(Long id) {
         Alumno alumno = alumnoDAO.obtenerCompleto(id);
         alumno.setActivo(true);

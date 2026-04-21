@@ -11,6 +11,14 @@ import com.practicasalma.proyectoalma.util.validacion.Validador;
 
 import java.util.List;
 
+/**
+ * Lógica de negocio para la gestión de docentes.
+ * <p>
+ * Valida los datos del docente (DNI/NIE, teléfono, correo, fecha de nacimiento)
+ * y registra automáticamente una asignación al curso académico actual al dar
+ * de alta a un docente nuevo o al reactivarlo.
+ * </p>
+ */
 public class DocenteService {
 
     private final DocenteDAO docenteDAO = new DocenteDAO();
@@ -33,6 +41,13 @@ public class DocenteService {
         }
     }
 
+    /**
+     * Persiste un docente nuevo validando sus datos y creando su primera asignación.
+     *
+     * @param docente docente a persistir (sin ID)
+     * @throws com.practicasalma.proyectoalma.exception.ValidacionException       si algún dato no supera las validaciones
+     * @throws com.practicasalma.proyectoalma.exception.EntidadDuplicadaException si ya existe un docente con ese DNI
+     */
     public void guardarDocente(Docente docente) {
         validarDocente(docente);
 
@@ -65,6 +80,13 @@ public class DocenteService {
         docenteDAO.actualizarActivo(id, activo);
     }
 
+    /**
+     * Registra una nueva asignación de continuación para un docente en el año académico indicado.
+     * Se usa cuando el diálogo de inicio de curso confirma la renovación manual.
+     *
+     * @param docente       docente que continúa
+     * @param anyoAcademico año académico en formato {@code "AAAA/AAAA+1"}
+     */
     public void registrarContinuacion(Docente docente, String anyoAcademico) {
         AsignacionPersonalDAO asignacionDAO = new AsignacionPersonalDAO();
         asignacionDAO.guardar(new AsignacionPersonal(docente, anyoAcademico));

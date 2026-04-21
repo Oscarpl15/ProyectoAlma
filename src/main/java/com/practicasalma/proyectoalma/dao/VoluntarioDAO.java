@@ -8,8 +8,20 @@ import jakarta.persistence.EntityManager;
 
 import java.util.List;
 
+/**
+ * Acceso a datos para la entidad {@link Voluntario}.
+ * <p>
+ * Misma estructura que {@link DocenteDAO}: CRUD, carga de colecciones lazy,
+ * cambio de estado activo/baja y verificación de DNI duplicado.
+ * </p>
+ */
 public class VoluntarioDAO {
 
+    /**
+     * Persiste un nuevo voluntario en la base de datos.
+     *
+     * @param voluntario entidad a insertar (sin ID asignado)
+     */
     public void guardar(Voluntario voluntario) {
         EntityManager em = null;
         try {
@@ -25,6 +37,11 @@ public class VoluntarioDAO {
         }
     }
 
+    /**
+     * Actualiza un voluntario existente (merge JPA).
+     *
+     * @param voluntario entidad con los campos modificados y el ID ya asignado
+     */
     public void actualizar(Voluntario voluntario) {
         EntityManager em = null;
         try {
@@ -40,6 +57,13 @@ public class VoluntarioDAO {
         }
     }
 
+    /**
+     * Carga un voluntario con su historial de asignaciones y periodos de actividad inicializados.
+     *
+     * @param id identificador del voluntario
+     * @return voluntario con colecciones listas para usar fuera del EntityManager
+     * @throws com.practicasalma.proyectoalma.exception.EntidadNoEncontradaException si el ID no existe
+     */
     public Voluntario obtenerCompleto(Long id) {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             Voluntario voluntario = em.find(Voluntario.class, id);
@@ -54,6 +78,13 @@ public class VoluntarioDAO {
         }
     }
 
+    /**
+     * Cambia el estado activo/baja de un voluntario.
+     *
+     * @param id     identificador del voluntario
+     * @param activo {@code true} para reactivar, {@code false} para dar de baja
+     * @throws com.practicasalma.proyectoalma.exception.EntidadNoEncontradaException si el ID no existe
+     */
     public void actualizarActivo(Long id, boolean activo) {
         EntityManager em = null;
         try {
@@ -74,6 +105,11 @@ public class VoluntarioDAO {
         }
     }
 
+    /**
+     * Devuelve todos los voluntarios con su historial de asignaciones pre-cargado.
+     *
+     * @return lista de voluntarios, vacía si no hay ninguno
+     */
     public List<Voluntario> obtenerTodos() {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             return em.createQuery(
@@ -84,6 +120,12 @@ public class VoluntarioDAO {
         }
     }
 
+    /**
+     * Comprueba si ya existe un voluntario con ese documento de identidad (sin distinguir mayúsculas).
+     *
+     * @param dni documento de identidad a verificar
+     * @return {@code true} si ya hay un voluntario con ese DNI
+     */
     public boolean existeDni(String dni) {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             Long count = em.createQuery(

@@ -8,8 +8,21 @@ import jakarta.persistence.EntityManager;
 
 import java.util.List;
 
+/**
+ * Acceso a datos para la entidad {@link Socio}.
+ * <p>
+ * Gestiona la persistencia de socios de la fundación, incluyendo la carga de
+ * sus donaciones y periodos de actividad. Nota: {@code Socio} no tiene campo
+ * {@code fechaNacimiento} en el modelo, a diferencia de {@code Alumno} o {@code Docente}.
+ * </p>
+ */
 public class SocioDAO {
 
+    /**
+     * Persiste un nuevo socio en la base de datos.
+     *
+     * @param socio entidad a insertar (sin ID asignado)
+     */
     public void guardar(Socio socio) {
         EntityManager em = null;
         try {
@@ -25,6 +38,11 @@ public class SocioDAO {
         }
     }
 
+    /**
+     * Actualiza un socio existente (merge JPA).
+     *
+     * @param socio entidad con los campos modificados y el ID ya asignado
+     */
     public void actualizar(Socio socio) {
         EntityManager em = null;
         try {
@@ -40,6 +58,13 @@ public class SocioDAO {
         }
     }
 
+    /**
+     * Carga un socio con sus donaciones y periodos de actividad inicializados.
+     *
+     * @param id identificador del socio
+     * @return socio con colecciones listas para usar fuera del EntityManager
+     * @throws com.practicasalma.proyectoalma.exception.EntidadNoEncontradaException si el ID no existe
+     */
     public Socio obtenerCompleto(Long id) {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             Socio socio = em.find(Socio.class, id);
@@ -54,6 +79,11 @@ public class SocioDAO {
         }
     }
 
+    /**
+     * Devuelve todos los socios registrados.
+     *
+     * @return lista de socios, vacía si no hay ninguno
+     */
     public List<Socio> obtenerTodos() {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             return em.createQuery("SELECT s FROM Socio s", Socio.class).getResultList();
@@ -62,6 +92,12 @@ public class SocioDAO {
         }
     }
 
+    /**
+     * Comprueba si ya existe un socio con ese documento de identidad (sin distinguir mayúsculas).
+     *
+     * @param dni documento de identidad a verificar
+     * @return {@code true} si ya hay un socio con ese DNI
+     */
     public boolean existeDni(String dni) {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             Long count = em.createQuery(

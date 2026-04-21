@@ -20,6 +20,14 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.time.LocalDate;
 
+/**
+ * Controlador JavaFX del formulario de alta de un nuevo alumno ({@code agregarAlumno-view.fxml}).
+ * <p>
+ * Recoge los datos del formulario y los pasa a {@link com.practicasalma.proyectoalma.service.AlumnoService}
+ * para persistirlos. También permite adjuntar una foto de perfil al guardar.
+ * Se abre como modal desde {@link AlumnosController}.
+ * </p>
+ */
 public class AgregarAlumnoController {
 
     // Datos Personales

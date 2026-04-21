@@ -18,6 +18,14 @@ import javafx.application.Platform;
 
 import java.io.File;
 
+/**
+ * Controlador JavaFX de la ficha de detalle de un docente ({@code fichaDocente-view.fxml}).
+ * <p>
+ * Permite ver y editar los datos del docente, su historial de asignaciones por curso
+ * académico y su documentación adjunta (certificados, LOPD). Se abre como modal desde
+ * {@link DocentesController}.
+ * </p>
+ */
 public class FichaDocenteController {
 
     @FXML private ImageView imgFoto;

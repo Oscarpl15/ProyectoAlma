@@ -19,6 +19,13 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDate;
 
+/**
+ * Controlador JavaFX de la pestaña de voluntarios ({@code voluntarios-view.fxml}).
+ * <p>
+ * Gestiona la tabla de voluntarios con filtrado, acceso a la ficha de detalle
+ * y las operaciones de alta/baja.
+ * </p>
+ */
 public class VoluntariosController {
 
     @FXML private TableView<Voluntario> tablaVoluntarios;

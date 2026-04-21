@@ -22,6 +22,14 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Controlador JavaFX de la ficha de detalle de un socio ({@code fichaSocio-view.fxml}).
+ * <p>
+ * Permite ver y editar los datos del socio, registrar donaciones y generar el certificado
+ * de donaciones (PDF) usando la plantilla oficial de la fundación. Se abre como modal
+ * desde {@link SocioController}.
+ * </p>
+ */
 public class FichaSocioController {
 
     @FXML private ImageView imgFoto;

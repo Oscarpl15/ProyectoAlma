@@ -22,6 +22,13 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Controlador JavaFX de la pestaña de alumnos ({@code alumnos-view.fxml}).
+ * <p>
+ * Gestiona la tabla principal con filtrado en tiempo real, acceso a la ficha de detalle
+ * y las operaciones de alta/baja de alumnos.
+ * </p>
+ */
 public class AlumnosController {
 
     @FXML private TableView<Alumno> tablaAlumnos;

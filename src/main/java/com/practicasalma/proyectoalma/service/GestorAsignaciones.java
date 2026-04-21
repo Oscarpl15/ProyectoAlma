@@ -12,10 +12,27 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+/**
+ * Gestor del proceso automático de renovación de asignaciones del personal al inicio de curso.
+ * <p>
+ * Funciona de forma análoga a {@link GestorMatriculas} pero para docentes y voluntarios.
+ * Se ejecuta desde {@code Launcher} al arrancar la aplicación, únicamente a partir de julio
+ * (mes ≥ 7), que es cuando comienza el nuevo curso académico del personal.
+ * </p>
+ * <p>
+ * Los docentes y voluntarios activos sin asignación para el curso nuevo se devuelven
+ * al controlador (diálogo de renovación). Los que el usuario pospone se guardan en
+ * {@code datos/postponed_asignaciones.properties} con claves {@code d_<id>} (docentes)
+ * y {@code v_<id>} (voluntarios).
+ * </p>
+ */
 public class GestorAsignaciones {
 
     private static final String RUTA_POSTPONED = "datos/postponed_asignaciones.properties";
 
+    /**
+     * DTO con las listas de docentes y voluntarios que necesitan asignación para el curso nuevo.
+     */
     public static class DatosPersonal {
         public final List<Docente> docentes;
         public final List<Voluntario> voluntarios;
@@ -35,6 +52,13 @@ public class GestorAsignaciones {
         }
     }
 
+    /**
+     * Punto de entrada principal. Filtra el personal activo sin asignación en el curso nuevo
+     * (descartando los pospuestos hasta una fecha futura) y devuelve los pendientes,
+     * o {@code null} si no estamos en periodo de generación o no hay nadie pendiente.
+     *
+     * @return datos para el diálogo de renovación, o {@code null} si no hay nada que hacer
+     */
     public static DatosPersonal prepararDatos() {
         if (!esPeriodoGeneracion()) return null;
 
