@@ -284,7 +284,9 @@
 }
 
 .boton-secundario:hover {
-    -fx-background-color: #E3F2FD; /* Azul clarito corporativo */
+    -fx-background-color: #E3F2FD;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
 /* Botón outline en gris para cancelar y salir */
@@ -299,6 +301,8 @@
 
 .boton-cancelar:hover {
     -fx-background-color: #f2f2f2;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
 /* ESTILOS ESPECÍFICOS PARA FICHAS (Solo Lectura / Edición) */
@@ -374,6 +378,8 @@
 
 .boton-guardar-exito:hover {
     -fx-background-color: #2ecc71;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
 /* Botón rojo para Dar de baja */
@@ -388,6 +394,8 @@
 
 .boton-baja:hover {
     -fx-background-color: #e74c3c;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
 /* ESTADO DE CHECKBOXES EN MODO LECTURA */

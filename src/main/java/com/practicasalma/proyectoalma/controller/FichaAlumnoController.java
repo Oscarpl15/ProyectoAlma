@@ -8,6 +8,7 @@ import com.practicasalma.proyectoalma.service.AlumnoService;
 import com.practicasalma.proyectoalma.service.PersonaAutorizadaService;
 import com.practicasalma.proyectoalma.service.TutorService;
 import com.practicasalma.proyectoalma.util.FxUtils;
+import com.practicasalma.proyectoalma.util.GestorDocumentos;
 import com.practicasalma.proyectoalma.util.Validador;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -629,6 +630,20 @@ public class FichaAlumnoController {
             alumnoActual.removePersonaAutorizada(seleccion);
             tablaAutorizados.getItems().remove(seleccion);
         }
+    }
+
+    @FXML
+    private void anadirDocumento() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Seleccionar documento");
+        File archivo = chooser.showOpenDialog(btnCerrar.getScene().getWindow());
+        if (archivo == null) return;
+        GestorDocumentos.copiarDocumento(archivo, "Alumno", txtNombre.getText(), txtApellidos.getText());
+    }
+
+    @FXML
+    private void verDocumentos() {
+        GestorDocumentos.abrirDirectorio("Alumno", txtNombre.getText(), txtApellidos.getText());
     }
 
     @FXML

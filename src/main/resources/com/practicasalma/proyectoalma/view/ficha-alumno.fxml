@@ -209,9 +209,11 @@
         <HBox spacing="15" styleClass="padding-pie-ficha">
             <Button fx:id="btnBajaAlta" text="Dar de baja" onAction="#toggleBajaAlta" styleClass="boton-baja"/>
             <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Añadir documento" onAction="#anadirDocumento" styleClass="boton-accion"/>
+            <Button text="Ver documentos" onAction="#verDocumentos" styleClass="boton-accion"/>
+            <Region HBox.hgrow="ALWAYS"/>
             <Button fx:id="btnCerrar" text="Cerrar" onAction="#cerrarVentana" styleClass="boton-cancelar"/>
             <Button fx:id="btnEditar" text="Editar Ficha" onAction="#activarEdicion" styleClass="boton-accion"/>
-
             <Button fx:id="btnCancelarEdicion" text="Cancelar" onAction="#cancelarEdicion" styleClass="boton-cancelar"/>
             <Button fx:id="btnGuardar" text="Guardar Cambios" onAction="#guardarDatos" styleClass="boton-guardar-exito"/>
         </HBox>

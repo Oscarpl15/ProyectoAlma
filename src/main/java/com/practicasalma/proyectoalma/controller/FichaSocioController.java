@@ -6,6 +6,7 @@ import com.practicasalma.proyectoalma.service.GeneradorPdfService;
 import com.practicasalma.proyectoalma.service.GestorCorreo;
 import com.practicasalma.proyectoalma.service.SocioService;
 import com.practicasalma.proyectoalma.util.FxUtils;
+import com.practicasalma.proyectoalma.util.GestorDocumentos;
 import com.practicasalma.proyectoalma.util.Validador;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -310,6 +311,20 @@ public class FichaSocioController {
                 }
             }
         });
+    }
+
+    @FXML
+    private void anadirDocumento() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Seleccionar documento");
+        File archivo = chooser.showOpenDialog(btnCerrar.getScene().getWindow());
+        if (archivo == null) return;
+        GestorDocumentos.copiarDocumento(archivo, "Socio", txtNombre.getText(), txtApellidos.getText());
+    }
+
+    @FXML
+    private void verDocumentos() {
+        GestorDocumentos.abrirDirectorio("Socio", txtNombre.getText(), txtApellidos.getText());
     }
 
     @FXML
