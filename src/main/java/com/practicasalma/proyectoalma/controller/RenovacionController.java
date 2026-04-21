@@ -27,6 +27,15 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDate;
 
+/**
+ * Controlador JavaFX del diálogo de renovación de inicio de curso ({@code renovacion-view.fxml}).
+ * <p>
+ * Se presenta automáticamente al abrir la aplicación durante el periodo de inicio de curso
+ * (julio-septiembre). Muestra las listas de alumnos en 6º Primaria y del personal (docentes
+ * y voluntarios) que necesitan confirmación manual para renovar su matrícula/asignación.
+ * El usuario puede confirmar, posponer o ignorar cada caso.
+ * </p>
+ */
 public class RenovacionController {
 
     @FXML private Label lblTitulo;

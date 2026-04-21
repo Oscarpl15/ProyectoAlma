@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.service;
 
 import com.practicasalma.proyectoalma.dao.AlumnoDAO;
 import com.practicasalma.proyectoalma.dao.MatriculaDAO;
+import com.practicasalma.proyectoalma.exception.PersistenciaException;
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.model.Matricula;
 
@@ -14,6 +15,21 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+/**
+ * Gestor del proceso automático de renovación de matrículas al inicio de curso.
+ * <p>
+ * Se ejecuta al arrancar la aplicación (desde {@code Launcher}) únicamente durante
+ * el periodo de generación: <b>julio, agosto y hasta el 10 de septiembre</b>.
+ * Para cada alumno activo sin matrícula en el curso actual:
+ * <ul>
+ *   <li>Si no está en 6º Primaria, se le crea automáticamente la matrícula del curso siguiente.</li>
+ *   <li>Si está en 6º Primaria, se devuelven esos alumnos al llamador (controlador de diálogo)
+ *       para que el usuario decida si pasan o no al siguiente nivel.</li>
+ * </ul>
+ * Los alumnos en 6º que el usuario pospone se guardan en
+ * {@code datos/postponed_matriculas.properties} para no volver a preguntar hasta la fecha indicada.
+ * </p>
+ */
 public class GestorMatriculas {
 
     private static final List<String> CURSOS = List.of(
@@ -24,7 +40,10 @@ public class GestorMatriculas {
 
     private static final String RUTA_POSTPONED = "datos/postponed_matriculas.properties";
 
-    // Datos necesarios para que RenovacionController construya las filas del diálogo
+    /**
+     * DTO que agrupa los datos necesarios para que el controlador presente el diálogo
+     * de alumnos en 6º Primaria que necesitan confirmación manual.
+     */
     public static class DatosDialogo {
         public final List<Alumno> alumnosSexto;
         public final String anyoAcademico;
@@ -44,8 +63,13 @@ public class GestorMatriculas {
         public boolean isEmpty() { return alumnosSexto.isEmpty(); }
     }
 
-    // Retorna los datos para el diálogo (o null si no es período o no hay nada que mostrar).
-    // Auto-genera matrículas para los alumnos que NO están en 6º.
+    /**
+     * Punto de entrada principal. Detecta alumnos sin matrícula en el curso actual,
+     * procesa automáticamente los que no están en 6º y devuelve un {@link DatosDialogo}
+     * con los alumnos de 6º que requieren confirmación manual, o {@code null} si no hay nada que hacer.
+     *
+     * @return datos para el diálogo de confirmación, o {@code null} si no hay nada pendiente
+     */
     public static DatosDialogo ejecutar() {
         if (!esPeriodoGeneracion()) return null;
 
@@ -90,8 +114,8 @@ public class GestorMatriculas {
                 Matricula m = new Matricula(nuevoCurso, a);
                 m.setAnyoAcademico(anyoActual);
                 matriculaDAO.guardar(m);
-            } catch (Exception e) {
-                System.err.println("Error al generar matrícula para " + a.getNombre() + ": " + e.getMessage());
+            } catch (PersistenciaException e) {
+                // Continuar con el resto si una matrícula individual falla
             }
         }
 
@@ -99,24 +123,37 @@ public class GestorMatriculas {
         return new DatosDialogo(enSexto, anyoActual, matriculaDAO, alumnoDAO, postponed);
     }
 
+    /**
+     * Indica si la fecha actual está dentro del periodo de generación de matrículas
+     * (julio, agosto y hasta el 10 de septiembre inclusive).
+     *
+     * @return {@code true} si estamos en periodo de generación
+     */
     public static boolean esPeriodoGeneracion() {
         LocalDate hoy = LocalDate.now();
         int mes = hoy.getMonthValue();
         int dia = hoy.getDayOfMonth();
-        //return mes == 7 || mes == 8 || (mes == 9 && dia <= 10);
-        return mes == 4;
+        return mes == 7 || mes == 8 || (mes == 9 && dia <= 10);
     }
 
     public static String calcularAnyoAcademico() {
         LocalDate hoy = LocalDate.now();
         int anyo = hoy.getYear();
         int mes = hoy.getMonthValue();
-        //if (mes >= 6) {
+        if (mes >= 6) {
             return anyo + "/" + (anyo + 1);
-        //}
-        //return (anyo - 1) + "/" + anyo;
+        }
+        return (anyo - 1) + "/" + anyo;
     }
 
+    /**
+     * Comprueba si un alumno ya tiene matrícula para el año académico dado.
+     * Acepta tanto el formato {@code "AAAA/AAAA+1"} como el alternativo {@code "AAAA-AAAA+1"}.
+     *
+     * @param alumno        alumno a comprobar
+     * @param anyoAcademico año académico buscado
+     * @return {@code true} si ya existe una matrícula para ese año
+     */
     public static boolean yaExisteMatricula(Alumno alumno, String anyoAcademico) {
         if (alumno.getMatriculas() == null) return false;
         String alternativo = anyoAcademico.replace("/", "-");
@@ -149,9 +186,7 @@ public class GestorMatriculas {
         if (f.exists()) {
             try (FileInputStream fis = new FileInputStream(f)) {
                 props.load(fis);
-            } catch (Exception e) {
-                System.err.println("Error cargando postponed: " + e.getMessage());
-            }
+            } catch (Exception ignored) {}
         }
         return props;
     }
@@ -162,8 +197,6 @@ public class GestorMatriculas {
             try (FileOutputStream fos = new FileOutputStream(RUTA_POSTPONED)) {
                 props.store(fos, null);
             }
-        } catch (Exception e) {
-            System.err.println("Error guardando postponed: " + e.getMessage());
-        }
+        } catch (Exception ignored) {}
     }
 }

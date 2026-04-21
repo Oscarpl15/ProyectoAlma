@@ -5,6 +5,15 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
+/**
+ * Entidad JPA que representa la inscripción de un alumno en un curso académico concreto.
+ * <p>
+ * Cada matrícula pertenece a exactamente un {@link Alumno} y registra el año académico
+ * (formato {@code "AAAA/AAAA+1"}), el nivel educativo (p. ej., "3º Primaria"),
+ * si es repetición y el grupo asignado (p. ej., "G1 Lunes").
+ * Un alumno puede tener varias matrículas (una por curso académico en que estuvo activo).
+ * </p>
+ */
 @Entity
 @Table(name = "matriculas")
 public class Matricula {
@@ -13,11 +22,9 @@ public class Matricula {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Formato: "2025-2026"
     @Column(name = "anyo_academico", nullable = false)
     private String anyoAcademico;
 
-    // Formato: "3º Primaria"
     @Column(nullable = false)
     private String curso;
 
@@ -25,19 +32,14 @@ public class Matricula {
     private Boolean esRepeticion = false;
 
     @Column(name = "grupo_asignado")
-    private String grupoAsignado; // Guardará "G1 Lunes", "G2 Martes", etc.
+    private String grupoAsignado;
 
-    // Relación Muchos a Uno con Alumno
-    // FetchType.LAZY optimiza la memoria: no hace una consulta extra para traer todos los
-    // datos del alumno a menos que llames explícitamente a matricula.getAlumno()
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "alumno_id", nullable = false)
     private Alumno alumno;
 
-    // Constructor vacío obligatorio
     public Matricula() {}
 
-    // Constructor con campos obligatorios
     public Matricula(String curso, Alumno alumno) {
         this.curso = curso;
         this.alumno = alumno;

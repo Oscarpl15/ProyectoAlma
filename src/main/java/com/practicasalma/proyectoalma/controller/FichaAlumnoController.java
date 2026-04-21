@@ -7,8 +7,9 @@ import com.practicasalma.proyectoalma.model.Tutor;
 import com.practicasalma.proyectoalma.service.AlumnoService;
 import com.practicasalma.proyectoalma.service.PersonaAutorizadaService;
 import com.practicasalma.proyectoalma.service.TutorService;
-import com.practicasalma.proyectoalma.util.FxUtils;
-import com.practicasalma.proyectoalma.util.Validador;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
+import com.practicasalma.proyectoalma.util.doc.GestorDocumentos;
+import com.practicasalma.proyectoalma.util.validacion.Validador;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -29,6 +30,14 @@ import javafx.stage.Stage;
 
 import java.io.File;
 
+/**
+ * Controlador JavaFX de la ficha de detalle de un alumno ({@code fichaAlumno-view.fxml}).
+ * <p>
+ * Permite ver y editar todos los datos del alumno: datos personales, matrículas,
+ * tutores legales, personas autorizadas a recogerle, familiares, autorizaciones
+ * y documentación adjunta. Se abre como modal desde {@link AlumnosController}.
+ * </p>
+ */
 public class FichaAlumnoController {
 
     @FXML private ImageView imgFoto;
@@ -484,15 +493,32 @@ public class FichaAlumnoController {
     private void seleccionarFoto(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Selecciona foto del alumno");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Imagen", "*.png", "*.jpg", "*.jpeg"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg"));
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         File archivoSeleccionado = fileChooser.showOpenDialog(stage);
 
         if (archivoSeleccionado != null) {
-            rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
-            imgFoto.setImage(new Image(archivoSeleccionado.toURI().toString()));
+            File dir = GestorDocumentos.getDirectorio("Alumnos", txtNombre.getText(), txtApellidos.getText());
+            if (dir != null) {
+                File destino = new File(dir, "foto" + obtenerExtension(archivoSeleccionado.getName()));
+                try {
+                    java.nio.file.Files.copy(archivoSeleccionado.toPath(), destino.toPath(),
+                            java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    rutaFotoSeleccionada = destino.getAbsolutePath();
+                } catch (java.io.IOException e) {
+                    rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
+                }
+            } else {
+                rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
+            }
+            imgFoto.setImage(new Image(new File(rutaFotoSeleccionada).toURI().toString()));
         }
+    }
+
+    private String obtenerExtension(String nombreArchivo) {
+        int punto = nombreArchivo.lastIndexOf('.');
+        return punto >= 0 ? nombreArchivo.substring(punto) : "";
     }
 
     private void actualizarLabelEstado(boolean activo) {
@@ -629,6 +655,20 @@ public class FichaAlumnoController {
             alumnoActual.removePersonaAutorizada(seleccion);
             tablaAutorizados.getItems().remove(seleccion);
         }
+    }
+
+    @FXML
+    private void anadirDocumento() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Seleccionar documento");
+        File archivo = chooser.showOpenDialog(btnCerrar.getScene().getWindow());
+        if (archivo == null) return;
+        GestorDocumentos.copiarDocumento(archivo, "Alumnos", txtNombre.getText(), txtApellidos.getText());
+    }
+
+    @FXML
+    private void verDocumentos() {
+        GestorDocumentos.abrirDirectorio("Alumnos", txtNombre.getText(), txtApellidos.getText());
     }
 
     @FXML

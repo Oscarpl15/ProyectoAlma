@@ -1,21 +1,31 @@
 package com.practicasalma.proyectoalma.model;
 
-//Aquí tendremos la clase base de la que heredaran el resto de clases, objetivo herencia y no duplicar codigo innecesario
-
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clase base abstracta de todas las personas del sistema.
+ * <p>
+ * Define los campos comunes: identificación ({@code documentoIdentidad}, {@code tipoDocumento}),
+ * datos de contacto, dirección y estado activo/baja. Cada subclase ({@link Alumno},
+ * {@link Docente}, {@link Socio}, {@link Voluntario}) genera su propia tabla en SQLite
+ * gracias a la estrategia {@code TABLE_PER_CLASS} implícita de {@code @MappedSuperclass}.
+ * </p>
+ * <p>
+ * Nota: {@code documentoIdentidad} tiene restricción {@code unique = true} a nivel de tabla,
+ * por lo que el mismo DNI puede existir en tablas distintas (un Socio y un Docente pueden
+ * compartir DNI sin infringir la restricción).
+ * </p>
+ */
 @MappedSuperclass
 public abstract class Persona {
 
-    // Hibernate autoincrementará este ID en cada tabla hija
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Obligatorios
     @Column(nullable = false)
     private String nombre;
 
@@ -23,10 +33,10 @@ public abstract class Persona {
     private String apellidos;
 
     @Column(name = "documento_identidad", unique = true)
-    private String documentoIdentidad; // Sirve para DNI, NIE o Pasaporte
+    private String documentoIdentidad;
 
     @Column(name = "tipo_documento")
-    private String tipoDocumento; // "DNI", "NIE", "Pasaporte"
+    private String tipoDocumento;
 
     private String direccion;
     private String ciudad;
@@ -37,30 +47,24 @@ public abstract class Persona {
     private String telefono;
     private String correo;
 
-    // Usamos LocalDate para las fechas. Le damos nombre a la columna para que quede más limpio en SQLite
     @Column(name = "fecha_alta")
     private LocalDate fechaAlta;
 
     @Column(name = "fecha_baja")
     private LocalDate fechaBaja;
 
-    // Por defecto, al crear a alguien, está activo
     private Boolean activo = true;
 
-    // Constructor vacío (vacio en argumentos de entrada) necesario 100% para que hibernate funcione
     public Persona() {
-        this.fechaAlta = LocalDate.now(); // Autocompleta la fecha de hoy al instanciar
+        this.fechaAlta = LocalDate.now();
     }
 
-    // Constructor con los campos obligatorios
     public Persona(String nombre, String apellidos, String direccion) {
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.direccion = direccion;
         this.fechaAlta = LocalDate.now();
     }
-
-    // Getters y Setters
 
     public Long getId() { return id; }
 
@@ -104,9 +108,15 @@ public abstract class Persona {
     @Column
     private String genero;
 
+    @Column(name = "ruta_foto_perfil")
+    private String rutaFotoPerfil;
+
     public String getNacionalidad() {return nacionalidad;}
     public void setNacionalidad(String nacionalidad) {this.nacionalidad = nacionalidad;}
 
     public String getGenero() {return genero;}
     public void setGenero(String genero) {this.genero = genero;}
+
+    public String getRutaFotoPerfil() {return rutaFotoPerfil;}
+    public void setRutaFotoPerfil(String rutaFotoPerfil) {this.rutaFotoPerfil = rutaFotoPerfil;}
 }

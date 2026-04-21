@@ -1,4 +1,4 @@
-package com.practicasalma.proyectoalma.util;
+package com.practicasalma.proyectoalma.util.ui;
 
 import com.practicasalma.proyectoalma.Launcher;
 import javafx.fxml.FXMLLoader;
@@ -16,13 +16,34 @@ import javafx.util.Callback;
 
 import java.io.IOException;
 
+/**
+ * Utilidades de interfaz de usuario reutilizables en los controllers JavaFX.
+ * <p>
+ * Centraliza operaciones comunes como abrir ventanas modales, mostrar alertas
+ * y configurar cell factories para tablas, evitando código repetido en los controllers.
+ * </p>
+ * <p>
+ * Singleton estático — no debe instanciarse.
+ * </p>
+ */
 public class FxUtils {
 
     private static final String RUTA_ICONO = "/com/practicasalma/proyectoalma/assets/logo.png";
 
+    private FxUtils() {}
+
     /**
-     * Abre un formulario emergente (modal) y espera a que se cierre.
-     * Uso: FxUtils.abrirModal("agregarAlumno-view.fxml", "Agregar alumno");
+     * Abre una ventana modal (bloqueante) cargando el FXML indicado.
+     * <p>
+     * La ventana se centra en pantalla y está limitada al 92% del área visible
+     * para adaptarse a resoluciones pequeñas. La ejecución se detiene hasta que
+     * el usuario cierre la ventana.
+     * </p>
+     *
+     * @param nombreFxml nombre del fichero FXML dentro de {@code resources/.../view/}
+     *                   (p. ej., {@code "agregarAlumno-view.fxml"})
+     * @param titulo     título de la ventana
+     * @throws IOException si el fichero FXML no se encuentra o no se puede cargar
      */
     public static void abrirModal(String nombreFxml, String titulo) throws IOException {
         FXMLLoader loader = new FXMLLoader(Launcher.class.getResource("view/" + nombreFxml));
@@ -44,8 +65,14 @@ public class FxUtils {
     }
 
     /**
-     * Devuelve el CellFactory para columnas de Estado (Activo / Baja) con sus estilos CSS.
-     * Uso: columna.setCellFactory(FxUtils.celdaEstado());
+     * Devuelve un {@code CellFactory} que colorea las celdas de estado con CSS.
+     * <p>
+     * Las celdas con valor {@code "Activo"} reciben la clase CSS {@code celda-activo};
+     * el resto reciben {@code celda-baja}.
+     * </p>
+     *
+     * @param <T> tipo del modelo de fila de la tabla
+     * @return callback listo para asignar con {@code columna.setCellFactory(...)}
      */
     public static <T> Callback<TableColumn<T, String>, TableCell<T, String>> celdaEstado() {
         return col -> new TableCell<>() {
@@ -64,8 +91,11 @@ public class FxUtils {
     }
 
     /**
-     * Muestra un Alert informativo, de aviso o de error.
-     * Uso: FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Título", "Mensaje");
+     * Muestra un diálogo de alerta y espera a que el usuario lo cierre.
+     *
+     * @param tipo    tipo de alerta ({@code INFORMATION}, {@code WARNING}, {@code ERROR})
+     * @param titulo  título de la ventana
+     * @param mensaje contenido del mensaje
      */
     public static void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alert = new Alert(tipo);

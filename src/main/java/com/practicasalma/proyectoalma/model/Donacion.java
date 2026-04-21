@@ -4,6 +4,15 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/**
+ * Entidad JPA que registra una donación realizada por un {@link Socio}.
+ * <p>
+ * Almacena la fecha, el importe (con dos decimales) y la forma de donación
+ * (transferencia, efectivo, etc.). La relación con el socio es N:1.
+ * El historial de donaciones se usa para calcular el importe total en el
+ * certificado de donaciones.
+ * </p>
+ */
 @Entity
 @Table(name = "donaciones")
 public class Donacion {

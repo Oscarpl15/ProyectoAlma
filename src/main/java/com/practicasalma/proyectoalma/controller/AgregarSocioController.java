@@ -2,7 +2,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Socio;
 import com.practicasalma.proyectoalma.service.SocioService;
-import com.practicasalma.proyectoalma.util.Validador;
+import com.practicasalma.proyectoalma.util.validacion.Validador;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -11,6 +11,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+/**
+ * Controlador JavaFX del formulario de alta de un nuevo socio ({@code agregarSocio-view.fxml}).
+ * <p>
+ * Recoge los datos del formulario y los pasa a {@link com.practicasalma.proyectoalma.service.SocioService}.
+ * Se abre como modal desde {@link SocioController}.
+ * </p>
+ */
 public class AgregarSocioController {
 
     @FXML private TextField txtNombre;

@@ -4,6 +4,14 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entidad JPA que representa al tutor legal de uno o varios alumnos.
+ * <p>
+ * Extiende {@link Persona} añadiendo el campo {@code relacion} (por defecto "Tutor/a Legal").
+ * Un mismo tutor puede estar vinculado a varios alumnos (p. ej., hermanos). La relación N:M
+ * con {@link Alumno} es gestionada desde el lado del alumno mediante la tabla {@code alumno_tutor}.
+ * </p>
+ */
 @Entity
 @Table(name = "tutores")
 public class Tutor extends Persona {
@@ -11,35 +19,25 @@ public class Tutor extends Persona {
     @Column(name = "relacion", nullable = false)
     private String relacion = "Tutor/a Legal";
 
-    // Lado inverso de la relación Muchos a Muchos con Alumno.
-    // "mappedBy" le dice a Hibernate que busque la variable "tutores" en la clase Alumno
-    // para saber cómo está configurada la tabla intermedia.
     @ManyToMany(mappedBy = "tutores")
     private List<Alumno> alumnos = new ArrayList<>();
 
-    // Constructor vacío obligatorio para Hibernate
     public Tutor() {
         super();
     }
 
-    // Constructor para instanciar desde el controlador JavaFX
     public Tutor(String nombre, String apellidos, String direccion, String dni) {
         super(nombre, apellidos, direccion);
-        this.setDocumentoIdentidad(dni); //Esto solo si fuese obligatorio el dni en tutor, si no lo es lo quitariamos.
+        this.setDocumentoIdentidad(dni);
     }
-
-    // Getters y setters
 
     public String getRelacion() { return relacion; }
     public void setRelacion(String relacion) { this.relacion = relacion; }
 
     public List<Alumno> getAlumnos() { return alumnos; }
 
-    // Métodos de sincronización bidireccional
-
     public void addAlumno(Alumno alumno) {
         this.alumnos.add(alumno);
-        // Mantiene la coherencia en memoria: si añado un alumno al tutor, el tutor se añade al alumno
         if (!alumno.getTutores().contains(this)) {
             alumno.getTutores().add(this);
         }

@@ -2,8 +2,8 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Docente;
 import com.practicasalma.proyectoalma.service.DocenteService;
-import com.practicasalma.proyectoalma.util.DocenteFiltro;
-import com.practicasalma.proyectoalma.util.FxUtils;
+import com.practicasalma.proyectoalma.util.filtro.DocenteFiltro;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -19,6 +19,13 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDate;
 
+/**
+ * Controlador JavaFX de la pestaña de docentes ({@code docentes-view.fxml}).
+ * <p>
+ * Gestiona la tabla de docentes con filtrado, acceso a la ficha de detalle
+ * y las operaciones de alta/baja.
+ * </p>
+ */
 public class DocentesController {
 
     @FXML private TableView<Docente> tablaDocentes;
@@ -132,7 +139,7 @@ public class DocentesController {
             FxUtils.abrirModal("agregarDocente-view.fxml", "Agregar docente");
             cargarDocentesEnTabla();
         } catch (IOException e) {
-            System.err.println("Error al abrir el pop-up: " + e.getMessage());
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir el formulario: " + e.getMessage());
         }
     }
 
@@ -143,7 +150,6 @@ public class DocentesController {
     private void abrirFichaDocente(Docente docenteTabla) {
         try {
             Docente docente = docenteService.obtenerCompleto(docenteTabla.getId());
-            if (docente == null) return;
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
                     "/com/practicasalma/proyectoalma/view/ficha-docente.fxml"));
@@ -160,8 +166,8 @@ public class DocentesController {
             stage.showAndWait();
 
             cargarDocentesEnTabla();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ficha: " + e.getMessage());
         }
     }
 }

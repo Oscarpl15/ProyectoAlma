@@ -9,11 +9,29 @@ import jakarta.mail.internet.MimeMultipart;
 import java.io.File;
 import java.util.Properties;
 
+/**
+ * Servicio para el envío de correos electrónicos mediante SMTP de Gmail.
+ * <p>
+ * Las credenciales (correo + contraseña de aplicación de Gmail) se configuran
+ * en tiempo de ejecución mediante {@link #configurarCredenciales(String, String)}.
+ * Hasta que no se configure, cualquier intento de envío lanzará {@link IllegalStateException}.
+ * </p>
+ * <p>
+ * <b>Importante:</b> se requiere una "contraseña de aplicación" de Gmail (no la contraseña normal),
+ * que se genera en la cuenta de Google con la verificación en dos pasos activada.
+ * </p>
+ */
 public class GestorCorreo {
 
     private static String correoRemitente = "";
     private static String contrasenaRemitente = "";
 
+    /**
+     * Establece las credenciales SMTP a usar en los envíos.
+     *
+     * @param correo     dirección de correo del remitente
+     * @param contrasena contraseña de aplicación de Gmail
+     */
     public static void configurarCredenciales(String correo, String contrasena) {
         correoRemitente = correo != null ? correo.trim() : "";
         contrasenaRemitente = contrasena != null ? contrasena : "";
@@ -42,6 +60,14 @@ public class GestorCorreo {
         });
     }
 
+    /**
+     * Envía un correo de texto plano.
+     *
+     * @param destinatario dirección de destino
+     * @param asunto       asunto del mensaje
+     * @param cuerpo       cuerpo del mensaje en texto plano
+     * @throws com.practicasalma.proyectoalma.exception.AlmaException si el envío falla
+     */
     public static void mandarEmail(String destinatario, String asunto, String cuerpo) {
         Session sesion = crearSesion();
 
@@ -53,14 +79,21 @@ public class GestorCorreo {
             mensaje.setText(cuerpo);
 
             Transport.send(mensaje);
-            System.out.println("¡Correo enviado con éxito a " + destinatario + "!");
 
         } catch (MessagingException e) {
-            System.out.println("Error al enviar el correo: " + e.getMessage());
-            e.printStackTrace();
+            throw new com.practicasalma.proyectoalma.exception.AlmaException("Error al enviar el correo: " + e.getMessage(), e);
         }
     }
 
+    /**
+     * Envía un correo con un fichero adjunto (multipart MIME).
+     *
+     * @param destinatario dirección de destino
+     * @param asunto       asunto del mensaje
+     * @param cuerpo       cuerpo del mensaje en texto plano
+     * @param rutaAdjunto  ruta absoluta al fichero a adjuntar
+     * @throws com.practicasalma.proyectoalma.exception.AlmaException si el envío falla
+     */
     public static void mandarEmailConAdjunto(String destinatario, String asunto, String cuerpo, String rutaAdjunto) {
         Session sesion = crearSesion();
 
@@ -84,10 +117,8 @@ public class GestorCorreo {
             mensaje.setContent(multipart);
 
             Transport.send(mensaje);
-            System.out.println("¡Correo con adjunto enviado con éxito a " + destinatario + "!");
         } catch (Exception e) {
-            System.out.println("Error al enviar el correo con adjunto: " + e.getMessage());
-            e.printStackTrace();
+            throw new com.practicasalma.proyectoalma.exception.AlmaException("Error al enviar el correo con adjunto: " + e.getMessage(), e);
         }
     }
 }

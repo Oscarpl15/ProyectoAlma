@@ -3,8 +3,9 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.model.AsignacionPersonal;
 import com.practicasalma.proyectoalma.model.Voluntario;
 import com.practicasalma.proyectoalma.service.VoluntarioService;
-import com.practicasalma.proyectoalma.util.FxUtils;
-import com.practicasalma.proyectoalma.util.Validador;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
+import com.practicasalma.proyectoalma.util.doc.GestorDocumentos;
+import com.practicasalma.proyectoalma.util.validacion.Validador;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -17,6 +18,13 @@ import javafx.application.Platform;
 
 import java.io.File;
 
+/**
+ * Controlador JavaFX de la ficha de detalle de un voluntario ({@code fichaVoluntario-view.fxml}).
+ * <p>
+ * Permite ver y editar los datos del voluntario, su historial de asignaciones y su
+ * documentación adjunta. Se abre como modal desde {@link VoluntariosController}.
+ * </p>
+ */
 public class FichaVoluntarioController {
 
     @FXML private ImageView imgFoto;
@@ -50,6 +58,7 @@ public class FichaVoluntarioController {
     @FXML private TableColumn<AsignacionPersonal, String> colAsiGrupo;
 
     private Voluntario voluntarioActual;
+    private String rutaFotoSeleccionada = null;
 
     private final VoluntarioService voluntarioService = new VoluntarioService();
 
@@ -98,11 +107,16 @@ public class FichaVoluntarioController {
     }
 
     private void cargarFoto() {
-        try {
-            imgFoto.setImage(new Image(getClass().getResource(
-                    "/com/practicasalma/proyectoalma/assets/default.png").toExternalForm()));
-        } catch (Exception e) {
-            System.out.println("No se encontró imagen por defecto.");
+        String ruta = voluntarioActual.getRutaFotoPerfil();
+        if (ruta != null && !ruta.isBlank() && new File(ruta).exists()) {
+            imgFoto.setImage(new Image(new File(ruta).toURI().toString()));
+        } else {
+            try {
+                imgFoto.setImage(new Image(getClass().getResource(
+                        "/com/practicasalma/proyectoalma/assets/default.png").toExternalForm()));
+            } catch (Exception e) {
+                System.out.println("No se encontró imagen por defecto.");
+            }
         }
     }
 
@@ -197,6 +211,10 @@ public class FichaVoluntarioController {
         voluntarioActual.setCodigoPostal(cp.isBlank() ? null : cp);
         voluntarioActual.setAutoDelitosSexuales(chkDelitosSexuales.isSelected());
         voluntarioActual.setAutoProteccionDatos(chkProteccionDatos.isSelected());
+        if (rutaFotoSeleccionada != null) {
+            voluntarioActual.setRutaFotoPerfil(rutaFotoSeleccionada);
+            rutaFotoSeleccionada = null;
+        }
 
         try {
             voluntarioService.actualizarVoluntario(voluntarioActual);
@@ -215,8 +233,27 @@ public class FichaVoluntarioController {
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg"));
         File file = chooser.showOpenDialog(imgFoto.getScene().getWindow());
         if (file != null) {
-            imgFoto.setImage(new Image(file.toURI().toString()));
+            File dir = GestorDocumentos.getDirectorio("Voluntarios", txtNombre.getText(), txtApellidos.getText());
+            String ext = obtenerExtension(file.getName());
+            if (dir != null) {
+                File destino = new File(dir, "foto" + ext);
+                try {
+                    java.nio.file.Files.copy(file.toPath(), destino.toPath(),
+                            java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    rutaFotoSeleccionada = destino.getAbsolutePath();
+                } catch (java.io.IOException e) {
+                    rutaFotoSeleccionada = file.getAbsolutePath();
+                }
+            } else {
+                rutaFotoSeleccionada = file.getAbsolutePath();
+            }
+            imgFoto.setImage(new Image(new File(rutaFotoSeleccionada).toURI().toString()));
         }
+    }
+
+    private String obtenerExtension(String nombreArchivo) {
+        int punto = nombreArchivo.lastIndexOf('.');
+        return punto >= 0 ? nombreArchivo.substring(punto) : "";
     }
 
     private void actualizarBotonBajaAlta() {
@@ -252,6 +289,20 @@ public class FichaVoluntarioController {
                 }
             }
         });
+    }
+
+    @FXML
+    private void anadirDocumento() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Seleccionar documento");
+        File archivo = chooser.showOpenDialog(btnCerrar.getScene().getWindow());
+        if (archivo == null) return;
+        GestorDocumentos.copiarDocumento(archivo, "Voluntarios", txtNombre.getText(), txtApellidos.getText());
+    }
+
+    @FXML
+    private void verDocumentos() {
+        GestorDocumentos.abrirDirectorio("Voluntarios", txtNombre.getText(), txtApellidos.getText());
     }
 
     @FXML

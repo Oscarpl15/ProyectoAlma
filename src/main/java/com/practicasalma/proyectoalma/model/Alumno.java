@@ -6,16 +6,29 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entidad JPA que representa a un alumno de la fundación.
+ * <p>
+ * Extiende {@link Persona} añadiendo datos propios del alumno:
+ * fecha de nacimiento, autorizaciones parentales (imagen, actividades, irse solo, etc.),
+ * información de seguimiento social (SAF, SS) y derivaciones.
+ * </p>
+ * <p>
+ * Relaciones:
+ * <ul>
+ *   <li>{@code matriculas} — 1:N con {@link Matricula}, cada curso académico tiene una entrada.</li>
+ *   <li>{@code tutores} — N:M con {@link Tutor} (tabla {@code alumno_tutor}).</li>
+ *   <li>{@code familiares} — N:M recursiva (tabla {@code alumno_familiar}); hermanos o primos.</li>
+ *   <li>{@code autorizadaRecoger} — N:M con {@link PersonaAutorizada} (tabla {@code alumno_persona_autorizada}).</li>
+ * </ul>
+ * </p>
+ */
 @Entity
 @Table(name = "alumnos")
 public class Alumno extends Persona {
 
     @Column(name = "fecha_nacimiento", nullable = false)
     private LocalDate fechaNacimiento;
-
-    // Rutas específicas para el alumno (OneDrive)
-    @Column(name = "ruta_foto_perfil")
-    private String rutaFotoPerfil;
 
     @Column(name = "auto_uso_datos")
     private Boolean autorizaUsoDatos = false;
@@ -36,14 +49,13 @@ public class Alumno extends Persona {
     private String rutaDocAutoriza;
 
 
-    //Otros datos
     @Column(name = "colegio")
     private String colegio;
 
-    @Column(name = "seguimiento_servicios_sociales") //check
+    @Column(name = "seguimiento_servicios_sociales")
     private Boolean seguimientoServiciosSociales = false;
 
-    @Column(name = "seguimiento_saf")  // check
+    @Column(name = "seguimiento_saf")
     private Boolean seguimientoSaf = false;
 
     @Column(name = "derivacion_ss")
@@ -67,22 +79,15 @@ public class Alumno extends Persona {
     @Column(name = "activo", nullable = false)
     private Boolean activo = true;
 
-    // Para el cálculo matemático de la baja automática
     @Column(name = "num_repeticiones_previas", nullable = false)
     private Integer numRepeticionesPrevias = 0;
 
-    // Información descriptiva en la ficha del alumno
     @Column(name = "detalle_cursos_repetidos")
     private String detalleCursosRepetidos;
 
-    // Relación Uno a Muchos con Matricula
-    // mappedBy indica que la clave foránea está en la clase Matricula (atributo "alumno")
-    // cascade = CascadeType.ALL y orphanRemoval = true aseguran que si borras un alumno, se borran sus matrículas
     @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Matricula> matriculas = new ArrayList<>();
 
-    // Relación Muchos a Muchos con PadreTutor
-    // @JoinTable fuerza a crear la tabla intermedia "alumno_tutor"
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "alumno_tutor",
@@ -91,8 +96,6 @@ public class Alumno extends Persona {
     )
     private List<Tutor> tutores = new ArrayList<>();
 
-    // Relación recursiva Muchos a Muchos (Hermanos/Primos)
-    // @JoinTable fuerza a crear la tabla intermedia "alumno_familiar" uniendo dos IDs de la misma tabla
     @ManyToMany
     @JoinTable(
             name = "alumno_familiar",
@@ -112,24 +115,17 @@ public class Alumno extends Persona {
     )
     private List<PersonaAutorizada> autorizadaRecoger = new ArrayList<>();
 
-    // Constructor vacío obligatorio para Hibernate
     public Alumno() {
-        super(); 
+        super();
     }
 
-    //Constructor normal
     public Alumno(String nombre, String apellidos, String direccion, LocalDate fechaNacimiento) {
         super(nombre, apellidos, direccion);
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    //Getters y Setters
-
     public LocalDate getFechaNacimiento() { return fechaNacimiento; }
     public void setFechaNacimiento(LocalDate fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
-
-    public String getRutaFotoPerfil() { return rutaFotoPerfil; }
-    public void setRutaFotoPerfil(String rutaFotoPerfil) { this.rutaFotoPerfil = rutaFotoPerfil; }
 
     public Boolean getAutorizaImagen() { return autorizaImagen; }
     public void setAutorizaImagen(Boolean autorizaImagen) { this.autorizaImagen = autorizaImagen; }
@@ -208,8 +204,6 @@ public class Alumno extends Persona {
         pa.getAlumnos().remove(this);
     }
 
-    // Métodos para añadir o eliminar tutores o matrículas a un alumno
-
     public void addTutor(Tutor tutor) {
         this.tutores.add(tutor);
     }
@@ -220,15 +214,14 @@ public class Alumno extends Persona {
 
     public void addMatricula(Matricula matricula) {
         this.matriculas.add(matricula);
-        matricula.setAlumno(this); // Mantiene la sincronización bidireccional
+        matricula.setAlumno(this);
     }
 
     public void removeMatricula(Matricula matricula) {
         this.matriculas.remove(matricula);
-        matricula.setAlumno(null); // Obligatorio para que Hibernate entienda la desvinculación
+        matricula.setAlumno(null);
     }
 
-    // Metodos para añadir o eliminar un nuevo periodo con sincronización bidireccional
     public void addPeriodo(PeriodoActividad periodo) {
         this.periodosActividad.add(periodo);
         periodo.setAlumno(this);

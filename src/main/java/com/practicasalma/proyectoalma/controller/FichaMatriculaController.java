@@ -3,12 +3,19 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.model.Matricula;
 import com.practicasalma.proyectoalma.service.GestorMatriculas;
 import com.practicasalma.proyectoalma.service.MatriculaService;
-import com.practicasalma.proyectoalma.util.FxUtils;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+/**
+ * Controlador JavaFX de la ficha de detalle de una matrícula ({@code fichaMatricula-view.fxml}).
+ * <p>
+ * Permite editar los campos de una matrícula existente: curso, grupo asignado y si es repetición.
+ * Se abre como modal desde {@link FichaAlumnoController}.
+ * </p>
+ */
 public class FichaMatriculaController {
 
     @FXML private TextField txtAlumno;
