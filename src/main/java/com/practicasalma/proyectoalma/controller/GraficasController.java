@@ -2,7 +2,6 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.service.GraficasService;
 import com.practicasalma.proyectoalma.service.GeneradorPdfService;
-import com.practicasalma.proyectoalma.util.FxUtils;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.SnapshotParameters;
@@ -183,7 +182,7 @@ public class GraficasController {
         try {
             Chart graficaActiva = pieChart.isVisible() ? pieChart : barChart;
             if (graficaActiva == null || !graficaActiva.isVisible()) {
-                FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Sin grafica", "No hay ninguna grafica visible para exportar.");
+                mostrarAlerta(Alert.AlertType.WARNING, "Sin grafica", "No hay ninguna grafica visible para exportar.");
                 return;
             }
 
@@ -211,13 +210,13 @@ public class GraficasController {
 
             generadorPdfService.generarPdfGrafica(rutaSalida.toString(), titulo, graficaImagen, resumen);
 
-            FxUtils.mostrarAlerta(
+            mostrarAlerta(
                     Alert.AlertType.INFORMATION,
                     "PDF generado",
                     "Se ha generado el PDF de la grafica en: " + rutaSalida
             );
         } catch (Exception e) {
-            FxUtils.mostrarAlerta(
+            mostrarAlerta(
                     Alert.AlertType.ERROR,
                     "Error al exportar",
                     "No se pudo exportar la grafica a PDF: " + e.getMessage()
@@ -231,5 +230,13 @@ public class GraficasController {
             return "Grafica";
         }
         return titulo;
+    }
+
+    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 }

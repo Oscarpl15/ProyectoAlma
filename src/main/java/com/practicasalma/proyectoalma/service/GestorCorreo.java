@@ -1,5 +1,6 @@
 package com.practicasalma.proyectoalma.service;
 
+import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
@@ -35,10 +36,29 @@ public class GestorCorreo {
     public static void configurarCredenciales(String correo, String contrasena) {
         correoRemitente = correo != null ? correo.trim() : "";
         contrasenaRemitente = contrasena != null ? contrasena : "";
+        GestorConfig.setCorreoRemitente(correoRemitente);
+        GestorConfig.setCorreoPasswordApp(contrasenaRemitente);
     }
 
     public static boolean estaConfigurado() {
+        cargarCredencialesDesdeConfigSiHaceFalta();
         return !correoRemitente.isBlank() && !contrasenaRemitente.isBlank();
+    }
+
+    private static void cargarCredencialesDesdeConfigSiHaceFalta() {
+        if (!correoRemitente.isBlank() && !contrasenaRemitente.isBlank()) {
+            return;
+        }
+
+        String correoGuardado = GestorConfig.getCorreoRemitente();
+        String contrasenaGuardada = GestorConfig.getCorreoPasswordApp();
+
+        if (correoRemitente.isBlank() && correoGuardado != null) {
+            correoRemitente = correoGuardado.trim();
+        }
+        if (contrasenaRemitente.isBlank() && contrasenaGuardada != null) {
+            contrasenaRemitente = contrasenaGuardada;
+        }
     }
 
     private static Session crearSesion() {

@@ -26,6 +26,8 @@ public class GestorConfig {
     private static final String CONFIG_FILE = CONFIG_DIR + "/config.properties";
     private static final String CLAVE_BBDD = "ruta.bbdd";
     private static final String CLAVE_DOCUMENTOS = "ruta.documentos";
+    private static final String CLAVE_CORREO_REMITENTE = "correo.remitente";
+    private static final String CLAVE_CORREO_PASSWORD_APP = "correo.password.app";
 
     private GestorConfig() {}
 
@@ -63,6 +65,22 @@ public class GestorConfig {
      */
     public static void setRutaDocumentos(String ruta) {
         guardarPropiedad(CLAVE_DOCUMENTOS, ruta);
+    }
+
+    public static String getCorreoRemitente() {
+        return leerPropiedad(CLAVE_CORREO_REMITENTE);
+    }
+
+    public static String getCorreoPasswordApp() {
+        return leerPropiedad(CLAVE_CORREO_PASSWORD_APP);
+    }
+
+    public static void setCorreoRemitente(String correo) {
+        guardarPropiedad(CLAVE_CORREO_REMITENTE, correo);
+    }
+
+    public static void setCorreoPasswordApp(String passwordApp) {
+        guardarPropiedad(CLAVE_CORREO_PASSWORD_APP, passwordApp);
     }
 
     /**
@@ -103,7 +121,7 @@ public class GestorConfig {
             } catch (IOException ignored) {}
         }
 
-        props.setProperty(clave, valor);
+        props.setProperty(clave, valor != null ? valor : "");
         try (FileOutputStream fos = new FileOutputStream(f)) {
             props.store(fos, "Configuracion Fundacion Alma");
         } catch (IOException e) {
