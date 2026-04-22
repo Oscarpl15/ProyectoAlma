@@ -95,6 +95,11 @@ public class MainController {
     }
 
     @FXML
+    protected void mostrarGraficas() {
+        tabPrincipal.getSelectionModel().select(4);
+    }
+
+    @FXML
     private void cambiarDirectorioBBDD() {
         ConfiguracionInicialController.mostrarCambioBBDD();
         String nuevaRuta = GestorConfig.getRutaBBDD();
