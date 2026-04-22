@@ -8,7 +8,6 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.practicasalma.proyectoalma.controller.FichaAlumnoController"
             stylesheets="@../css/estilos.css"
-            prefWidth="1000" prefHeight="900"
             styleClass="fondo-blanco">
 
     <top>
@@ -19,6 +18,7 @@
     </top>
 
     <center>
+        <ScrollPane fitToWidth="true" styleClass="fondo-blanco">
         <HBox spacing="20" styleClass="padding-cuerpo-ficha">
 
             <VBox spacing="20" styleClass="panel-lateral-ficha" alignment="TOP_CENTER">
@@ -36,6 +36,13 @@
                     <CheckBox fx:id="chkAutoActividades" text="Actividades"/>
                     <CheckBox fx:id="chkAutoComunicaciones" text="Comunicaciones"/>
                     <CheckBox fx:id="chkAutoIrseSolo" text="Autoriza Irse Solo"/>
+                </VBox>
+
+                <Separator/>
+
+                <VBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="Estado" styleClass="titulo-seccion"/>
+                    <Label fx:id="lblEstado" styleClass="texto-lectura-simple"/>
                 </VBox>
             </VBox>
 
@@ -70,7 +77,10 @@
                     <TextField fx:id="txtColegio" GridPane.columnIndex="1" GridPane.rowIndex="3" styleClass="campo-lectura"/>
 
                     <Label text="Curso Actual:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtCurso" GridPane.columnIndex="1" GridPane.rowIndex="4" styleClass="campo-lectura" editable="false"/>
+                    <StackPane GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="CENTER_LEFT">
+                        <TextField fx:id="txtCurso" styleClass="campo-lectura" editable="false"/>
+                        <ComboBox fx:id="comboCurso" maxWidth="Infinity" visible="false" managed="false"/>
+                    </StackPane>
 
                     <Label text="Grupo Asignado:" GridPane.columnIndex="2" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
                     <StackPane GridPane.columnIndex="3" GridPane.rowIndex="4" alignment="CENTER_LEFT">
@@ -86,6 +96,12 @@
                         <TextField fx:id="txtGeneroLectura" styleClass="campo-lectura" editable="false"/>
                         <ComboBox fx:id="comboGenero" maxWidth="Infinity" visible="false" managed="false"/>
                     </StackPane>
+
+                    <Label text="Ciudad:" GridPane.columnIndex="0" GridPane.rowIndex="6" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCiudad" GridPane.columnIndex="1" GridPane.rowIndex="6" styleClass="campo-lectura"/>
+
+                    <Label text="Cód. Postal:" GridPane.columnIndex="2" GridPane.rowIndex="6" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCodigoPostal" GridPane.columnIndex="3" GridPane.rowIndex="6" styleClass="campo-lectura"/>
                 </GridPane>
 
 
@@ -186,13 +202,18 @@
                 </VBox>
             </VBox>
         </HBox>
+        </ScrollPane>
     </center>
 
     <bottom>
-        <HBox alignment="CENTER_RIGHT" spacing="15" styleClass="padding-pie-ficha">
+        <HBox spacing="15" styleClass="padding-pie-ficha">
+            <Button fx:id="btnBajaAlta" text="Dar de baja" onAction="#toggleBajaAlta" styleClass="boton-baja"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Añadir documento" onAction="#anadirDocumento" styleClass="boton-accion"/>
+            <Button text="Ver documentos" onAction="#verDocumentos" styleClass="boton-accion"/>
+            <Region HBox.hgrow="ALWAYS"/>
             <Button fx:id="btnCerrar" text="Cerrar" onAction="#cerrarVentana" styleClass="boton-cancelar"/>
             <Button fx:id="btnEditar" text="Editar Ficha" onAction="#activarEdicion" styleClass="boton-accion"/>
-
             <Button fx:id="btnCancelarEdicion" text="Cancelar" onAction="#cancelarEdicion" styleClass="boton-cancelar"/>
             <Button fx:id="btnGuardar" text="Guardar Cambios" onAction="#guardarDatos" styleClass="boton-guardar-exito"/>
         </HBox>

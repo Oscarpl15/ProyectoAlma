@@ -3,7 +3,9 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.model.AsignacionPersonal;
 import com.practicasalma.proyectoalma.model.Docente;
 import com.practicasalma.proyectoalma.service.DocenteService;
-import com.practicasalma.proyectoalma.util.FxUtils;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
+import com.practicasalma.proyectoalma.util.doc.GestorDocumentos;
+import com.practicasalma.proyectoalma.util.validacion.Validador;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -12,8 +14,18 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javafx.application.Platform;
+
 import java.io.File;
 
+/**
+ * Controlador JavaFX de la ficha de detalle de un docente ({@code fichaDocente-view.fxml}).
+ * <p>
+ * Permite ver y editar los datos del docente, su historial de asignaciones por curso
+ * académico y su documentación adjunta (certificados, LOPD). Se abre como modal desde
+ * {@link DocentesController}.
+ * </p>
+ */
 public class FichaDocenteController {
 
     @FXML private ImageView imgFoto;
@@ -22,6 +34,7 @@ public class FichaDocenteController {
     @FXML private Button btnGuardar;
     @FXML private Button btnCancelarEdicion;
     @FXML private Button btnCerrar;
+    @FXML private Button btnBajaAlta;
 
     @FXML private TextField txtNombre;
     @FXML private TextField txtApellidos;
@@ -35,16 +48,19 @@ public class FichaDocenteController {
 
     @FXML private TextField txtGeneroLectura;
     @FXML private ComboBox<String> comboGenero;
+    @FXML private TextField txtCiudad;
+    @FXML private TextField txtCodigoPostal;
 
     @FXML private CheckBox chkDelitosSexuales;
     @FXML private CheckBox chkProteccionDatos;
-    @FXML private CheckBox chkActivo;
+    @FXML private Label lblEstado;
 
     @FXML private TableView<AsignacionPersonal> tablaAsignaciones;
     @FXML private TableColumn<AsignacionPersonal, String> colAsiAnyo;
     @FXML private TableColumn<AsignacionPersonal, String> colAsiGrupo;
 
     private Docente docenteActual;
+    private String rutaFotoSeleccionada = null;
 
     private final DocenteService docenteService = new DocenteService();
 
@@ -62,6 +78,7 @@ public class FichaDocenteController {
         this.docenteActual = docente;
         cargarDatosEnVista();
         cambiarModoEdicion(false);
+        Platform.runLater(() -> btnEditar.requestFocus());
     }
 
     private void cargarDatosEnVista() {
@@ -77,24 +94,32 @@ public class FichaDocenteController {
 
         txtGeneroLectura.setText(docenteActual.getGenero() != null ? docenteActual.getGenero() : "");
         comboGenero.setValue(docenteActual.getGenero());
+        txtCiudad.setText(docenteActual.getCiudad() != null ? docenteActual.getCiudad() : "");
+        txtCodigoPostal.setText(docenteActual.getCodigoPostal() != null ? docenteActual.getCodigoPostal() : "");
 
         chkDelitosSexuales.setSelected(Boolean.TRUE.equals(docenteActual.getAutoDelitosSexuales()));
         chkProteccionDatos.setSelected(Boolean.TRUE.equals(docenteActual.getAutoProteccionDatos()));
-        chkActivo.setSelected(Boolean.TRUE.equals(docenteActual.getActivo()));
+        actualizarLabelEstado(Boolean.TRUE.equals(docenteActual.getActivo()));
 
         if (docenteActual.getHistorialAsignaciones() != null) {
             tablaAsignaciones.setItems(FXCollections.observableArrayList(docenteActual.getHistorialAsignaciones()));
         }
 
         cargarFoto();
+        actualizarBotonBajaAlta();
     }
 
     private void cargarFoto() {
-        try {
-            imgFoto.setImage(new Image(getClass().getResource(
-                    "/com/practicasalma/proyectoalma/assets/default.png").toExternalForm()));
-        } catch (Exception e) {
-            System.out.println("No se encontró imagen por defecto.");
+        String ruta = docenteActual.getRutaFotoPerfil();
+        if (ruta != null && !ruta.isBlank() && new File(ruta).exists()) {
+            imgFoto.setImage(new Image(new File(ruta).toURI().toString()));
+        } else {
+            try {
+                imgFoto.setImage(new Image(getClass().getResource(
+                        "/com/practicasalma/proyectoalma/assets/default.png").toExternalForm()));
+            } catch (Exception e) {
+                System.out.println("No se encontró imagen por defecto.");
+            }
         }
     }
 
@@ -108,9 +133,10 @@ public class FichaDocenteController {
         txtDireccion.setEditable(editable);
         txtTitulacion.setEditable(editable);
         txtNacionalidad.setEditable(editable);
-        chkDelitosSexuales.setDisable(!editable);
-        chkProteccionDatos.setDisable(!editable);
-        chkActivo.setDisable(!editable);
+        txtCiudad.setEditable(editable);
+        txtCodigoPostal.setEditable(editable);
+        actualizarVistaCheckbox(chkDelitosSexuales, "Cert. Delitos Sexuales", editable);
+        actualizarVistaCheckbox(chkProteccionDatos, "Cert. Protección Datos", editable);
 
         btnCambiarFoto.setVisible(editable);
         btnCambiarFoto.setManaged(editable);
@@ -129,6 +155,33 @@ public class FichaDocenteController {
         txtGeneroLectura.setManaged(!editable);
         comboGenero.setVisible(editable);
         comboGenero.setManaged(editable);
+    }
+
+    private void actualizarLabelEstado(boolean activo) {
+        lblEstado.getStyleClass().removeAll("celda-activo", "celda-baja");
+        if (activo) {
+            lblEstado.setText("✔  Activo");
+            lblEstado.getStyleClass().add("celda-activo");
+        } else {
+            lblEstado.setText("✘  Inactivo");
+            lblEstado.getStyleClass().add("celda-baja");
+        }
+    }
+
+    private void actualizarVistaCheckbox(CheckBox chk, String textoBase, boolean editable) {
+        chk.setDisable(!editable);
+        chk.getStyleClass().removeAll("check-lectura-true", "check-lectura-false");
+        if (!editable) {
+            if (chk.isSelected()) {
+                chk.setText("✔  " + textoBase);
+                chk.getStyleClass().add("check-lectura-true");
+            } else {
+                chk.setText("✘  " + textoBase);
+                chk.getStyleClass().add("check-lectura-false");
+            }
+        } else {
+            chk.setText(textoBase);
+        }
     }
 
     @FXML
@@ -154,9 +207,19 @@ public class FichaDocenteController {
         docenteActual.setTitulacion(txtTitulacion.getText().trim());
         docenteActual.setNacionalidad(txtNacionalidad.getText().trim());
         docenteActual.setGenero(comboGenero.getValue());
+        docenteActual.setCiudad(txtCiudad.getText().isBlank() ? null : txtCiudad.getText().trim());
+        String cp = txtCodigoPostal.getText().trim();
+        if (!cp.isBlank() && !Validador.esCodigoPostalValido(cp)) {
+            FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Código postal inválido", "El código postal debe tener exactamente 5 dígitos.");
+            return;
+        }
+        docenteActual.setCodigoPostal(cp.isBlank() ? null : cp);
         docenteActual.setAutoDelitosSexuales(chkDelitosSexuales.isSelected());
         docenteActual.setAutoProteccionDatos(chkProteccionDatos.isSelected());
-        docenteActual.setActivo(chkActivo.isSelected());
+        if (rutaFotoSeleccionada != null) {
+            docenteActual.setRutaFotoPerfil(rutaFotoSeleccionada);
+            rutaFotoSeleccionada = null;
+        }
 
         try {
             docenteService.actualizarDocente(docenteActual);
@@ -175,8 +238,76 @@ public class FichaDocenteController {
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg"));
         File file = chooser.showOpenDialog(imgFoto.getScene().getWindow());
         if (file != null) {
-            imgFoto.setImage(new Image(file.toURI().toString()));
+            File dir = GestorDocumentos.getDirectorio("Docentes", txtNombre.getText(), txtApellidos.getText());
+            String ext = obtenerExtension(file.getName());
+            if (dir != null) {
+                File destino = new File(dir, "foto" + ext);
+                try {
+                    java.nio.file.Files.copy(file.toPath(), destino.toPath(),
+                            java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    rutaFotoSeleccionada = destino.getAbsolutePath();
+                } catch (java.io.IOException e) {
+                    rutaFotoSeleccionada = file.getAbsolutePath();
+                }
+            } else {
+                rutaFotoSeleccionada = file.getAbsolutePath();
+            }
+            imgFoto.setImage(new Image(new File(rutaFotoSeleccionada).toURI().toString()));
         }
+    }
+
+    private String obtenerExtension(String nombreArchivo) {
+        int punto = nombreArchivo.lastIndexOf('.');
+        return punto >= 0 ? nombreArchivo.substring(punto) : "";
+    }
+
+    private void actualizarBotonBajaAlta() {
+        boolean activo = Boolean.TRUE.equals(docenteActual.getActivo());
+        btnBajaAlta.getStyleClass().removeAll("boton-baja", "boton-guardar-exito");
+        if (activo) {
+            btnBajaAlta.setText("Dar de baja");
+            btnBajaAlta.getStyleClass().add("boton-baja");
+        } else {
+            btnBajaAlta.setText("Dar de alta");
+            btnBajaAlta.getStyleClass().add("boton-guardar-exito");
+        }
+    }
+
+    @FXML
+    private void toggleBajaAlta() {
+        boolean activo = Boolean.TRUE.equals(docenteActual.getActivo());
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle(activo ? "Dar de baja" : "Dar de alta");
+        confirm.setHeaderText((activo ? "¿Dar de baja a " : "¿Dar de alta a ") + docenteActual.getNombre() + "?");
+        confirm.showAndWait().ifPresent(r -> {
+            if (r == ButtonType.OK) {
+                try {
+                    if (activo) {
+                        docenteService.darDeBaja(docenteActual.getId());
+                    } else {
+                        docenteService.darDeAlta(docenteActual.getId());
+                    }
+                    docenteActual = docenteService.obtenerCompleto(docenteActual.getId());
+                    cargarDatosEnVista();
+                } catch (Exception e) {
+                    FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", e.getMessage());
+                }
+            }
+        });
+    }
+
+    @FXML
+    private void anadirDocumento() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Seleccionar documento");
+        File archivo = chooser.showOpenDialog(btnCerrar.getScene().getWindow());
+        if (archivo == null) return;
+        GestorDocumentos.copiarDocumento(archivo, "Docentes", txtNombre.getText(), txtApellidos.getText());
+    }
+
+    @FXML
+    private void verDocumentos() {
+        GestorDocumentos.abrirDirectorio("Docentes", txtNombre.getText(), txtApellidos.getText());
     }
 
     @FXML

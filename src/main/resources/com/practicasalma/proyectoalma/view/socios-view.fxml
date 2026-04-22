@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
@@ -11,26 +9,10 @@
 
     <BorderPane>
         <left>
-            <HBox alignment="CENTER_LEFT" spacing="15">
-                <ComboBox fx:id="comboTipoEntidadFiltro" prefWidth="150" promptText="Tipo Entidad">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="Física"/>
-                            <String fx:value="Empresa"/>
-                            <String fx:value="Asociación"/>
-                        </FXCollections>
-                    </items>
-                </ComboBox>
-                <ComboBox fx:id="comboPeriodicidadFiltro" prefWidth="150" promptText="Periodicidad">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="Mensual"/>
-                            <String fx:value="Trimestral"/>
-                            <String fx:value="Anual"/>
-                            <String fx:value="Puntual"/>
-                        </FXCollections>
-                    </items>
-                </ComboBox>
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <ComboBox fx:id="comboTipoEntidadFiltro" prefWidth="150"/>
+                <ComboBox fx:id="comboPeriodicidadFiltro" prefWidth="130"/>
+                <ComboBox fx:id="comboEstadoFiltro" prefWidth="110"/>
             </HBox>
         </left>
         <right>

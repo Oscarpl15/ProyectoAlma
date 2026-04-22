@@ -1,7 +1,9 @@
 package com.practicasalma.proyectoalma.dao;
 
+import com.practicasalma.proyectoalma.exception.EntidadNoEncontradaException;
+import com.practicasalma.proyectoalma.exception.PersistenciaException;
 import com.practicasalma.proyectoalma.model.Alumno;
-import com.practicasalma.proyectoalma.util.GestorBBDD;
+import com.practicasalma.proyectoalma.util.config.GestorBBDD;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -10,88 +12,148 @@ import jakarta.persistence.criteria.Root;
 
 import java.util.List;
 
+/**
+ * Acceso a datos para la entidad {@link Alumno}.
+ * <p>
+ * Encapsula todas las operaciones de persistencia JPA relativas a alumnos:
+ * inserción, actualización, consulta con eager-loading de colecciones y
+ * verificación de duplicados por DNI. Todos los métodos usan su propio
+ * {@code EntityManager} de corta vida y hacen rollback automático en caso de error.
+ * </p>
+ * <p>
+ * Los errores de base de datos se envuelven en {@link com.practicasalma.proyectoalma.exception.PersistenciaException};
+ * los accesos a IDs inexistentes lanzan {@link com.practicasalma.proyectoalma.exception.EntidadNoEncontradaException}.
+ * </p>
+ */
 public class AlumnoDAO {
 
-    public void guardar(Alumno alumno) throws Exception {
+    /**
+     * Persiste un nuevo alumno en la base de datos.
+     *
+     * @param alumno entidad a insertar (sin ID asignado)
+     * @throws com.practicasalma.proyectoalma.exception.PersistenciaException si Hibernate no puede persistir
+     */
+    public void guardar(Alumno alumno) {
         EntityManager em = null;
         try {
             em = GestorBBDD.getEntityManagerFactory().createEntityManager();
             em.getTransaction().begin();
-
-            // Persistimos el alumno (como tiene Cascade, guardará también su matrícula)
             em.persist(alumno);
-
             em.getTransaction().commit();
         } catch (Exception e) {
-            if (em != null && em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new Exception("Error técnico al guardar en BBDD: " + e.getMessage());
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw new PersistenciaException("Error al guardar el alumno: " + e.getMessage(), e);
         } finally {
-            if (em != null) {
-                em.close();
-            }
+            if (em != null) em.close();
         }
     }
 
-    public void actualizar(Alumno alumno) throws Exception {
+    /**
+     * Actualiza un alumno existente (merge JPA).
+     *
+     * @param alumno entidad con los campos modificados y el ID ya asignado
+     */
+    public void actualizar(Alumno alumno) {
         EntityManager em = null;
         try {
             em = GestorBBDD.getEntityManagerFactory().createEntityManager();
             em.getTransaction().begin();
-
-            // MERGE es el comando mágico de Hibernate para hacer un UPDATE
             em.merge(alumno);
-
             em.getTransaction().commit();
         } catch (Exception e) {
-            if (em != null && em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new Exception("Error técnico al actualizar en BBDD: " + e.getMessage());
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw new PersistenciaException("Error al actualizar el alumno: " + e.getMessage(), e);
         } finally {
-            if (em != null) {
-                em.close();
-            }
+            if (em != null) em.close();
         }
     }
 
+    /**
+     * Devuelve todos los alumnos con sus matrículas pre-cargadas (LEFT JOIN FETCH).
+     * El DISTINCT evita duplicados provocados por el join.
+     *
+     * @return lista de alumnos, vacía si no hay ninguno
+     */
     public List<Alumno> obtenerTodos() {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Alumno> query = cb.createQuery(Alumno.class);
             Root<Alumno> root = query.from(Alumno.class);
-
-            // --- LA MAGIA ESTÁ AQUÍ ---
-            // Le decimos que se traiga las matrículas de paso (LEFT por si algún niño aún no tiene)
             root.fetch("matriculas", JoinType.LEFT);
-
-            // Ponemos distinct(true) para que no nos devuelva alumnos duplicados si tienen 2 matrículas
             query.select(root).distinct(true);
-
             return em.createQuery(query).getResultList();
         } catch (Exception e) {
-            System.err.println("Error al cargar todos los alumnos: " + e.getMessage());
-            return List.of();
+            throw new PersistenciaException("Error al cargar los alumnos: " + e.getMessage(), e);
         }
     }
 
+    /**
+     * Cambia el estado activo/baja de un alumno sin tocar el resto de sus datos.
+     *
+     * @param id     identificador del alumno
+     * @param activo {@code true} para reactivar, {@code false} para dar de baja
+     * @throws com.practicasalma.proyectoalma.exception.EntidadNoEncontradaException si el ID no existe
+     */
+    public void actualizarActivo(Long id, boolean activo) {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+            Alumno a = em.find(Alumno.class, id);
+            if (a == null) throw new EntidadNoEncontradaException("Alumno con id " + id + " no encontrado.");
+            a.setActivo(activo);
+            em.getTransaction().commit();
+        } catch (EntidadNoEncontradaException e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw e;
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw new PersistenciaException("Error al actualizar estado del alumno: " + e.getMessage(), e);
+        } finally {
+            if (em != null) em.close();
+        }
+    }
+
+    /**
+     * Carga un alumno con todas sus colecciones inicializadas:
+     * matrículas, personas autorizadas a recogerle y tutores.
+     * Se hace forzando la inicialización de cada lazy collection dentro del mismo contexto JPA.
+     *
+     * @param id identificador del alumno
+     * @return alumno con colecciones listas para usar fuera del EntityManager
+     * @throws com.practicasalma.proyectoalma.exception.EntidadNoEncontradaException si el ID no existe
+     */
     public Alumno obtenerCompleto(Long id) {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
-            // Buscamos al alumno por su ID
             Alumno alumno = em.find(Alumno.class, id);
-
-            if (alumno != null) {
-                // "Despertamos" las colecciones perezosas llamando a .size()
-                // antes de que el EntityManager se cierre.
-                alumno.getMatriculas().size();
-                alumno.getAutorizadaRecoger().size();
-                alumno.getTutores().size(); // Lo dejamos preparado para el futuro
-            }
+            if (alumno == null) throw new EntidadNoEncontradaException("Alumno con id " + id + " no encontrado.");
+            alumno.getMatriculas().size();
+            alumno.getAutorizadaRecoger().size();
+            alumno.getTutores().size();
             return alumno;
+        } catch (EntidadNoEncontradaException e) {
+            throw e;
         } catch (Exception e) {
-            System.err.println("Error al cargar los detalles del alumno: " + e.getMessage());
-            return null;
+            throw new PersistenciaException("Error al cargar los detalles del alumno: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Comprueba si ya existe un alumno con ese documento de identidad (sin distinguir mayúsculas).
+     * Solo busca en la tabla {@code Alumno} — el mismo DNI puede existir en otras tablas (Socio, Docente…).
+     *
+     * @param dni documento de identidad a verificar
+     * @return {@code true} si ya hay un alumno con ese DNI
+     */
+    public boolean existeDni(String dni) {
+        try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
+            Long count = em.createQuery(
+                    "SELECT COUNT(a) FROM Alumno a WHERE UPPER(a.documentoIdentidad) = UPPER(:dni)", Long.class)
+                    .setParameter("dni", dni)
+                    .getSingleResult();
+            return count > 0;
+        } catch (Exception e) {
+            throw new PersistenciaException("Error al verificar DNI del alumno: " + e.getMessage(), e);
         }
     }
 }

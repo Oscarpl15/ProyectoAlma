@@ -5,6 +5,22 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entidad JPA que representa a un socio donante de la fundación.
+ * <p>
+ * Los socios pueden ser personas físicas, empresas o asociaciones ({@code tipoEntidad}).
+ * Añade a {@link Persona}: datos bancarios (IBAN, BIC), cuota periódica y el historial
+ * de donaciones. Nota: a diferencia de otras entidades, {@code Socio} no tiene
+ * {@code fechaNacimiento} porque puede representar entidades jurídicas.
+ * </p>
+ * <p>
+ * Relaciones:
+ * <ul>
+ *   <li>{@code donaciones} — 1:N con {@link Donacion}.</li>
+ *   <li>{@code periodosActividad} — 1:N con {@link PeriodoActividad}.</li>
+ * </ul>
+ * </p>
+ */
 @Entity
 @Table(name = "socios")
 public class Socio extends Persona {

@@ -1,6 +1,9 @@
 package com.practicasalma.proyectoalma;
 
 import atlantafx.base.theme.PrimerLight;
+import com.practicasalma.proyectoalma.controller.ConfiguracionInicialController;
+import com.practicasalma.proyectoalma.util.config.GestorBBDD;
+import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -9,39 +12,67 @@ import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+/**
+ * Punto de entrada de la aplicación JavaFX.
+ * <p>
+ * Secuencia de arranque:
+ * <ol>
+ *   <li>Aplica el tema visual AtlantaFX {@code PrimerLight}.</li>
+ *   <li>Lee la configuración de {@link com.practicasalma.proyectoalma.util.config.GestorConfig}.
+ *       Si no está configurado, muestra el asistente de configuración inicial.</li>
+ *   <li>Inicializa {@link com.practicasalma.proyectoalma.util.config.GestorBBDD} con la ruta de la BD.</li>
+ *   <li>Ejecuta {@link com.practicasalma.proyectoalma.service.GestorMatriculas} y
+ *       {@link com.practicasalma.proyectoalma.service.GestorAsignaciones} para procesar
+ *       renovaciones automáticas de inicio de curso.</li>
+ *   <li>Carga y muestra la vista principal ({@code main-view.fxml}).</li>
+ * </ol>
+ * </p>
+ * <p>
+ * {@link MainLauncher} es el wrapper de entrada real que llama a este {@code main()} —
+ * necesario para evitar el error de módulos de JavaFX al ejecutar sin {@code module-info.java}.
+ * </p>
+ */
 public class Launcher extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
 
-        // Cargar el tema base de AtlantaFX
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
 
-        // Cargar la vista principal (que ya incluye su propio CSS internamente)
-        URL fxmlUrl = Launcher.class.getResource("/com/practicasalma/proyectoalma/view/main-view.fxml");
+        String rutaBBDD = GestorConfig.getRutaBBDD();
+        boolean necesitaConfiguracion = !GestorConfig.estaConfigurado()
+                || rutaBBDD == null
+                || !new File(rutaBBDD).exists();
 
+        if (necesitaConfiguracion) {
+            ConfiguracionInicialController.mostrar();
+            rutaBBDD = GestorConfig.getRutaBBDD();
+            if (rutaBBDD == null || rutaBBDD.isBlank()) {
+                return;
+            }
+        }
+
+        GestorBBDD.inicializar(rutaBBDD);
+
+        URL fxmlUrl = Launcher.class.getResource("/com/practicasalma/proyectoalma/view/main-view.fxml");
         if (fxmlUrl == null) {
-            System.err.println("ERROR FATAL: No se encuentra el archivo FXML principal.");
-            return;
+            throw new IllegalStateException("No se encuentra el archivo FXML principal.");
         }
 
         Scene scene = new Scene(new FXMLLoader(fxmlUrl).load());
 
-        // Configurar la ventana (Stage)
-        stage.setTitle("Gestión Fundación - Panel de Control");
+        stage.setTitle("Gestion Fundacion - Panel de Control");
 
         try {
             stage.getIcons().add(new Image(getClass().getResourceAsStream("/com/practicasalma/proyectoalma/assets/logo.png")));
-        } catch (Exception e) {
-            System.err.println("AVISO: No se pudo cargar el logo de la aplicación.");
-        }
+        } catch (Exception ignored) {}
 
         stage.setScene(scene);
 
-        // Calcular pantalla y forzar maximizado sin parpadeos
         Rectangle2D limitesPantalla = Screen.getPrimary().getVisualBounds();
         stage.setX(limitesPantalla.getMinX());
         stage.setY(limitesPantalla.getMinY());

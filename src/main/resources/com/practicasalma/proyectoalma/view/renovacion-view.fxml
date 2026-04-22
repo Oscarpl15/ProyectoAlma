@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.practicasalma.proyectoalma.controller.RenovacionController"
+            styleClass="fondo-blanco"
+            stylesheets="@../css/estilos.css"
+            prefWidth="700">
+
+    <top>
+        <VBox spacing="5" styleClass="padding-cabecera-ficha">
+            <Label fx:id="lblTitulo" styleClass="titulo-ventana"/>
+            <Label text="Revisa las personas pendientes de confirmación para el nuevo curso." styleClass="subtitulo-ventana"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="fondo-blanco">
+            <VBox fx:id="contenedor" spacing="10" styleClass="padding-cuerpo-ficha"/>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" styleClass="padding-pie-ficha">
+            <Button text="Cerrar" onAction="#cerrar" styleClass="boton-cancelar"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

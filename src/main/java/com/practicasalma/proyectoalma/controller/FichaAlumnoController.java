@@ -7,21 +7,37 @@ import com.practicasalma.proyectoalma.model.Tutor;
 import com.practicasalma.proyectoalma.service.AlumnoService;
 import com.practicasalma.proyectoalma.service.PersonaAutorizadaService;
 import com.practicasalma.proyectoalma.service.TutorService;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
+import com.practicasalma.proyectoalma.util.doc.GestorDocumentos;
+import com.practicasalma.proyectoalma.util.validacion.Validador;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.collections.FXCollections;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
 
+/**
+ * Controlador JavaFX de la ficha de detalle de un alumno ({@code fichaAlumno-view.fxml}).
+ * <p>
+ * Permite ver y editar todos los datos del alumno: datos personales, matrículas,
+ * tutores legales, personas autorizadas a recogerle, familiares, autorizaciones
+ * y documentación adjunta. Se abre como modal desde {@link AlumnosController}.
+ * </p>
+ */
 public class FichaAlumnoController {
 
     @FXML private ImageView imgFoto;
@@ -38,6 +54,7 @@ public class FichaAlumnoController {
     @FXML private CheckBox chkAutoActividades;
     @FXML private CheckBox chkAutoComunicaciones;
     @FXML private CheckBox chkAutoIrseSolo;
+    @FXML private Label lblEstado;
 
     // Botones de acción
     @FXML private Button btnCambiarFoto;
@@ -45,16 +62,20 @@ public class FichaAlumnoController {
     @FXML private Button btnGuardar;
     @FXML private Button btnCancelarEdicion;
     @FXML private Button btnCerrar;
+    @FXML private Button btnBajaAlta;
 
     // Curso y Grupo
     @FXML private TextField txtCurso;
+    @FXML private ComboBox<String> comboCurso;
     @FXML private TextField txtGrupoLectura;
     @FXML private ComboBox<String> comboGrupo;
 
-    // Nacionalidad y Género
+    // Nacionalidad, Género, Ciudad y Código Postal
     @FXML private TextField txtNacionalidad;
     @FXML private TextField txtGeneroLectura;
     @FXML private ComboBox<String> comboGenero;
+    @FXML private TextField txtCiudad;
+    @FXML private TextField txtCodigoPostal;
 
     // Seguimiento y Derivación (Lectura)
     @FXML private VBox boxSeguimientoLectura;
@@ -112,6 +133,11 @@ public class FichaAlumnoController {
                 "g1 martes/jueves",
                 "g2 martes/jueves"
         );
+        comboCurso.getItems().addAll(
+                "1º Infantil", "2º Infantil", "3º Infantil",
+                "1º Primaria", "2º Primaria", "3º Primaria",
+                "4º Primaria", "5º Primaria", "6º Primaria"
+        );
         comboGenero.getItems().addAll(
                 "Masculino", "Femenino", "No binario", "Prefiero no especificar"
         );
@@ -123,6 +149,16 @@ public class FichaAlumnoController {
                 c.getValue().getGrupoAsignado() != null ? c.getValue().getGrupoAsignado() : "—"));
         colMatRepeticion.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
                 Boolean.TRUE.equals(c.getValue().getEsRepeticion()) ? "Sí" : "No"));
+
+        // Doble clic en matrícula → abrir ficha de matrícula
+        tablaMatriculas.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                Matricula seleccionada = tablaMatriculas.getSelectionModel().getSelectedItem();
+                if (seleccionada != null) {
+                    abrirFichaMatricula(seleccionada);
+                }
+            }
+        });
 
         // Configurar columnas de Tutores
         colTutorNombre.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getNombre()));
@@ -173,6 +209,8 @@ public class FichaAlumnoController {
             txtNacionalidad.setText(alumnoActual.getNacionalidad() != null ? alumnoActual.getNacionalidad() : "");
             txtGeneroLectura.setText(alumnoActual.getGenero() != null ? alumnoActual.getGenero() : "");
             comboGenero.setValue(alumnoActual.getGenero());
+            txtCiudad.setText(alumnoActual.getCiudad() != null ? alumnoActual.getCiudad() : "");
+            txtCodigoPostal.setText(alumnoActual.getCodigoPostal() != null ? alumnoActual.getCodigoPostal() : "");
             dpFechaNacimiento.setValue(alumnoActual.getFechaNacimiento());
 
             chkAutoDatos.setSelected(Boolean.TRUE.equals(alumnoActual.getAutorizaUsoDatos()));
@@ -180,17 +218,19 @@ public class FichaAlumnoController {
             chkAutoActividades.setSelected(Boolean.TRUE.equals(alumnoActual.getAutorizaActividades()));
             chkAutoComunicaciones.setSelected(Boolean.TRUE.equals(alumnoActual.getAutorizaComunicaciones()));
             chkAutoIrseSolo.setSelected(Boolean.TRUE.equals(alumnoActual.getAutorizaIrseSolo()));
-
+            actualizarLabelEstado(Boolean.TRUE.equals(alumnoActual.getActivo()));
 
             // --- CARGAR CURSO Y GRUPO DESDE MATRÍCULA ---
             // Buscamos la última matrícula activa (asumimos la última de la lista)
             if (alumnoActual.getMatriculas() != null && !alumnoActual.getMatriculas().isEmpty()) {
                 var ultimaMatricula = alumnoActual.getMatriculas().get(alumnoActual.getMatriculas().size() - 1);
                 txtCurso.setText(ultimaMatricula.getCurso() != null ? ultimaMatricula.getCurso() : "Sin curso");
+                comboCurso.setValue(ultimaMatricula.getCurso());
                 txtGrupoLectura.setText(ultimaMatricula.getGrupoAsignado() != null ? ultimaMatricula.getGrupoAsignado() : "Sin grupo");
                 comboGrupo.setValue(ultimaMatricula.getGrupoAsignado());
             } else {
                 txtCurso.setText("Sin matricular");
+                comboCurso.setValue(null);
                 txtGrupoLectura.setText("Sin grupo");
                 comboGrupo.setValue(null);
             }
@@ -228,6 +268,7 @@ public class FichaAlumnoController {
             } else {
                 cargarFotoPorDefecto();
             }
+            actualizarBotonBajaAlta();
         }
     }
 
@@ -274,6 +315,15 @@ public class FichaAlumnoController {
         actualizarVistaCheckbox(chkAutoComunicaciones, "Comunicaciones", editable);
         actualizarVistaCheckbox(chkAutoIrseSolo, "Autoriza Irse Solo", editable);
 
+        // Truco visual para el Curso Actual
+        boolean tieneMatriculas = alumnoActual != null
+                && alumnoActual.getMatriculas() != null
+                && !alumnoActual.getMatriculas().isEmpty();
+        txtCurso.setVisible(!editable || !tieneMatriculas);
+        txtCurso.setManaged(!editable || !tieneMatriculas);
+        comboCurso.setVisible(editable && tieneMatriculas);
+        comboCurso.setManaged(editable && tieneMatriculas);
+
         // Truco visual para el Grupo (Intercambiar Textfield por Combo)
         txtGrupoLectura.setVisible(!editable);
         txtGrupoLectura.setManaged(!editable);
@@ -286,8 +336,10 @@ public class FichaAlumnoController {
         comboGenero.setVisible(editable);
         comboGenero.setManaged(editable);
 
-        // Nacionalidad editable/no editable
+        // Nacionalidad, Ciudad y Código Postal
         txtNacionalidad.setEditable(editable);
+        txtCiudad.setEditable(editable);
+        txtCodigoPostal.setEditable(editable);
 
         // Truco visual para Seguimiento/Derivación
         boxSeguimientoLectura.setVisible(!editable);
@@ -313,6 +365,10 @@ public class FichaAlumnoController {
             // Al volver a modo lectura, actualizamos los textos resumen por si ha cambiado algún check
             actualizarTextosSeguimiento();
 
+            // Sincronizamos el texto de lectura del curso
+            if (comboCurso.getValue() != null) {
+                txtCurso.setText(comboCurso.getValue());
+            }
             // Sincronizamos el texto de lectura del grupo con lo que se haya elegido en el desplegable
             if (comboGrupo.getValue() != null) {
                 txtGrupoLectura.setText(comboGrupo.getValue());
@@ -370,6 +426,13 @@ public class FichaAlumnoController {
             alumnoActual.setDerivadoPor(txtDerivado.getText());
             alumnoActual.setNacionalidad(txtNacionalidad.getText().isBlank() ? null : txtNacionalidad.getText().trim());
             alumnoActual.setGenero(comboGenero.getValue());
+            alumnoActual.setCiudad(txtCiudad.getText().isBlank() ? null : txtCiudad.getText().trim());
+            String cp = txtCodigoPostal.getText().trim();
+            if (!cp.isBlank() && !Validador.esCodigoPostalValido(cp)) {
+                FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Código postal inválido", "El código postal debe tener exactamente 5 dígitos.");
+                return;
+            }
+            alumnoActual.setCodigoPostal(cp.isBlank() ? null : cp);
 
             // 2. Recoger Autorizaciones
             alumnoActual.setAutorizaUsoDatos(chkAutoDatos.isSelected());
@@ -393,9 +456,12 @@ public class FichaAlumnoController {
                 alumnoActual.setRutaFotoPerfil(rutaFotoSeleccionada);
             }
 
-            // 5. Actualizar la matrícula (Grupo)
+            // 5. Actualizar la matrícula (Curso y Grupo)
             if (alumnoActual.getMatriculas() != null && !alumnoActual.getMatriculas().isEmpty()) {
                 var ultimaMatricula = alumnoActual.getMatriculas().get(alumnoActual.getMatriculas().size() - 1);
+                if (comboCurso.getValue() != null) {
+                    ultimaMatricula.setCurso(comboCurso.getValue());
+                }
                 if (comboGrupo.getValue() != null) {
                     ultimaMatricula.setGrupoAsignado(comboGrupo.getValue());
                 }
@@ -427,15 +493,82 @@ public class FichaAlumnoController {
     private void seleccionarFoto(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Selecciona foto del alumno");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Imagen", "*.png", "*.jpg", "*.jpeg"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg"));
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         File archivoSeleccionado = fileChooser.showOpenDialog(stage);
 
         if (archivoSeleccionado != null) {
-            rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
-            imgFoto.setImage(new Image(archivoSeleccionado.toURI().toString()));
+            File dir = GestorDocumentos.getDirectorio("Alumnos", txtNombre.getText(), txtApellidos.getText());
+            if (dir != null) {
+                File destino = new File(dir, "foto" + obtenerExtension(archivoSeleccionado.getName()));
+                try {
+                    java.nio.file.Files.copy(archivoSeleccionado.toPath(), destino.toPath(),
+                            java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    rutaFotoSeleccionada = destino.getAbsolutePath();
+                } catch (java.io.IOException e) {
+                    rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
+                }
+            } else {
+                rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
+            }
+            imgFoto.setImage(new Image(new File(rutaFotoSeleccionada).toURI().toString()));
         }
+    }
+
+    private String obtenerExtension(String nombreArchivo) {
+        int punto = nombreArchivo.lastIndexOf('.');
+        return punto >= 0 ? nombreArchivo.substring(punto) : "";
+    }
+
+    private void actualizarLabelEstado(boolean activo) {
+        lblEstado.getStyleClass().removeAll("celda-activo", "celda-baja");
+        if (activo) {
+            lblEstado.setText("✔  Activo");
+            lblEstado.getStyleClass().add("celda-activo");
+        } else {
+            lblEstado.setText("✘  Inactivo");
+            lblEstado.getStyleClass().add("celda-baja");
+        }
+    }
+
+    private void actualizarBotonBajaAlta() {
+        boolean activo = Boolean.TRUE.equals(alumnoActual.getActivo());
+        btnBajaAlta.getStyleClass().removeAll("boton-baja", "boton-guardar-exito");
+        if (activo) {
+            btnBajaAlta.setText("Dar de baja");
+            btnBajaAlta.getStyleClass().add("boton-baja");
+        } else {
+            btnBajaAlta.setText("Dar de alta");
+            btnBajaAlta.getStyleClass().add("boton-guardar-exito");
+        }
+    }
+
+    @FXML
+    private void toggleBajaAlta() {
+        boolean activo = Boolean.TRUE.equals(alumnoActual.getActivo());
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle(activo ? "Dar de baja" : "Dar de alta");
+        confirm.setHeaderText((activo ? "¿Dar de baja a " : "¿Dar de alta a ") + alumnoActual.getNombre() + "?");
+        if (!activo) {
+            confirm.setContentText("Se generará una nueva matrícula para el curso actual.");
+        }
+        confirm.showAndWait().ifPresent(r -> {
+            if (r == ButtonType.OK) {
+                try {
+                    if (activo) {
+                        alumnoService.darDeBaja(alumnoActual.getId());
+                    } else {
+                        alumnoService.darDeAlta(alumnoActual.getId());
+                    }
+                    alumnoActual = alumnoService.obtenerCompleto(alumnoActual.getId());
+                    cargarDatosEnVista();
+                    cambiarModoEdicion(false);
+                } catch (Exception e) {
+                    FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", e.getMessage());
+                }
+            }
+        });
     }
 
     private void actualizarTextosSeguimiento() {
@@ -525,9 +658,54 @@ public class FichaAlumnoController {
     }
 
     @FXML
+    private void anadirDocumento() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Seleccionar documento");
+        File archivo = chooser.showOpenDialog(btnCerrar.getScene().getWindow());
+        if (archivo == null) return;
+        GestorDocumentos.copiarDocumento(archivo, "Alumnos", txtNombre.getText(), txtApellidos.getText());
+    }
+
+    @FXML
+    private void verDocumentos() {
+        GestorDocumentos.abrirDirectorio("Alumnos", txtNombre.getText(), txtApellidos.getText());
+    }
+
+    @FXML
     private void cerrarVentana() {
         Stage stage = (Stage) btnCerrar.getScene().getWindow();
         stage.close();
+    }
+
+    private void abrirFichaMatricula(Matricula matricula) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/practicasalma/proyectoalma/view/ficha-matricula.fxml"));
+            Parent root = loader.load();
+
+            FichaMatriculaController controller = loader.getController();
+            String nombreAlumno = (alumnoActual.getNombre() != null ? alumnoActual.getNombre() : "") +
+                    " " + (alumnoActual.getApellidos() != null ? alumnoActual.getApellidos() : "");
+            controller.setMatricula(matricula, nombreAlumno.trim());
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Ficha de Matrícula");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            // Refrescar tabla tras posibles cambios
+            tablaMatriculas.refresh();
+            // Actualizar el campo curso visible si la última matrícula cambió
+            if (alumnoActual.getMatriculas() != null && !alumnoActual.getMatriculas().isEmpty()) {
+                var ultima = alumnoActual.getMatriculas().get(alumnoActual.getMatriculas().size() - 1);
+                txtCurso.setText(ultima.getCurso() != null ? ultima.getCurso() : "Sin curso");
+                txtGrupoLectura.setText(ultima.getGrupoAsignado() != null ? ultima.getGrupoAsignado() : "Sin grupo");
+                comboGrupo.setValue(ultima.getGrupoAsignado());
+            }
+        } catch (Exception e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ficha de matrícula: " + e.getMessage());
+        }
     }
 
     // ── TUTORES ──────────────────────────────────────────────────────────────

@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Docente;
 import com.practicasalma.proyectoalma.service.DocenteService;
+import com.practicasalma.proyectoalma.util.validacion.Validador;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -14,6 +15,13 @@ import javafx.stage.Stage;
 
 import java.time.LocalDate;
 
+/**
+ * Controlador JavaFX del formulario de alta de un nuevo docente ({@code agregarDocente-view.fxml}).
+ * <p>
+ * Recoge los datos del formulario y los pasa a {@link com.practicasalma.proyectoalma.service.DocenteService}.
+ * Se abre como modal desde {@link DocentesController}.
+ * </p>
+ */
 public class AgregarDocenteController {
 
     @FXML
@@ -32,6 +40,8 @@ public class AgregarDocenteController {
     @FXML private DatePicker dpFechaNacimiento;
     @FXML private TextField txtNacionalidad;
     @FXML private ComboBox<String> comboGenero;
+    @FXML private TextField txtCiudad;
+    @FXML private TextField txtCodigoPostal;
 
     // Checkboxes
     @FXML private CheckBox checkAuth1;
@@ -62,6 +72,16 @@ public class AgregarDocenteController {
             if (!nacionalidad.isEmpty()) docente.setNacionalidad(nacionalidad);
             String genero = comboGenero.getValue();
             if (genero != null) docente.setGenero(genero);
+            String ciudad = txtCiudad.getText().trim();
+            if (!ciudad.isEmpty()) docente.setCiudad(ciudad);
+            String cp = txtCodigoPostal.getText().trim();
+            if (!cp.isEmpty()) {
+                if (!Validador.esCodigoPostalValido(cp)) {
+                    mostrarError("El código postal debe tener exactamente 5 dígitos.");
+                    return;
+                }
+                docente.setCodigoPostal(cp);
+            }
             docenteService.guardarDocente(docente);
             cerrarVentana(event);
         } catch (Exception e) {

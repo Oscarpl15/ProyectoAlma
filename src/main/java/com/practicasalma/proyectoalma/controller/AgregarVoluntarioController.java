@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Voluntario;
 import com.practicasalma.proyectoalma.service.VoluntarioService;
+import com.practicasalma.proyectoalma.util.validacion.Validador;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -14,6 +15,13 @@ import javafx.stage.Stage;
 
 import java.time.LocalDate;
 
+/**
+ * Controlador JavaFX del formulario de alta de un nuevo voluntario ({@code agregarVoluntario-view.fxml}).
+ * <p>
+ * Recoge los datos del formulario y los pasa a {@link com.practicasalma.proyectoalma.service.VoluntarioService}.
+ * Se abre como modal desde {@link VoluntariosController}.
+ * </p>
+ */
 public class AgregarVoluntarioController {
 
     @FXML private TextField txtNombre;
@@ -25,6 +33,8 @@ public class AgregarVoluntarioController {
     @FXML private DatePicker dpFechaNacimiento;
     @FXML private TextField txtNacionalidad;
     @FXML private ComboBox<String> comboGenero;
+    @FXML private TextField txtCiudad;
+    @FXML private TextField txtCodigoPostal;
     @FXML private CheckBox checkDelitos;
     @FXML private CheckBox checkProtDatos;
 
@@ -53,6 +63,16 @@ public class AgregarVoluntarioController {
             if (!nacionalidad.isEmpty()) voluntario.setNacionalidad(nacionalidad);
             String genero = comboGenero.getValue();
             if (genero != null) voluntario.setGenero(genero);
+            String ciudad = txtCiudad.getText().trim();
+            if (!ciudad.isEmpty()) voluntario.setCiudad(ciudad);
+            String cp = txtCodigoPostal.getText().trim();
+            if (!cp.isEmpty()) {
+                if (!Validador.esCodigoPostalValido(cp)) {
+                    mostrarError("El código postal debe tener exactamente 5 dígitos.");
+                    return;
+                }
+                voluntario.setCodigoPostal(cp);
+            }
             voluntarioService.guardarVoluntario(voluntario);
             cerrarVentana(event);
         } catch (Exception e) {

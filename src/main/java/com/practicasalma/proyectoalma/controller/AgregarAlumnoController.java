@@ -2,6 +2,8 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.service.AlumnoService;
+import com.practicasalma.proyectoalma.util.doc.GestorDocumentos;
+import com.practicasalma.proyectoalma.util.validacion.Validador;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -18,6 +20,14 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.time.LocalDate;
 
+/**
+ * Controlador JavaFX del formulario de alta de un nuevo alumno ({@code agregarAlumno-view.fxml}).
+ * <p>
+ * Recoge los datos del formulario y los pasa a {@link com.practicasalma.proyectoalma.service.AlumnoService}
+ * para persistirlos. También permite adjuntar una foto de perfil al guardar.
+ * Se abre como modal desde {@link AlumnosController}.
+ * </p>
+ */
 public class AgregarAlumnoController {
 
     // Datos Personales
@@ -36,6 +46,8 @@ public class AgregarAlumnoController {
     // Opcionales
     @FXML private TextField txtNacionalidad;
     @FXML private ComboBox<String> comboGenero;
+    @FXML private TextField txtCiudad;
+    @FXML private TextField txtCodigoPostal;
 
     // Seguimiento
     @FXML private CheckBox chkSeguimientoSS;
@@ -56,10 +68,10 @@ public class AgregarAlumnoController {
     @FXML private CheckBox chkAutoComunicaciones;
     @FXML private CheckBox chkAutoIrseSolo;
 
-    // Foto (Tu lógica original)
     @FXML private ImageView fotoAlumno;
     private final String RUTA_DEFECTO_IMAGEN = "/com/practicasalma/proyectoalma/assets/default.png";
     private String rutaFotoSeleccionada = null;
+    private File fotoArchivoSeleccionado = null;
 
     // Instanciamos el servicio
     private final AlumnoService alumnoService = new AlumnoService();
@@ -97,6 +109,20 @@ public class AgregarAlumnoController {
         alumno.setTelefono(telefono);
         alumno.setColegio(limpiarTexto(txtColegio.getText()));
         alumno.setDerivadoPor(limpiarTexto(txtDerivado.getText()));
+        if (fotoArchivoSeleccionado != null) {
+            File dir = GestorDocumentos.getDirectorio("Alumnos", nombre, apellidos);
+            if (dir != null) {
+                String ext = obtenerExtension(fotoArchivoSeleccionado.getName());
+                File destino = new File(dir, "foto" + ext);
+                try {
+                    java.nio.file.Files.copy(fotoArchivoSeleccionado.toPath(), destino.toPath(),
+                            java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    rutaFotoSeleccionada = destino.getAbsolutePath();
+                } catch (java.io.IOException e) {
+                    rutaFotoSeleccionada = fotoArchivoSeleccionado.getAbsolutePath();
+                }
+            }
+        }
         alumno.setRutaFotoPerfil(rutaFotoSeleccionada);
 
         if (dni != null) alumno.setDocumentoIdentidad(dni);
@@ -124,12 +150,24 @@ public class AgregarAlumnoController {
         String genero = comboGenero.getValue();
         if (genero != null) alumno.setGenero(genero);
 
+        String ciudad = limpiarTexto(txtCiudad.getText());
+        if (ciudad != null) alumno.setCiudad(ciudad);
+
+        String cp = limpiarTexto(txtCodigoPostal.getText());
+        if (cp != null) {
+            if (!Validador.esCodigoPostalValido(cp)) {
+                mostrarMensaje("Código postal inválido", "El código postal debe tener exactamente 5 dígitos.", Alert.AlertType.WARNING);
+                return;
+            }
+            alumno.setCodigoPostal(cp);
+        }
+
         // Delegar la responsabilidad al Servicio
         try {
             alumnoService.matricularNuevoAlumno(alumno, cursoNormalizado, grupo);
 
             mostrarMensaje("Éxito", "Alumno guardado correctamente.", Alert.AlertType.INFORMATION);
-            cerrarVentana(event);
+            cerrarVentana( event);
 
         } catch (Exception e) {
             // Si el servicio o el DAO fallan, capturamos el error aquí
@@ -167,11 +205,15 @@ public class AgregarAlumnoController {
         File archivoSeleccionado = fileChooser.showOpenDialog(stage);
 
         if (archivoSeleccionado != null) {
+            fotoArchivoSeleccionado = archivoSeleccionado;
             rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
             fotoAlumno.setImage(new Image(archivoSeleccionado.toURI().toString()));
-
-            System.out.println("Ruta de la foto: " + rutaFotoSeleccionada);
         }
+    }
+
+    private String obtenerExtension(String nombreArchivo) {
+        int punto = nombreArchivo.lastIndexOf('.');
+        return punto >= 0 ? nombreArchivo.substring(punto) : "";
     }
 
     private void cerrarVentana(ActionEvent event) {

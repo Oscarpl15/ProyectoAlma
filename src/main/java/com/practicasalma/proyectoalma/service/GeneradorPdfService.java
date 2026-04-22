@@ -39,6 +39,23 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Servicio de generación de documentos PDF para la fundación.
+ * <p>
+ * Genera dos tipos de documentos usando la librería OpenPDF:
+ * <ol>
+ *   <li><b>Informe de socio</b> — datos básicos del socio y sus donaciones en formato simple.</li>
+ *   <li><b>Certificado de donaciones</b> — rellena una plantilla PDF oficial (con AcroForm o
+ *       reemplazo de texto plano como fallback) con los datos del socio y el importe total.</li>
+ * </ol>
+ * La plantilla del certificado se busca automáticamente en varias ubicaciones: raíz del proyecto,
+ * escritorio del usuario, carpeta de recursos y classpath (en ese orden).
+ * </p>
+ * <p>
+ * El importe se convierte a letras en español siguiendo las reglas morfológicas del castellano
+ * (apócope de "uno" ante sustantivo, etc.).
+ * </p>
+ */
 public class GeneradorPdfService {
 
     private static final String CAMPO_ANO_INICIAL = "ANO_INICIAL";
@@ -248,6 +265,15 @@ public class GeneradorPdfService {
         }
     }
 
+    /**
+     * Genera el certificado oficial de donaciones usando la plantilla PDF de la fundación.
+     * Calcula automáticamente el importe total y lo convierte a letras para rellenar el certificado.
+     *
+     * @param rutaSalida ruta del fichero PDF de salida
+     * @param socio      socio para el que se emite el certificado (con donaciones cargadas)
+     * @throws IllegalArgumentException si el socio no tiene domicilio configurado
+     * @throws IllegalStateException    si no se encuentra la plantilla PDF en ninguna ubicación
+     */
     public void generarInformeSocioConPlantilla(String rutaSalida, Socio socio) {
         if (socio == null) {
             throw new IllegalArgumentException("El socio es obligatorio para generar el informe.");

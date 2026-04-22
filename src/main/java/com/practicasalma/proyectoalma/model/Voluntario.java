@@ -5,6 +5,20 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entidad JPA que representa a un voluntario (colaborador no remunerado) de la fundación.
+ * <p>
+ * Estructura muy similar a {@link Docente}: añade certificados legales y fecha de nacimiento.
+ * La diferencia conceptual es que el voluntario no cobra y su disponibilidad puede ser irregular.
+ * </p>
+ * <p>
+ * Relaciones:
+ * <ul>
+ *   <li>{@code historialAsignaciones} — 1:N con {@link AsignacionPersonal}.</li>
+ *   <li>{@code periodosActividad} — 1:N con {@link PeriodoActividad}.</li>
+ * </ul>
+ * </p>
+ */
 @Entity
 @Table(name = "voluntarios")
 public class Voluntario extends Persona {

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.practicasalma.proyectoalma.controller.FichaMatriculaController"
+            stylesheets="@../css/estilos.css"
+            styleClass="fondo-blanco">
+
+    <top>
+        <VBox spacing="5" styleClass="padding-cabecera-ficha">
+            <Label text="Ficha de Matrícula" styleClass="titulo-ventana"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="fondo-blanco">
+        <VBox spacing="20" styleClass="padding-cuerpo-ficha">
+            <GridPane hgap="15" vgap="15">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="130" halignment="RIGHT"/>
+                    <ColumnConstraints hgrow="ALWAYS" prefWidth="280"/>
+                </columnConstraints>
+
+                <Label text="Alumno:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="etiqueta-campo"/>
+                <TextField fx:id="txtAlumno" GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="campo-lectura" editable="false"/>
+
+                <Label text="Año académico:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="etiqueta-campo"/>
+                <TextField fx:id="txtAnyoAcademico" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="campo-lectura" editable="false"/>
+
+                <Label text="Curso:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="etiqueta-campo"/>
+                <TextField fx:id="txtCurso" GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="campo-lectura" editable="false"/>
+
+                <Label text="Grupo:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="etiqueta-campo"/>
+                <StackPane GridPane.columnIndex="1" GridPane.rowIndex="3" alignment="CENTER_LEFT">
+                    <TextField fx:id="txtGrupoLectura" styleClass="campo-lectura"/>
+                    <ComboBox fx:id="comboGrupo" maxWidth="Infinity" visible="false" managed="false"/>
+                </StackPane>
+
+                <Label text="Repetidor:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
+                <CheckBox fx:id="chkRepetidor" text="Es repetición" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+            </GridPane>
+        </VBox>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="15" styleClass="padding-pie-ficha">
+            <Button fx:id="btnCerrar" text="Cerrar" onAction="#cerrarVentana" styleClass="boton-cancelar"/>
+            <Button fx:id="btnEditar" text="Editar Ficha" onAction="#activarEdicion" styleClass="boton-accion"/>
+            <Button fx:id="btnCancelarEdicion" text="Cancelar" onAction="#cancelarEdicion" styleClass="boton-cancelar" visible="false" managed="false"/>
+            <Button fx:id="btnGuardar" text="Guardar Cambios" onAction="#guardarDatos" styleClass="boton-guardar-exito" visible="false" managed="false"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

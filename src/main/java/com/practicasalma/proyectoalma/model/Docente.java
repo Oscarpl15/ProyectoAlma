@@ -5,6 +5,20 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entidad JPA que representa a un docente (educador remunerado) de la fundación.
+ * <p>
+ * Añade a {@link Persona}: fecha de nacimiento, certificados legales obligatorios
+ * (certificado de delitos sexuales, LOPD), titulación y disponibilidad.
+ * </p>
+ * <p>
+ * Relaciones:
+ * <ul>
+ *   <li>{@code historialAsignaciones} — 1:N con {@link AsignacionPersonal}; un registro por curso académico.</li>
+ *   <li>{@code periodosActividad} — 1:N con {@link PeriodoActividad}.</li>
+ * </ul>
+ * </p>
+ */
 @Entity
 @Table(name = "docentes")
 public class Docente extends Persona {

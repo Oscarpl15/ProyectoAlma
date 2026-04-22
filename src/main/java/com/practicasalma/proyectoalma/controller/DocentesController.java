@@ -1,29 +1,31 @@
 package com.practicasalma.proyectoalma.controller;
 
-import com.practicasalma.proyectoalma.Launcher;
 import com.practicasalma.proyectoalma.model.Docente;
+import com.practicasalma.proyectoalma.service.DocenteService;
+import com.practicasalma.proyectoalma.util.filtro.DocenteFiltro;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
-import com.practicasalma.proyectoalma.service.DocenteService;
-import com.practicasalma.proyectoalma.util.FxUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
+/**
+ * Controlador JavaFX de la pestaña de docentes ({@code docentes-view.fxml}).
+ * <p>
+ * Gestiona la tabla de docentes con filtrado, acceso a la ficha de detalle
+ * y las operaciones de alta/baja.
+ * </p>
+ */
 public class DocentesController {
 
     @FXML private TableView<Docente> tablaDocentes;
@@ -32,29 +34,29 @@ public class DocentesController {
     @FXML private TableColumn<Docente, String> colTelefono;
     @FXML private TableColumn<Docente, String> colDni;
     @FXML private TableColumn<Docente, String> colCorreo;
-
-    // Las nuevas columnas de documentación y estado
     @FXML private TableColumn<Docente, Boolean> colDelitos;
     @FXML private TableColumn<Docente, Boolean> colProtDatos;
     @FXML private TableColumn<Docente, String> colAB;
+
+    @FXML private ComboBox<String> comboCursoFiltro;
+    @FXML private ComboBox<String> comboEstadoFiltro;
     @FXML private TextField txtBuscar;
 
     private final DocenteService docenteService = new DocenteService();
     private final ObservableList<Docente> listaMaestra = FXCollections.observableArrayList();
+    private FilteredList<Docente> listaFiltrada;
 
     @FXML
     public void initialize() {
-        // 1. Enlazar columnas con el modelo (Hemos quitado la de dirección)
         colNombre.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNombre()));
         colApellidos.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getApellidos()));
         colTelefono.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTelefono()));
         colDni.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDocumentoIdentidad()));
         colCorreo.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCorreo()));
 
-        // Enlazamos los booleanos nuevos (Asumiendo que hiciste los getters en el modelo Docente)
-        // Si aún no los tienes en el modelo, comenta estas dos líneas para que no de error
-        colDelitos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoDelitosSexuales() != null ? cellData.getValue().getAutoDelitosSexuales() : false));
-        colDelitos.setCellFactory(tc -> new javafx.scene.control.TableCell<>() {
+        colDelitos.setCellValueFactory(cellData -> new SimpleBooleanProperty(
+                cellData.getValue().getAutoDelitosSexuales() != null ? cellData.getValue().getAutoDelitosSexuales() : false));
+        colDelitos.setCellFactory(tc -> new TableCell<>() {
             @Override protected void updateItem(Boolean item, boolean empty) {
                 super.updateItem(item, empty);
                 getStyleClass().removeAll("celda-booleana-true", "celda-booleana-false");
@@ -63,8 +65,9 @@ public class DocentesController {
             }
         });
 
-        colProtDatos.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().getAutoProteccionDatos() != null ? cellData.getValue().getAutoProteccionDatos() : false));
-        colProtDatos.setCellFactory(tc -> new javafx.scene.control.TableCell<>() {
+        colProtDatos.setCellValueFactory(cellData -> new SimpleBooleanProperty(
+                cellData.getValue().getAutoProteccionDatos() != null ? cellData.getValue().getAutoProteccionDatos() : false));
+        colProtDatos.setCellFactory(tc -> new TableCell<>() {
             @Override protected void updateItem(Boolean item, boolean empty) {
                 super.updateItem(item, empty);
                 getStyleClass().removeAll("celda-booleana-true", "celda-booleana-false");
@@ -74,36 +77,60 @@ public class DocentesController {
         });
 
         colAB.setCellValueFactory(cellData ->
-                new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Baja"));
+                new SimpleStringProperty(Boolean.TRUE.equals(cellData.getValue().getActivo()) ? "Activo" : "Inactivo"));
         colAB.setCellFactory(FxUtils.celdaEstado());
 
-        // 2. Filtrado en tiempo real sobre datos de BD
-        FilteredList<Docente> listaFiltrada = new FilteredList<>(listaMaestra, d -> true);
-        txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
-            listaFiltrada.setPredicate(docente -> {
-                if (newVal == null || newVal.isBlank()) return true;
-                String filtro = newVal.toLowerCase();
-                return docente.getNombre().toLowerCase().contains(filtro)
-                        || docente.getApellidos().toLowerCase().contains(filtro);
-            });
-        });
+        poblarCursoEscolar();
+        poblarEstado();
+
+        listaFiltrada = new FilteredList<>(listaMaestra, d -> true);
+
+        txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> aplicarFiltros());
+        comboCursoFiltro.valueProperty().addListener((obs, oldVal, newVal) -> aplicarFiltros());
+        comboEstadoFiltro.valueProperty().addListener((obs, oldVal, newVal) -> aplicarFiltros());
+
         SortedList<Docente> listaSortable = new SortedList<>(listaFiltrada);
         listaSortable.comparatorProperty().bind(tablaDocentes.comparatorProperty());
         tablaDocentes.setItems(listaSortable);
 
-        cargarDocentesEnTabla();
-
-        // 3. EVENTO DOBLE CLIC
         tablaDocentes.setRowFactory(tv -> {
             TableRow<Docente> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
-                    Docente docenteSeleccionado = row.getItem();
-                    abrirFichaDocente(docenteSeleccionado);
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    abrirFichaDocente(row.getItem());
                 }
             });
-            return row ;
+            return row;
         });
+
+        cargarDocentesEnTabla();
+    }
+
+    private void poblarCursoEscolar() {
+        LocalDate hoy = LocalDate.now();
+        int anyoInicio = 2022;
+        int anyoActual = (hoy.getMonthValue() >= 9) ? hoy.getYear() : hoy.getYear() - 1;
+
+        ObservableList<String> cursos = FXCollections.observableArrayList();
+        cursos.add("Todos");
+        for (int anyo = anyoInicio; anyo <= anyoActual; anyo++) {
+            cursos.add(anyo + "/" + (anyo + 1));
+        }
+        comboCursoFiltro.setItems(cursos);
+        comboCursoFiltro.setValue(anyoActual + "/" + (anyoActual + 1));
+    }
+
+    private void poblarEstado() {
+        comboEstadoFiltro.setItems(FXCollections.observableArrayList("Todos", "Activo", "Inactivo"));
+        comboEstadoFiltro.setValue("Todos");
+    }
+
+    private void aplicarFiltros() {
+        listaFiltrada.setPredicate(DocenteFiltro.construir(
+                txtBuscar.getText(),
+                comboCursoFiltro.getValue(),
+                comboEstadoFiltro.getValue()
+        ));
     }
 
     @FXML
@@ -112,7 +139,7 @@ public class DocentesController {
             FxUtils.abrirModal("agregarDocente-view.fxml", "Agregar docente");
             cargarDocentesEnTabla();
         } catch (IOException e) {
-            System.err.println("Error al abrir el pop-up: " + e.getMessage());
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir el formulario: " + e.getMessage());
         }
     }
 
@@ -123,7 +150,6 @@ public class DocentesController {
     private void abrirFichaDocente(Docente docenteTabla) {
         try {
             Docente docente = docenteService.obtenerCompleto(docenteTabla.getId());
-            if (docente == null) return;
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
                     "/com/practicasalma/proyectoalma/view/ficha-docente.fxml"));
@@ -140,9 +166,8 @@ public class DocentesController {
             stage.showAndWait();
 
             cargarDocentesEnTabla();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Error al abrir la ficha: " + e.getMessage());
+        } catch (Exception e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ficha: " + e.getMessage());
         }
     }
 }
