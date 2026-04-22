@@ -2,6 +2,8 @@ package com.practicasalma.proyectoalma.service;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Image;
+import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.AcroFields;
 import com.lowagie.text.pdf.PdfDictionary;
@@ -14,8 +16,11 @@ import com.practicasalma.proyectoalma.model.Donacion;
 import com.practicasalma.proyectoalma.model.Socio;
 
 import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -84,6 +89,96 @@ public class GeneradorPdfService {
                 }
             }
         }
+    }
+
+    public void generarPdfGrafica(String rutaSalida, String titulo, javafx.scene.image.Image grafica, List<String> resumen) {
+        if (rutaSalida == null || rutaSalida.trim().isEmpty()) {
+            throw new IllegalArgumentException("La ruta de salida del PDF es obligatoria.");
+        }
+        if (grafica == null || grafica.getWidth() <= 0 || grafica.getHeight() <= 0) {
+            throw new IllegalArgumentException("La imagen de la grafica es obligatoria.");
+        }
+
+        Path ruta = Paths.get(rutaSalida.trim());
+
+        try {
+            Path carpetaPadre = ruta.getParent();
+            if (carpetaPadre != null) {
+                Files.createDirectories(carpetaPadre);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo crear la carpeta de salida para el PDF de grafica.", e);
+        }
+
+        Document document = new Document(PageSize.A4.rotate(), 30, 30, 30, 30);
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(ruta.toFile());
+            PdfWriter.getInstance(document, outputStream);
+            document.open();
+
+            String tituloSeguro = (titulo == null || titulo.trim().isEmpty()) ? "Grafica" : titulo.trim();
+            document.add(new Paragraph("INFORME VISUAL"));
+            document.add(new Paragraph("Titulo: " + tituloSeguro));
+            document.add(new Paragraph("Fecha: " + LocalDate.now()));
+            document.add(new Paragraph(" "));
+
+            byte[] graficaPng = convertirImagenPng(grafica);
+            Image imagenPdf = Image.getInstance(graficaPng);
+
+            float anchoMaximo = document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin();
+            float altoMaximo = document.getPageSize().getHeight() - document.topMargin() - document.bottomMargin() - 140f;
+            imagenPdf.scaleToFit(anchoMaximo, altoMaximo);
+            imagenPdf.setAlignment(Image.MIDDLE);
+            document.add(imagenPdf);
+
+            if (resumen != null && !resumen.isEmpty()) {
+                document.add(new Paragraph(" "));
+                document.add(new Paragraph("Resumen:"));
+                for (String linea : resumen) {
+                    if (linea != null && !linea.trim().isEmpty() && !"-".equals(linea.trim())) {
+                        document.add(new Paragraph("- " + linea.trim()));
+                    }
+                }
+            }
+        } catch (IOException | DocumentException e) {
+            throw new RuntimeException("Error al generar el PDF de la grafica.", e);
+        } finally {
+            if (document.isOpen()) {
+                document.close();
+            }
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException ignored) {
+                }
+            }
+        }
+    }
+
+    private byte[] convertirImagenPng(javafx.scene.image.Image imagen) throws IOException {
+        BufferedImage bufferedImage = convertirImagenBuffered(imagen);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "png", baos);
+        return baos.toByteArray();
+    }
+
+    private BufferedImage convertirImagenBuffered(javafx.scene.image.Image imagen) {
+        int ancho = (int) Math.round(imagen.getWidth());
+        int alto = (int) Math.round(imagen.getHeight());
+        BufferedImage buffered = new BufferedImage(ancho, alto, BufferedImage.TYPE_INT_ARGB);
+
+        javafx.scene.image.PixelReader pixelReader = imagen.getPixelReader();
+        if (pixelReader == null) {
+            throw new IllegalArgumentException("No se pudo leer la imagen de la grafica.");
+        }
+
+        for (int y = 0; y < alto; y++) {
+            for (int x = 0; x < ancho; x++) {
+                buffered.setRGB(x, y, pixelReader.getArgb(x, y));
+            }
+        }
+        return buffered;
     }
 
     public void generarInformeSocio(String rutaSalida, Socio socio) {

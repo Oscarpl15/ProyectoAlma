@@ -1,19 +1,30 @@
 package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.service.GraficasService;
+import com.practicasalma.proyectoalma.service.GeneradorPdfService;
+import com.practicasalma.proyectoalma.util.FxUtils;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.Chart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.image.WritableImage;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +55,7 @@ public class GraficasController {
     @FXML private NumberAxis yAxis;
 
     private final GraficasService graficasService = new GraficasService();
+    private final GeneradorPdfService generadorPdfService = new GeneradorPdfService();
 
     @FXML
     public void initialize() {
@@ -164,5 +176,60 @@ public class GraficasController {
         lblResumen1.setText(resumen.size() > 0 ? resumen.get(0) : "-");
         lblResumen2.setText(resumen.size() > 1 ? resumen.get(1) : "-");
         lblResumen3.setText(resumen.size() > 2 ? resumen.get(2) : "-");
+    }
+
+    @FXML
+    private void exportarGraficaPdf() {
+        try {
+            Chart graficaActiva = pieChart.isVisible() ? pieChart : barChart;
+            if (graficaActiva == null || !graficaActiva.isVisible()) {
+                FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Sin grafica", "No hay ninguna grafica visible para exportar.");
+                return;
+            }
+
+            graficaActiva.applyCss();
+            graficaActiva.layout();
+
+            SnapshotParameters snapshotParameters = new SnapshotParameters();
+            snapshotParameters.setFill(Color.WHITE);
+            WritableImage graficaImagen = graficaActiva.snapshot(snapshotParameters, null);
+
+            String titulo = obtenerTituloGrafica();
+            List<String> resumen = new ArrayList<>();
+            if (lblResumen1.getText() != null && !lblResumen1.getText().isBlank() && !"-".equals(lblResumen1.getText())) {
+                resumen.add(lblResumen1.getText());
+            }
+            if (lblResumen2.getText() != null && !lblResumen2.getText().isBlank() && !"-".equals(lblResumen2.getText())) {
+                resumen.add(lblResumen2.getText());
+            }
+            if (lblResumen3.getText() != null && !lblResumen3.getText().isBlank() && !"-".equals(lblResumen3.getText())) {
+                resumen.add(lblResumen3.getText());
+            }
+
+            String marcaTiempo = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
+            Path rutaSalida = Paths.get(System.getProperty("user.home"), "Desktop", "grafica_" + marcaTiempo + ".pdf");
+
+            generadorPdfService.generarPdfGrafica(rutaSalida.toString(), titulo, graficaImagen, resumen);
+
+            FxUtils.mostrarAlerta(
+                    Alert.AlertType.INFORMATION,
+                    "PDF generado",
+                    "Se ha generado el PDF de la grafica en: " + rutaSalida
+            );
+        } catch (Exception e) {
+            FxUtils.mostrarAlerta(
+                    Alert.AlertType.ERROR,
+                    "Error al exportar",
+                    "No se pudo exportar la grafica a PDF: " + e.getMessage()
+            );
+        }
+    }
+
+    private String obtenerTituloGrafica() {
+        String titulo = pieChart.isVisible() ? pieChart.getTitle() : barChart.getTitle();
+        if (titulo == null || titulo.isBlank()) {
+            return "Grafica";
+        }
+        return titulo;
     }
 }
