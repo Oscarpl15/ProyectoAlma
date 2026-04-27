@@ -55,6 +55,7 @@
     </TableView>
 
     <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Button text="PDF GRUPOS" onAction="#exportarPdfGrupos" styleClass="boton-accion"/>
         <Button text="+ AÑADIR ALUMNO" onAction="#nuevoAlumno" styleClass="boton-accion"/>
     </HBox>
 

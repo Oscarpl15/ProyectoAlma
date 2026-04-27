@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.service.GraficasService;
 import com.practicasalma.proyectoalma.service.GeneradorPdfService;
+import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.SnapshotParameters;
@@ -43,7 +44,6 @@ public class GraficasController {
     @FXML private VBox boxTipoSocio;
     @FXML private VBox boxPeriodicidad;
 
-    @FXML private Label lblActualizacion;
     @FXML private Label lblResumen1;
     @FXML private Label lblResumen2;
     @FXML private Label lblResumen3;
@@ -78,7 +78,6 @@ public class GraficasController {
         comboPeriodicidad.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> refrescarGraficas());
 
         comboEntidad.getSelectionModel().select("ALUMNOS");
-        lblActualizacion.setText("Alumnos: circular | Socios: barras");
     }
 
     private void configurarFiltrosSegunEntidad(String entidad) {
@@ -91,8 +90,8 @@ public class GraficasController {
 
         if (esSocios) {
             comboVisual.getSelectionModel().select("BARRAS");
-            comboTipoDato.setItems(FXCollections.observableArrayList("INGRESOS_MES"));
-            comboTipoDato.getSelectionModel().select("INGRESOS_MES");
+            comboTipoDato.setItems(FXCollections.observableArrayList("Ingresos por mes"));
+            comboTipoDato.getSelectionModel().select("Ingresos por mes");
 
             List<String> anos = graficasService.obtenerAnosSocios();
             comboAno.setItems(FXCollections.observableArrayList(anos));
@@ -104,8 +103,8 @@ public class GraficasController {
             comboPeriodicidad.getSelectionModel().select("TODAS");
         } else {
             comboVisual.getSelectionModel().select("CIRCULAR");
-            comboTipoDato.setItems(FXCollections.observableArrayList("NACIONALIDAD", "CURSO", "GENERO"));
-            comboTipoDato.getSelectionModel().select("NACIONALIDAD");
+            comboTipoDato.setItems(FXCollections.observableArrayList("Nacionalidad", "Curso", "Genero"));
+            comboTipoDato.getSelectionModel().select("Nacionalidad");
 
             List<String> anos = graficasService.obtenerAnosAcademicosAlumnos();
             comboAno.setItems(FXCollections.observableArrayList(anos));
@@ -128,8 +127,9 @@ public class GraficasController {
                     comboPeriodicidad.getValue()
             );
         } else {
+            String tipoDato = mapearTipoDatoAlumno(comboTipoDato.getValue());
             resultado = graficasService.generarGraficaAlumnos(
-                    comboTipoDato.getValue(),
+                    tipoDato,
                     comboAno.getValue()
             );
         }
@@ -206,7 +206,17 @@ public class GraficasController {
             }
 
             String marcaTiempo = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
-            Path rutaSalida = Paths.get(System.getProperty("user.home"), "Desktop", "grafica_" + marcaTiempo + ".pdf");
+            String rutaDocumentos = GestorConfig.getRutaDocumentos();
+            if (rutaDocumentos == null || rutaDocumentos.isBlank()) {
+                mostrarAlerta(
+                        Alert.AlertType.WARNING,
+                        "Directorio no configurado",
+                        "Configura el directorio de documentos en Ajustes antes de generar PDFs."
+                );
+                return;
+            }
+
+            Path rutaSalida = Paths.get(rutaDocumentos, "Informes", "graficas", "grafica_" + marcaTiempo + ".pdf");
 
             generadorPdfService.generarPdfGrafica(rutaSalida.toString(), titulo, graficaImagen, resumen);
 
@@ -238,5 +248,16 @@ public class GraficasController {
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
         alert.showAndWait();
+    }
+
+    private String mapearTipoDatoAlumno(String etiquetaUi) {
+        if (etiquetaUi == null) {
+            return "NACIONALIDAD";
+        }
+        return switch (etiquetaUi) {
+            case "Curso" -> "CURSO";
+            case "Genero" -> "GENERO";
+            default -> "NACIONALIDAD";
+        };
     }
 }

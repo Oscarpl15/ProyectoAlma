@@ -5,6 +5,7 @@ import com.practicasalma.proyectoalma.model.Socio;
 import com.practicasalma.proyectoalma.service.GeneradorPdfService;
 import com.practicasalma.proyectoalma.service.GestorCorreo;
 import com.practicasalma.proyectoalma.service.SocioService;
+import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import com.practicasalma.proyectoalma.util.doc.GestorDocumentos;
 import com.practicasalma.proyectoalma.util.validacion.Validador;
@@ -389,7 +390,17 @@ public class FichaSocioController {
         }
 
         try {
-            Path rutaInforme = Paths.get(System.getProperty("user.home"), "Desktop",
+            String rutaDocumentos = GestorConfig.getRutaDocumentos();
+            if (rutaDocumentos == null || rutaDocumentos.isBlank()) {
+                FxUtils.mostrarAlerta(Alert.AlertType.WARNING,
+                        "Directorio no configurado",
+                        "Configura el directorio de documentos en Ajustes antes de generar PDFs.");
+                return;
+            }
+
+            Path rutaInforme = Paths.get(rutaDocumentos,
+                    "Informes",
+                    "socios",
                     "informe_socio_" + (socioActual.getId() != null ? socioActual.getId() : "sin_id") + ".pdf");
 
             generadorPdfService.generarInformeSocioConPlantilla(rutaInforme.toString(), socioActual);

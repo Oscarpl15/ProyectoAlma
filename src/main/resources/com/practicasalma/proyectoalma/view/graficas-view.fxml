@@ -76,7 +76,6 @@
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Visual" styleClass="etiqueta-campo"/>
                     <ComboBox fx:id="comboVisual" prefWidth="180" disable="true"/>
-                    <Label fx:id="lblActualizacion" text="Alumnos: circular | Socios: barras"/>
                     <Region HBox.hgrow="ALWAYS"/>
                     <Button text="Exportar PDF" onAction="#exportarGraficaPdf" styleClass="boton-accion"/>
                 </HBox>

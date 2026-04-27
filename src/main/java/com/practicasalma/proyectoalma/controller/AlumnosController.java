@@ -2,6 +2,8 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.service.AlumnoService;
+import com.practicasalma.proyectoalma.service.GeneradorPdfService;
+import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import com.practicasalma.proyectoalma.util.filtro.AlumnoFiltro;
 import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import javafx.beans.property.SimpleObjectProperty;
@@ -19,7 +21,12 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,6 +60,7 @@ public class AlumnosController {
     @FXML private TextField txtBuscar;
 
     private final AlumnoService alumnoService = new AlumnoService();
+    private final GeneradorPdfService generadorPdfService = new GeneradorPdfService();
     private final ObservableList<Alumno> listaMaestra = FXCollections.observableArrayList();
     private FilteredList<Alumno> listaFiltrada;
 
@@ -194,6 +202,37 @@ public class AlumnosController {
             cargarAlumnosEnTabla();
         } catch (IOException e) {
             FxUtils.mostrarAlerta(javafx.scene.control.Alert.AlertType.ERROR, "Error", "No se pudo abrir el formulario: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void exportarPdfGrupos() {
+        List<Alumno> alumnosFiltrados = new ArrayList<>(listaFiltrada);
+        if (alumnosFiltrados.isEmpty()) {
+            FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Sin datos", "No hay alumnos para generar el PDF.");
+            return;
+        }
+
+        String rutaDocumentos = GestorConfig.getRutaDocumentos();
+        if (rutaDocumentos == null || rutaDocumentos.isBlank()) {
+            FxUtils.mostrarAlerta(Alert.AlertType.WARNING,
+                    "Directorio no configurado",
+                    "Configura el directorio de documentos en Ajustes antes de generar PDFs.");
+            return;
+        }
+
+        try {
+            String marcaTiempo = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
+            Path rutaSalida = Paths.get(rutaDocumentos, "Informes", "alumnos", "grupos_alumnos_" + marcaTiempo + ".pdf");
+            generadorPdfService.generarPdfGruposAlumnos(rutaSalida.toString(), alumnosFiltrados, "Listado de alumnos por grupos");
+
+            FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION,
+                    "PDF generado",
+                    "Se ha generado el PDF en: " + rutaSalida);
+        } catch (Exception e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR,
+                    "Error",
+                    "No se pudo generar el PDF de grupos: " + e.getMessage());
         }
     }
 

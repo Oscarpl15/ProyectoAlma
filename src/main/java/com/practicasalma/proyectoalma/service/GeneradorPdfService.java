@@ -12,7 +12,9 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.PRStream;
 import com.lowagie.text.pdf.PdfStamper;
+import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.model.Donacion;
+import com.practicasalma.proyectoalma.model.Matricula;
 import com.practicasalma.proyectoalma.model.Socio;
 
 import java.io.FileOutputStream;
@@ -32,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.LinkedHashMap;
@@ -171,6 +174,105 @@ public class GeneradorPdfService {
                 }
             }
         }
+    }
+
+    public void generarPdfGruposAlumnos(String rutaSalida, List<Alumno> alumnos, String titulo) {
+        if (rutaSalida == null || rutaSalida.trim().isEmpty()) {
+            throw new IllegalArgumentException("La ruta de salida del PDF es obligatoria.");
+        }
+        if (alumnos == null) {
+            throw new IllegalArgumentException("La lista de alumnos es obligatoria.");
+        }
+
+        Path ruta = Paths.get(rutaSalida.trim());
+        try {
+            Path carpetaPadre = ruta.getParent();
+            if (carpetaPadre != null) {
+                Files.createDirectories(carpetaPadre);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo crear la carpeta de salida para el PDF de grupos.", e);
+        }
+
+        Document document = new Document(PageSize.A4, 30, 30, 30, 30);
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(ruta.toFile());
+            PdfWriter.getInstance(document, outputStream);
+            document.open();
+
+            String tituloSeguro = (titulo == null || titulo.trim().isEmpty()) ? "Listado de alumnos por grupos" : titulo.trim();
+            document.add(new Paragraph(tituloSeguro));
+            document.add(new Paragraph("Fecha: " + LocalDate.now()));
+            document.add(new Paragraph("Total alumnos: " + alumnos.size()));
+            document.add(new Paragraph(" "));
+
+            Map<String, List<String>> alumnosPorGrupo = new LinkedHashMap<>();
+            for (Alumno alumno : alumnos) {
+                if (alumno == null) {
+                    continue;
+                }
+
+                Matricula ultimaMatricula = obtenerUltimaMatricula(alumno);
+                String grupo = (ultimaMatricula != null && ultimaMatricula.getGrupoAsignado() != null
+                        && !ultimaMatricula.getGrupoAsignado().trim().isEmpty())
+                        ? ultimaMatricula.getGrupoAsignado().trim()
+                        : "Sin grupo";
+
+                String nombreCompleto = (valorSeguro(alumno.getNombre()) + " " + valorSeguro(alumno.getApellidos())).trim();
+                String curso = (ultimaMatricula != null && ultimaMatricula.getCurso() != null && !ultimaMatricula.getCurso().trim().isEmpty())
+                        ? ultimaMatricula.getCurso().trim()
+                        : "Sin curso";
+
+                alumnosPorGrupo
+                        .computeIfAbsent(grupo, k -> new ArrayList<>())
+                        .add(nombreCompleto + " (" + curso + ")");
+            }
+
+            List<String> grupos = new ArrayList<>(alumnosPorGrupo.keySet());
+            grupos.sort((a, b) -> {
+                if ("Sin grupo".equalsIgnoreCase(a) && !"Sin grupo".equalsIgnoreCase(b)) return 1;
+                if (!"Sin grupo".equalsIgnoreCase(a) && "Sin grupo".equalsIgnoreCase(b)) return -1;
+                return a.compareToIgnoreCase(b);
+            });
+
+            if (grupos.isEmpty()) {
+                document.add(new Paragraph("No hay alumnos para generar el listado."));
+            } else {
+                for (String grupo : grupos) {
+                    List<String> nombres = alumnosPorGrupo.get(grupo);
+                    if (nombres == null) {
+                        continue;
+                    }
+
+                    Collections.sort(nombres);
+                    document.add(new Paragraph("Grupo: " + grupo + " (" + nombres.size() + ")"));
+                    for (String nombre : nombres) {
+                        document.add(new Paragraph("- " + nombre));
+                    }
+                    document.add(new Paragraph(" "));
+                }
+            }
+        } catch (IOException | DocumentException e) {
+            throw new RuntimeException("Error al generar el PDF de grupos de alumnos.", e);
+        } finally {
+            if (document.isOpen()) {
+                document.close();
+            }
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException ignored) {
+                }
+            }
+        }
+    }
+
+    private Matricula obtenerUltimaMatricula(Alumno alumno) {
+        if (alumno.getMatriculas() == null || alumno.getMatriculas().isEmpty()) {
+            return null;
+        }
+        return alumno.getMatriculas().get(alumno.getMatriculas().size() - 1);
     }
 
     private byte[] convertirImagenPng(javafx.scene.image.Image imagen) throws IOException {

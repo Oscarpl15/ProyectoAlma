@@ -133,14 +133,15 @@ public class GestorMatriculas {
         LocalDate hoy = LocalDate.now();
         int mes = hoy.getMonthValue();
         int dia = hoy.getDayOfMonth();
-        return mes == 7 || mes == 8 || (mes == 9 && dia <= 10);
+        //return mes == 7 || mes == 8 || (mes == 9 && dia <= 10);
+        return mes == 4;
     }
 
     public static String calcularAnyoAcademico() {
         LocalDate hoy = LocalDate.now();
         int anyo = hoy.getYear();
         int mes = hoy.getMonthValue();
-        if (mes >= 6) {
+        if (mes >= 4) {
             return anyo + "/" + (anyo + 1);
         }
         return (anyo - 1) + "/" + anyo;
