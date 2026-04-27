@@ -73,35 +73,35 @@
                     <Label text="Dirección:" GridPane.columnIndex="2" GridPane.rowIndex="2" styleClass="etiqueta-campo"/>
                     <TextField fx:id="txtDireccion" GridPane.columnIndex="3" GridPane.rowIndex="2" styleClass="campo-lectura"/>
 
-                    <Label text="Colegio:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtColegio" GridPane.columnIndex="1" GridPane.rowIndex="3" styleClass="campo-lectura"/>
+                    <Label text="Ciudad:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCiudad" GridPane.columnIndex="1" GridPane.rowIndex="3" styleClass="campo-lectura"/>
 
-                    <Label text="Curso Actual:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
-                    <StackPane GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="CENTER_LEFT">
-                        <TextField fx:id="txtCurso" styleClass="campo-lectura" editable="false"/>
-                        <ComboBox fx:id="comboCurso" maxWidth="Infinity" visible="false" managed="false"/>
-                    </StackPane>
+                    <Label text="Cód. Postal:" GridPane.columnIndex="2" GridPane.rowIndex="3" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCodigoPostal" GridPane.columnIndex="3" GridPane.rowIndex="3" styleClass="campo-lectura"/>
 
-                    <Label text="Grupo Asignado:" GridPane.columnIndex="2" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
+                    <Label text="Nacionalidad:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtNacionalidad" GridPane.columnIndex="1" GridPane.rowIndex="4" styleClass="campo-lectura"/>
+
+                    <Label text="Género:" GridPane.columnIndex="2" GridPane.rowIndex="4" styleClass="etiqueta-campo"/>
                     <StackPane GridPane.columnIndex="3" GridPane.rowIndex="4" alignment="CENTER_LEFT">
-                        <TextField fx:id="txtGrupoLectura" styleClass="campo-lectura" editable="false"/>
-                        <ComboBox fx:id="comboGrupo" maxWidth="Infinity" visible="false" managed="false"/>
-                    </StackPane>
-
-                    <Label text="Nacionalidad:" GridPane.columnIndex="0" GridPane.rowIndex="5" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtNacionalidad" GridPane.columnIndex="1" GridPane.rowIndex="5" styleClass="campo-lectura"/>
-
-                    <Label text="Género:" GridPane.columnIndex="2" GridPane.rowIndex="5" styleClass="etiqueta-campo"/>
-                    <StackPane GridPane.columnIndex="3" GridPane.rowIndex="5" alignment="CENTER_LEFT">
                         <TextField fx:id="txtGeneroLectura" styleClass="campo-lectura" editable="false"/>
                         <ComboBox fx:id="comboGenero" maxWidth="Infinity" visible="false" managed="false"/>
                     </StackPane>
 
-                    <Label text="Ciudad:" GridPane.columnIndex="0" GridPane.rowIndex="6" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtCiudad" GridPane.columnIndex="1" GridPane.rowIndex="6" styleClass="campo-lectura"/>
+                    <Label text="Colegio:" GridPane.columnIndex="0" GridPane.rowIndex="5" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtColegio" GridPane.columnIndex="1" GridPane.rowIndex="5" styleClass="campo-lectura"/>
 
-                    <Label text="Cód. Postal:" GridPane.columnIndex="2" GridPane.rowIndex="6" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtCodigoPostal" GridPane.columnIndex="3" GridPane.rowIndex="6" styleClass="campo-lectura"/>
+                    <Label text="Curso Actual:" GridPane.columnIndex="2" GridPane.rowIndex="5" styleClass="etiqueta-campo"/>
+                    <StackPane GridPane.columnIndex="3" GridPane.rowIndex="5" alignment="CENTER_LEFT">
+                        <TextField fx:id="txtCurso" styleClass="campo-lectura" editable="false"/>
+                        <ComboBox fx:id="comboCurso" maxWidth="Infinity" visible="false" managed="false"/>
+                    </StackPane>
+
+                    <Label text="Grupo Asignado:" GridPane.columnIndex="0" GridPane.rowIndex="6" styleClass="etiqueta-campo"/>
+                    <StackPane GridPane.columnIndex="1" GridPane.rowIndex="6" alignment="CENTER_LEFT">
+                        <TextField fx:id="txtGrupoLectura" styleClass="campo-lectura" editable="false"/>
+                        <ComboBox fx:id="comboGrupo" maxWidth="Infinity" visible="false" managed="false"/>
+                    </StackPane>
                 </GridPane>
 
 

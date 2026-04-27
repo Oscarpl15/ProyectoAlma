@@ -22,8 +22,10 @@ public class AgregarSocioController {
 
     @FXML private TextField txtNombre;
     @FXML private TextField txtApellidos;
-    @FXML private TextField txtDireccion;
     @FXML private TextField txtDni;
+    @FXML private TextField txtTelefono;
+    @FXML private TextField txtCorreo;
+    @FXML private TextField txtDireccion;
     @FXML private TextField txtCuota;
 
     @FXML private ComboBox<String> comboTipoEntidad;
@@ -63,6 +65,10 @@ public class AgregarSocioController {
         try {
             Socio socio = new Socio(nombre, apellidos, direccion, dni, tipoEntidad,
                     cuota, periodicidad != null ? periodicidad : "Ninguna");
+            String telefono = txtTelefono.getText().trim();
+            if (!telefono.isEmpty()) socio.setTelefono(telefono);
+            String correo = txtCorreo.getText().trim();
+            if (!correo.isEmpty()) socio.setCorreo(correo);
             String nacionalidad = txtNacionalidad.getText().trim();
             if (!nacionalidad.isEmpty()) socio.setNacionalidad(nacionalidad);
             String genero = comboGenero.getValue();
