@@ -3,6 +3,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.service.GestorAsignaciones;
 import com.practicasalma.proyectoalma.service.GestorCorreo;
+import com.practicasalma.proyectoalma.service.GestorDonaciones;
 import com.practicasalma.proyectoalma.service.GestorMatriculas;
 import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import com.practicasalma.proyectoalma.util.doc.GestorDocumentos;
@@ -51,6 +52,7 @@ public class MainController {
         if (tabPrincipal != null) {
             tabPrincipal.getSelectionModel().select(0);
         }
+        GestorDonaciones.generarDonacionesPendientes();
         GestorMatriculas.DatosDialogo datosSexto = GestorMatriculas.ejecutar();
         GestorAsignaciones.DatosPersonal datosPersonal = GestorAsignaciones.prepararDatos();
         if (datosSexto != null || datosPersonal != null) {

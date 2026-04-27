@@ -1,5 +1,6 @@
 package com.practicasalma.proyectoalma.controller;
 
+import com.practicasalma.proyectoalma.model.Donacion;
 import com.practicasalma.proyectoalma.model.Socio;
 import com.practicasalma.proyectoalma.service.SocioService;
 import com.practicasalma.proyectoalma.util.validacion.Validador;
@@ -11,13 +12,9 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-/**
- * Controlador JavaFX del formulario de alta de un nuevo socio ({@code agregarSocio-view.fxml}).
- * <p>
- * Recoge los datos del formulario y los pasa a {@link com.practicasalma.proyectoalma.service.SocioService}.
- * Se abre como modal desde {@link SocioController}.
- * </p>
- */
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 public class AgregarSocioController {
 
     @FXML private TextField txtNombre;
@@ -30,12 +27,22 @@ public class AgregarSocioController {
 
     @FXML private ComboBox<String> comboTipoEntidad;
     @FXML private ComboBox<String> comboPeriodicidad;
+    @FXML private ComboBox<String> comboFormaPago;
     @FXML private TextField txtNacionalidad;
     @FXML private ComboBox<String> comboGenero;
     @FXML private TextField txtCiudad;
     @FXML private TextField txtCodigoPostal;
 
     private final SocioService socioService = new SocioService();
+
+    @FXML
+    public void initialize() {
+        comboPeriodicidad.setOnAction(e -> {
+            boolean puntual = "Puntual".equals(comboPeriodicidad.getValue());
+            txtCuota.setDisable(puntual);
+            if (puntual) txtCuota.setText("");
+        });
+    }
 
     @FXML
     private void guardarSocio(ActionEvent event) {
@@ -53,7 +60,8 @@ public class AgregarSocioController {
         }
 
         double cuota = 0.0;
-        if (!cuotaTexto.isEmpty()) {
+        boolean esPuntual = "Puntual".equals(periodicidad) || periodicidad == null;
+        if (!esPuntual && !cuotaTexto.isEmpty()) {
             try {
                 cuota = Double.parseDouble(cuotaTexto.replace(",", "."));
             } catch (NumberFormatException e) {
@@ -64,7 +72,7 @@ public class AgregarSocioController {
 
         try {
             Socio socio = new Socio(nombre, apellidos, direccion, dni, tipoEntidad,
-                    cuota, periodicidad != null ? periodicidad : "Ninguna");
+                    cuota, periodicidad != null ? periodicidad : "Puntual");
             String telefono = txtTelefono.getText().trim();
             if (!telefono.isEmpty()) socio.setTelefono(telefono);
             String correo = txtCorreo.getText().trim();
@@ -83,6 +91,16 @@ public class AgregarSocioController {
                 }
                 socio.setCodigoPostal(cp);
             }
+            String formaPago = comboFormaPago.getValue();
+            if (formaPago != null) socio.setFormaPago(formaPago);
+
+            // Generar primera donación automáticamente para periodicidades regulares
+            if (!esPuntual && cuota > 0) {
+                Donacion primera = new Donacion(LocalDate.now(), BigDecimal.valueOf(cuota), periodicidad, socio);
+                primera.setFormaDonacion(formaPago);
+                socio.addDonacion(primera);
+            }
+
             socioService.guardarSocio(socio);
             cerrarVentana(event);
         } catch (Exception e) {

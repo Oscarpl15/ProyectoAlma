@@ -30,9 +30,9 @@ public class Donacion {
     @Column(name = "forma_donacion")
     private String formaDonacion; // Ej: "Domiciliación", "Transferencia", "Efectivo"
 
-    // Para diferenciar si es el pago de su cuota habitual o un extra
-    @Column(name = "es_puntual", nullable = false)
-    private Boolean esPuntual = false;
+    // "Puntual", "Mensual", "Trimestral", "Anual"
+    @Column(name = "periodicidad")
+    private String periodicidad;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "socio_id", nullable = false)
@@ -40,15 +40,12 @@ public class Donacion {
 
     public Donacion() {}
 
-    public Donacion(LocalDate fecha, BigDecimal importe, Boolean esPuntual, Socio socio) {
+    public Donacion(LocalDate fecha, BigDecimal importe, String periodicidad, Socio socio) {
         this.fecha = fecha;
         this.importe = importe;
-        this.esPuntual = esPuntual;
+        this.periodicidad = periodicidad;
         this.socio = socio;
     }
-
-    // ... Getters y Setters ...
-
 
     public Long getId() { return id; }
 
@@ -58,12 +55,12 @@ public class Donacion {
     public BigDecimal getImporte() { return importe; }
     public void setImporte(BigDecimal importe) { this.importe = importe; }
 
-    public Boolean getEsPuntual() { return esPuntual; }
-    public void setEsPuntual(Boolean esPuntual) { this.esPuntual = esPuntual; }
+    public String getPeriodicidad() { return periodicidad; }
+    public void setPeriodicidad(String periodicidad) { this.periodicidad = periodicidad; }
 
     public Socio getSocio() { return socio; }
     public void setSocio(Socio socio) { this.socio = socio; }
 
-    public String getFormaDonacion() {return formaDonacion;}
-    public void setFormaDonacion(String formaDonacion) {this.formaDonacion = formaDonacion;}
+    public String getFormaDonacion() { return formaDonacion; }
+    public void setFormaDonacion(String formaDonacion) { this.formaDonacion = formaDonacion; }
 }
