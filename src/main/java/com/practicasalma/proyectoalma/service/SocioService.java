@@ -65,6 +65,8 @@ public class SocioService {
     public void darDeBaja(Long id) {
         Socio socio = socioDAO.obtenerCompleto(id);
         socio.setActivo(false);
+        socio.setPeriodicidad("Puntual");
+        socio.setCuota(0.0);
         socioDAO.actualizar(socio);
     }
 

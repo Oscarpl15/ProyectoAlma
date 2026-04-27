@@ -11,26 +11,24 @@ import com.practicasalma.proyectoalma.util.doc.GestorDocumentos;
 import com.practicasalma.proyectoalma.util.validacion.Validador;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import javafx.application.Platform;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 
-/**
- * Controlador JavaFX de la ficha de detalle de un socio ({@code fichaSocio-view.fxml}).
- * <p>
- * Permite ver y editar los datos del socio, registrar donaciones y generar el certificado
- * de donaciones (PDF) usando la plantilla oficial de la fundación. Se abre como modal
- * desde {@link SocioController}.
- * </p>
- */
 public class FichaSocioController {
 
     @FXML private ImageView imgFoto;
@@ -41,6 +39,7 @@ public class FichaSocioController {
     @FXML private Button btnCerrar;
     @FXML private Button btnEnviarInforme;
     @FXML private Button btnBajaAlta;
+    @FXML private Button btnAnadirDonativo;
 
     @FXML private TextField txtNombre;
     @FXML private TextField txtApellidos;
@@ -50,11 +49,14 @@ public class FichaSocioController {
     @FXML private TextField txtDireccion;
     @FXML private TextField txtNacionalidad;
     @FXML private TextField txtCuota;
+    @FXML private TextField txtCuentaBancaria;
+    @FXML private TextField txtCodigoBic;
+    @FXML private TextField txtTipoBanco;
+    @FXML private TextField txtCiudad;
+    @FXML private TextField txtCodigoPostal;
 
     @FXML private TextField txtGeneroLectura;
     @FXML private ComboBox<String> comboGenero;
-    @FXML private TextField txtCiudad;
-    @FXML private TextField txtCodigoPostal;
 
     @FXML private TextField txtTipoEntidadLectura;
     @FXML private ComboBox<String> comboTipoEntidad;
@@ -62,15 +64,15 @@ public class FichaSocioController {
     @FXML private TextField txtPeriodicidadLectura;
     @FXML private ComboBox<String> comboPeriodicidad;
 
-    @FXML private Label lblEstado;
+    @FXML private TextField txtFormaPagoLectura;
+    @FXML private ComboBox<String> comboFormaPago;
 
-    @FXML private TextField txtCuentaBancaria;
-    @FXML private TextField txtCodigoBic;
-    @FXML private TextField txtTipoBanco;
+    @FXML private Label lblEstado;
 
     @FXML private TableView<Donacion> tablaDonaciones;
     @FXML private TableColumn<Donacion, String> colDonFecha;
     @FXML private TableColumn<Donacion, String> colDonImporte;
+    @FXML private TableColumn<Donacion, String> colDonPeriodicidad;
     @FXML private TableColumn<Donacion, String> colDonDescripcion;
 
     private Socio socioActual;
@@ -84,11 +86,14 @@ public class FichaSocioController {
         comboGenero.getItems().addAll("Masculino", "Femenino", "No binario", "Prefiero no especificar");
         comboTipoEntidad.getItems().addAll("Física", "Empresa", "Asociación");
         comboPeriodicidad.getItems().addAll("Mensual", "Trimestral", "Anual", "Puntual");
+        comboFormaPago.getItems().addAll("Domiciliación", "Transferencia", "Efectivo");
 
         colDonFecha.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
                 c.getValue().getFecha() != null ? c.getValue().getFecha().toString() : "—"));
         colDonImporte.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
                 c.getValue().getImporte() != null ? c.getValue().getImporte().toPlainString() + " €" : "—"));
+        colDonPeriodicidad.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
+                c.getValue().getPeriodicidad() != null ? c.getValue().getPeriodicidad() : "—"));
         colDonDescripcion.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
                 c.getValue().getFormaDonacion() != null ? c.getValue().getFormaDonacion() : ""));
     }
@@ -120,6 +125,9 @@ public class FichaSocioController {
 
         txtPeriodicidadLectura.setText(socioActual.getPeriodicidad() != null ? socioActual.getPeriodicidad() : "");
         comboPeriodicidad.setValue(socioActual.getPeriodicidad());
+
+        txtFormaPagoLectura.setText(socioActual.getFormaPago() != null ? socioActual.getFormaPago() : "");
+        comboFormaPago.setValue(socioActual.getFormaPago());
 
         actualizarLabelEstado(Boolean.TRUE.equals(socioActual.getActivo()));
 
@@ -157,12 +165,25 @@ public class FichaSocioController {
         txtCorreo.setEditable(editable);
         txtDireccion.setEditable(editable);
         txtNacionalidad.setEditable(editable);
-        txtCuota.setEditable(editable);
         txtCuentaBancaria.setEditable(editable);
         txtCodigoBic.setEditable(editable);
         txtTipoBanco.setEditable(editable);
         txtCiudad.setEditable(editable);
         txtCodigoPostal.setEditable(editable);
+
+        // Cuota: editable solo si no es Puntual
+        boolean esPuntual = "Puntual".equals(comboPeriodicidad.getValue());
+        txtCuota.setEditable(editable && !esPuntual);
+
+        if (editable) {
+            comboPeriodicidad.setOnAction(e -> {
+                boolean puntual = "Puntual".equals(comboPeriodicidad.getValue());
+                txtCuota.setEditable(!puntual);
+                if (puntual) txtCuota.setText("0.0");
+            });
+        } else {
+            comboPeriodicidad.setOnAction(null);
+        }
 
         btnCambiarFoto.setVisible(editable);
         btnCambiarFoto.setManaged(editable);
@@ -179,23 +200,29 @@ public class FichaSocioController {
         btnCancelarEdicion.setVisible(editable);
         btnCancelarEdicion.setManaged(editable);
 
-        // Género: intercambiar label/combo
+        // Género
         txtGeneroLectura.setVisible(!editable);
         txtGeneroLectura.setManaged(!editable);
         comboGenero.setVisible(editable);
         comboGenero.setManaged(editable);
 
-        // Tipo Entidad: intercambiar label/combo
+        // Tipo Entidad
         txtTipoEntidadLectura.setVisible(!editable);
         txtTipoEntidadLectura.setManaged(!editable);
         comboTipoEntidad.setVisible(editable);
         comboTipoEntidad.setManaged(editable);
 
-        // Periodicidad: intercambiar label/combo
+        // Periodicidad
         txtPeriodicidadLectura.setVisible(!editable);
         txtPeriodicidadLectura.setManaged(!editable);
         comboPeriodicidad.setVisible(editable);
         comboPeriodicidad.setManaged(editable);
+
+        // Forma de Pago
+        txtFormaPagoLectura.setVisible(!editable);
+        txtFormaPagoLectura.setManaged(!editable);
+        comboFormaPago.setVisible(editable);
+        comboFormaPago.setManaged(editable);
     }
 
     private void actualizarLabelEstado(boolean activo) {
@@ -206,22 +233,6 @@ public class FichaSocioController {
         } else {
             lblEstado.setText("✘  Inactivo");
             lblEstado.getStyleClass().add("celda-baja");
-        }
-    }
-
-    private void actualizarVistaCheckbox(CheckBox chk, String textoBase, boolean editable) {
-        chk.setDisable(!editable);
-        chk.getStyleClass().removeAll("check-lectura-true", "check-lectura-false");
-        if (!editable) {
-            if (chk.isSelected()) {
-                chk.setText("✔  " + textoBase);
-                chk.getStyleClass().add("check-lectura-true");
-            } else {
-                chk.setText("✘  " + textoBase);
-                chk.getStyleClass().add("check-lectura-false");
-            }
-        } else {
-            chk.setText(textoBase);
         }
     }
 
@@ -238,6 +249,8 @@ public class FichaSocioController {
 
     @FXML
     private void guardarDatos() {
+        String oldPeriodicidad = socioActual.getPeriodicidad();
+
         socioActual.setNombre(txtNombre.getText().trim());
         socioActual.setApellidos(txtApellidos.getText().trim());
         socioActual.setDocumentoIdentidad(txtDni.getText().trim());
@@ -247,40 +260,65 @@ public class FichaSocioController {
         socioActual.setNacionalidad(txtNacionalidad.getText().trim());
         socioActual.setGenero(comboGenero.getValue());
         socioActual.setCiudad(txtCiudad.getText().isBlank() ? null : txtCiudad.getText().trim());
+
         String cp = txtCodigoPostal.getText().trim();
         if (!cp.isBlank() && !Validador.esCodigoPostalValido(cp)) {
-            FxUtils.mostrarAlerta(javafx.scene.control.Alert.AlertType.WARNING, "Código postal inválido", "El código postal debe tener exactamente 5 dígitos.");
+            FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Código postal inválido", "El código postal debe tener exactamente 5 dígitos.");
             return;
         }
         socioActual.setCodigoPostal(cp.isBlank() ? null : cp);
         socioActual.setTipoEntidad(comboTipoEntidad.getValue());
-        socioActual.setPeriodicidad(comboPeriodicidad.getValue());
+        socioActual.setFormaPago(comboFormaPago.getValue());
         socioActual.setCuentaBancaria(txtCuentaBancaria.getText().trim());
         socioActual.setCodigoBic(txtCodigoBic.getText().trim());
         socioActual.setTipoBanco(txtTipoBanco.getText().trim());
+
         if (rutaFotoSeleccionada != null) {
             socioActual.setRutaFotoPerfil(rutaFotoSeleccionada);
             rutaFotoSeleccionada = null;
         }
 
+        String newPeriodicidad = comboPeriodicidad.getValue();
         String cuotaTexto = txtCuota.getText().trim();
-        if (!cuotaTexto.isEmpty()) {
+        double cuota = 0.0;
+
+        if (!"Puntual".equals(newPeriodicidad) && !cuotaTexto.isEmpty()) {
             try {
-                socioActual.setCuota(Double.parseDouble(cuotaTexto));
+                cuota = Double.parseDouble(cuotaTexto);
             } catch (NumberFormatException e) {
-                FxUtils.mostrarAlerta(javafx.scene.control.Alert.AlertType.WARNING,
-                        "Cuota inválida", "Introduce un número válido para la cuota.");
+                FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Cuota inválida", "Introduce un número válido para la cuota.");
                 return;
             }
         }
 
+        // Manejar transiciones de periodicidad
+        if ("Puntual".equals(newPeriodicidad) && !"Puntual".equals(oldPeriodicidad)) {
+            // Regular → Puntual: desactivar
+            socioActual.setActivo(false);
+            socioActual.setPeriodicidad("Puntual");
+            socioActual.setCuota(0.0);
+        } else if (!"Puntual".equals(newPeriodicidad) && "Puntual".equals(oldPeriodicidad)) {
+            // Puntual → Regular: reactivar y generar primera donación
+            socioActual.setActivo(true);
+            socioActual.setPeriodicidad(newPeriodicidad);
+            socioActual.setCuota(cuota);
+            if (cuota > 0) {
+                Donacion primera = new Donacion(LocalDate.now(), BigDecimal.valueOf(cuota), newPeriodicidad, socioActual);
+                primera.setFormaDonacion(comboFormaPago.getValue());
+                socioActual.addDonacion(primera);
+            }
+        } else {
+            socioActual.setPeriodicidad(newPeriodicidad);
+            socioActual.setCuota(cuota);
+        }
+
         try {
             socioService.actualizarSocio(socioActual);
+            socioActual = socioService.obtenerCompleto(socioActual.getId());
             cambiarModoEdicion(false);
             cargarDatosEnVista();
         } catch (Exception e) {
-            FxUtils.mostrarAlerta(javafx.scene.control.Alert.AlertType.ERROR,
-                    "Error al guardar", "No se pudieron guardar los cambios: " + e.getMessage());
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error al guardar", "No se pudieron guardar los cambios: " + e.getMessage());
         }
     }
 
@@ -316,30 +354,20 @@ public class FichaSocioController {
 
     private void actualizarBotonBajaAlta() {
         boolean activo = Boolean.TRUE.equals(socioActual.getActivo());
-        btnBajaAlta.getStyleClass().removeAll("boton-baja", "boton-guardar-exito");
-        if (activo) {
-            btnBajaAlta.setText("Dar de baja");
-            btnBajaAlta.getStyleClass().add("boton-baja");
-        } else {
-            btnBajaAlta.setText("Dar de alta");
-            btnBajaAlta.getStyleClass().add("boton-guardar-exito");
-        }
+        btnBajaAlta.setVisible(activo);
+        btnBajaAlta.setManaged(activo);
     }
 
     @FXML
     private void toggleBajaAlta() {
-        boolean activo = Boolean.TRUE.equals(socioActual.getActivo());
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle(activo ? "Dar de baja" : "Dar de alta");
-        confirm.setHeaderText((activo ? "¿Dar de baja a " : "¿Dar de alta a ") + socioActual.getNombre() + "?");
+        confirm.setTitle("Dar de baja");
+        confirm.setHeaderText("¿Dar de baja a " + socioActual.getNombre() + "?");
+        confirm.setContentText("El socio pasará a inactivo, su periodicidad será Puntual y la cuota quedará a 0.");
         confirm.showAndWait().ifPresent(r -> {
             if (r == ButtonType.OK) {
                 try {
-                    if (activo) {
-                        socioService.darDeBaja(socioActual.getId());
-                    } else {
-                        socioService.darDeAlta(socioActual.getId());
-                    }
+                    socioService.darDeBaja(socioActual.getId());
                     socioActual = socioService.obtenerCompleto(socioActual.getId());
                     cargarDatosEnVista();
                 } catch (Exception e) {
@@ -347,6 +375,27 @@ public class FichaSocioController {
                 }
             }
         });
+    }
+
+    @FXML
+    private void anadirDonativo() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/practicasalma/proyectoalma/view/agregarDonativo-view.fxml"));
+            Parent root = loader.load();
+            AgregarDonativoController controller = loader.getController();
+            controller.setSocio(socioActual);
+            Stage stage = new Stage();
+            stage.setTitle("Añadir Donativo");
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(btnCerrar.getScene().getWindow());
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+            socioActual = socioService.obtenerCompleto(socioActual.getId());
+            cargarDatosEnVista();
+        } catch (Exception e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir el formulario: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -399,25 +448,17 @@ public class FichaSocioController {
             }
 
             Path rutaInforme = Paths.get(rutaDocumentos,
-                    "Informes",
-                    "socios",
+                    "Informes", "socios",
                     "informe_socio_" + (socioActual.getId() != null ? socioActual.getId() : "sin_id") + ".pdf");
 
             generadorPdfService.generarInformeSocioConPlantilla(rutaInforme.toString(), socioActual);
 
-            GestorCorreo.mandarEmailConAdjunto(
-                    correoSocio,
-                    "Prueba",
-                    "Prueba",
-                    rutaInforme.toString()
-            );
+            GestorCorreo.mandarEmailConAdjunto(correoSocio, "Prueba", "Prueba", rutaInforme.toString());
 
-            FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION,
-                    "Informe enviado",
+            FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Informe enviado",
                     "Se ha generado y enviado el informe a " + correoSocio + ".");
         } catch (Exception e) {
-            FxUtils.mostrarAlerta(Alert.AlertType.ERROR,
-                    "Error al enviar informe",
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error al enviar informe",
                     "No se pudo generar o enviar el informe: " + e.getMessage());
         }
     }

@@ -52,11 +52,20 @@
                     <Label text="Dirección:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
                     <TextField fx:id="txtDireccion" promptText="C/ Ejemplo 123" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-                    <Label text="Nacionalidad:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtNacionalidad" promptText="Ej: Española" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                    <Label text="Titulación:" GridPane.rowIndex="3" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtTitulacion" promptText="Ej: Grado en Educación" GridPane.rowIndex="3" GridPane.columnIndex="3"/>
 
-                    <Label text="Género:" GridPane.rowIndex="4" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
-                    <ComboBox fx:id="comboGenero" promptText="Seleccione..." GridPane.rowIndex="4" GridPane.columnIndex="3" maxWidth="Infinity">
+                    <Label text="Ciudad:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCiudad" promptText="Ej: Madrid" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                    <Label text="Cód. Postal:" GridPane.rowIndex="4" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCodigoPostal" promptText="Ej: 28001" GridPane.rowIndex="4" GridPane.columnIndex="3"/>
+
+                    <Label text="Nacionalidad:" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtNacionalidad" promptText="Ej: Española" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+                    <Label text="Género:" GridPane.rowIndex="5" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboGenero" promptText="Seleccione..." GridPane.rowIndex="5" GridPane.columnIndex="3" maxWidth="Infinity">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="Masculino"/>
@@ -66,12 +75,6 @@
                             </FXCollections>
                         </items>
                     </ComboBox>
-
-                    <Label text="Ciudad:" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtCiudad" promptText="Ej: Madrid" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-
-                    <Label text="Cód. Postal:" GridPane.rowIndex="5" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtCodigoPostal" promptText="Ej: 28001" GridPane.rowIndex="5" GridPane.columnIndex="3"/>
                 </GridPane>
 
                 <Separator/>
