@@ -139,29 +139,54 @@ public class AlumnoDAO {
     }
 
     /**
-     * Actualiza el grupo asignado en las matrículas del año académico indicado
-     * cuyo grupo coincida con {@code grupoViejo}. Si {@code grupoNuevo} es {@code null},
-     * los registros quedan sin grupo (borrado lógico de la asignación).
+     * Renombra un grupo en todas las matrículas, independientemente del año académico.
+     * Se usa al cambiar el nombre de un grupo: la coherencia del nombre debe mantenerse
+     * en toda la historia del alumno.
      *
      * @param grupoViejo nombre actual del grupo tal como está almacenado en BD
-     * @param grupoNuevo nuevo nombre del grupo, o {@code null} para dejar sin grupo
-     * @param anyo       año académico en formato {@code "AAAA/AAAA+1"}
+     * @param grupoNuevo nuevo nombre del grupo
      */
-    public void actualizarGrupoEnCursoActual(String grupoViejo, String grupoNuevo, String anyo) {
+    public void renombrarGrupoEnTodasLasMatriculas(String grupoViejo, String grupoNuevo) {
         EntityManager em = null;
         try {
             em = GestorBBDD.getEntityManagerFactory().createEntityManager();
             em.getTransaction().begin();
             em.createQuery(
-                    "UPDATE Matricula m SET m.grupoAsignado = :nuevo WHERE m.grupoAsignado = :viejo AND m.anyoAcademico = :anyo")
+                    "UPDATE Matricula m SET m.grupoAsignado = :nuevo WHERE m.grupoAsignado = :viejo")
                     .setParameter("nuevo", grupoNuevo)
                     .setParameter("viejo", grupoViejo)
+                    .executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw new PersistenciaException("Error al renombrar grupo en matrículas: " + e.getMessage(), e);
+        } finally {
+            if (em != null) em.close();
+        }
+    }
+
+    /**
+     * Elimina la asignación de grupo (pone {@code null}) en las matrículas del año académico
+     * indicado cuyo grupo coincida con {@code grupoEliminado}. Las matrículas de años
+     * anteriores no se tocan, preservando el historial.
+     *
+     * @param grupoEliminado nombre del grupo eliminado
+     * @param anyo           año académico en formato {@code "AAAA/AAAA+1"}
+     */
+    public void eliminarGrupoEnCursoActual(String grupoEliminado, String anyo) {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+            em.createQuery(
+                    "UPDATE Matricula m SET m.grupoAsignado = NULL WHERE m.grupoAsignado = :viejo AND m.anyoAcademico = :anyo")
+                    .setParameter("viejo", grupoEliminado)
                     .setParameter("anyo", anyo)
                     .executeUpdate();
             em.getTransaction().commit();
         } catch (Exception e) {
             if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
-            throw new PersistenciaException("Error al actualizar grupo en matrículas: " + e.getMessage(), e);
+            throw new PersistenciaException("Error al eliminar grupo en matrículas: " + e.getMessage(), e);
         } finally {
             if (em != null) em.close();
         }

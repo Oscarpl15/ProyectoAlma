@@ -81,18 +81,19 @@ public class GestionarGruposController {
 
     @FXML
     private void guardarCambios() {
-        String anyo = UtilFecha.calcularCursoAcademico();
-
-        for (String eliminado : eliminados) {
-            alumnoDAO.actualizarGrupoEnCursoActual(eliminado, null, anyo);
-        }
-
+        // Renombrados: sin filtro de año para que el nuevo nombre sea consistente en toda la historia
         for (int i = 0; i < items.size(); i++) {
             String original = originales.get(i);
             String actual = items.get(i);
             if (original != null && !original.equals(actual)) {
-                alumnoDAO.actualizarGrupoEnCursoActual(original, actual, anyo);
+                alumnoDAO.renombrarGrupoEnTodasLasMatriculas(original, actual);
             }
+        }
+
+        // Eliminados: solo el curso actual; las matrículas históricas conservan el nombre
+        String anyo = UtilFecha.calcularCursoAcademico();
+        for (String eliminado : eliminados) {
+            alumnoDAO.eliminarGrupoEnCursoActual(eliminado, anyo);
         }
 
         GestorConfig.setGrupos(new ArrayList<>(items));

@@ -177,6 +177,7 @@ public class MainController {
             stage.setTitle("Gestionar Grupos");
             stage.setScene(new Scene(root));
             stage.showAndWait();
+            alumnosController.cargarAlumnosEnTabla();
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");

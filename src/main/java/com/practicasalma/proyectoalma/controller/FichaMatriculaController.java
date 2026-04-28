@@ -3,6 +3,7 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.model.Matricula;
 import com.practicasalma.proyectoalma.service.GestorMatriculas;
 import com.practicasalma.proyectoalma.service.MatriculaService;
+import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -38,12 +39,7 @@ public class FichaMatriculaController {
 
     @FXML
     public void initialize() {
-        comboGrupo.getItems().addAll(
-                "g1 lunes/miercoles",
-                "g2 lunes/miercoles",
-                "g1 martes/jueves",
-                "g2 martes/jueves"
-        );
+        comboGrupo.getItems().addAll(GestorConfig.getGrupos());
     }
 
     public void setMatricula(Matricula matricula, String nombreAlumno) {
@@ -60,8 +56,12 @@ public class FichaMatriculaController {
         String anyo = matriculaActual.getAnyoAcademico() != null ? matriculaActual.getAnyoAcademico().replace("-", "/") : "";
         txtAnyoAcademico.setText(anyo);
         txtCurso.setText(cursoOriginal != null ? cursoOriginal : "");
-        txtGrupoLectura.setText(matriculaActual.getGrupoAsignado() != null ? matriculaActual.getGrupoAsignado() : "Sin grupo");
-        comboGrupo.setValue(matriculaActual.getGrupoAsignado());
+        String grupoActual = matriculaActual.getGrupoAsignado();
+        txtGrupoLectura.setText(grupoActual != null ? grupoActual : "Sin grupo");
+        if (grupoActual != null && !comboGrupo.getItems().contains(grupoActual)) {
+            comboGrupo.getItems().add(0, grupoActual);
+        }
+        comboGrupo.setValue(grupoActual);
         chkRepetidor.setSelected(repeticionOriginal);
         actualizarVistaCheckbox(chkRepetidor, "Es repetición", false);
     }
