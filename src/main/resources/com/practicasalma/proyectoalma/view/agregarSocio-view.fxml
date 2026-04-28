@@ -37,7 +37,7 @@
                     <Label text="Apellidos:" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
                     <TextField fx:id="txtApellidos" promptText="Ej: Sánchez Pérez" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
 
-                    <Label text="DNI:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboTipoDocumento" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="combo-tipo-doc"/>
                     <TextField fx:id="txtDni" promptText="Ej: 00000000X" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
                     <Label text="Teléfono:" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
@@ -106,6 +106,9 @@
 
                     <Label text="Cuota (€):" GridPane.rowIndex="6" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
                     <TextField fx:id="txtCuota" promptText="Ej: 0.0" GridPane.rowIndex="6" GridPane.columnIndex="3"/>
+
+                    <Label text="Fecha donación:" GridPane.rowIndex="7" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <DatePicker fx:id="dpFechaDonacion" GridPane.rowIndex="7" GridPane.columnIndex="1" maxWidth="Infinity"/>
                 </GridPane>
 
             </VBox>

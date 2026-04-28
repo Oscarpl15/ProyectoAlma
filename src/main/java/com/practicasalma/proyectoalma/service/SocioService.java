@@ -22,8 +22,15 @@ public class SocioService {
 
     private void validarSocio(Socio socio) {
         String dni = socio.getDocumentoIdentidad();
-        if (dni != null && !dni.isBlank() && !Validador.esDni(dni) && !Validador.esNie(dni)) {
-            throw new ValidacionException("El DNI/NIE introducido no es válido. Revisa las letras y números.");
+        if (dni != null && !dni.isBlank()) {
+            String tipo = socio.getTipoDocumento();
+            if ("DNI".equals(tipo)) {
+                if (!Validador.esDni(dni)) throw new ValidacionException("El DNI introducido no es válido. Revisa el número y la letra.");
+            } else if ("NIE".equals(tipo)) {
+                if (!Validador.esNie(dni)) throw new ValidacionException("El NIE introducido no es válido. Revisa el número y la letra.");
+            } else if (!"Pasaporte".equals(tipo) && !Validador.esDni(dni) && !Validador.esNie(dni)) {
+                throw new ValidacionException("El DNI/NIE introducido no es válido. Revisa las letras y números.");
+            }
         }
         String telefono = socio.getTelefono();
         if (telefono != null && !telefono.isBlank() && !Validador.esTelefonoValido(telefono)) {

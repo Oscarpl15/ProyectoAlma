@@ -38,7 +38,7 @@
                     <Label text="Apellidos:" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
                     <TextField fx:id="txtApellidos" promptText="Ej: García Pérez" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
 
-                    <Label text="Documento:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboTipoDocumento" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="combo-tipo-doc"/>
                     <TextField fx:id="txtDni" promptText="Ej: 12345678A" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
                     <Label text="Fecha Nac.:" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
@@ -92,16 +92,7 @@
                     </ComboBox>
 
                     <Label text="Grupo:" GridPane.rowIndex="6" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-                    <ComboBox fx:id="comboGrupo" promptText="Seleccione grupo" GridPane.rowIndex="6" GridPane.columnIndex="1" maxWidth="Infinity">
-                        <items>
-                            <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="g1 lunes/miercoles"/>
-                                <String fx:value="g2 lunes/miercoles"/>
-                                <String fx:value="g1 martes/jueves"/>
-                                <String fx:value="g2 martes/jueves"/>
-                            </FXCollections>
-                        </items>
-                    </ComboBox>
+                    <ComboBox fx:id="comboGrupo" promptText="Seleccione grupo" GridPane.rowIndex="6" GridPane.columnIndex="1" maxWidth="Infinity"/>
                 </GridPane>
 
                 <Separator/>

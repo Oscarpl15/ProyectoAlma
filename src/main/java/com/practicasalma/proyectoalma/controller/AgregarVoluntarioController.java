@@ -31,6 +31,7 @@ public class AgregarVoluntarioController {
     @FXML private TextField txtDni;
     @FXML private TextField txtCorreo;
     @FXML private DatePicker dpFechaNacimiento;
+    @FXML private ComboBox<String> comboTipoDocumento;
     @FXML private TextField txtNacionalidad;
     @FXML private ComboBox<String> comboGenero;
     @FXML private TextField txtCiudad;
@@ -39,6 +40,12 @@ public class AgregarVoluntarioController {
     @FXML private CheckBox checkProtDatos;
 
     private final VoluntarioService voluntarioService = new VoluntarioService();
+
+    @FXML
+    private void initialize() {
+        comboTipoDocumento.getItems().addAll("DNI", "NIE", "Pasaporte");
+        comboTipoDocumento.setValue("DNI");
+    }
 
     @FXML
     private void guardarVoluntario(ActionEvent event) {
@@ -57,6 +64,7 @@ public class AgregarVoluntarioController {
 
         try {
             Voluntario voluntario = new Voluntario(nombre, apellidos, direccion, dni, telefono, correo, fechaNacimiento);
+            voluntario.setTipoDocumento(comboTipoDocumento.getValue());
             voluntario.setAutoDelitosSexuales(checkDelitos.isSelected());
             voluntario.setAutoProteccionDatos(checkProtDatos.isSelected());
             String nacionalidad = txtNacionalidad.getText().trim();

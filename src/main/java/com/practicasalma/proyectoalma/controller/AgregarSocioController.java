@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -25,6 +26,7 @@ public class AgregarSocioController {
     @FXML private TextField txtDireccion;
     @FXML private TextField txtCuota;
 
+    @FXML private ComboBox<String> comboTipoDocumento;
     @FXML private ComboBox<String> comboTipoEntidad;
     @FXML private ComboBox<String> comboPeriodicidad;
     @FXML private ComboBox<String> comboFormaPago;
@@ -32,16 +34,14 @@ public class AgregarSocioController {
     @FXML private ComboBox<String> comboGenero;
     @FXML private TextField txtCiudad;
     @FXML private TextField txtCodigoPostal;
+    @FXML private DatePicker dpFechaDonacion;
 
     private final SocioService socioService = new SocioService();
 
     @FXML
     public void initialize() {
-        comboPeriodicidad.setOnAction(e -> {
-            boolean puntual = "Puntual".equals(comboPeriodicidad.getValue());
-            txtCuota.setDisable(puntual);
-            if (puntual) txtCuota.setText("");
-        });
+        comboTipoDocumento.getItems().addAll("DNI", "NIE", "Pasaporte");
+        comboTipoDocumento.setValue("DNI");
     }
 
     @FXML
@@ -59,20 +59,35 @@ public class AgregarSocioController {
             return;
         }
 
-        double cuota = 0.0;
         boolean esPuntual = "Puntual".equals(periodicidad) || periodicidad == null;
-        if (!esPuntual && !cuotaTexto.isEmpty()) {
+        double importe = 0.0;
+        if (!cuotaTexto.isEmpty()) {
             try {
-                cuota = Double.parseDouble(cuotaTexto.replace(",", "."));
+                importe = Double.parseDouble(cuotaTexto.replace(",", "."));
             } catch (NumberFormatException e) {
                 mostrarError("La cuota debe ser un número válido.");
                 return;
             }
         }
 
+        // Si se selecciona una periodicidad, fecha e importe son obligatorios
+        if (periodicidad != null && !periodicidad.isBlank()) {
+            if (dpFechaDonacion.getValue() == null) {
+                mostrarError("Debes indicar la fecha de la donación.");
+                return;
+            }
+            if (importe <= 0) {
+                mostrarError("Debes indicar una cuota o importe mayor que 0.");
+                return;
+            }
+        }
+
+        LocalDate fechaDonacion = dpFechaDonacion.getValue();
+
         try {
+            // Para puntual: la cuota recurrente del socio es 0; el importe va a la donación
             Socio socio = new Socio(nombre, apellidos, direccion, dni, tipoEntidad,
-                    cuota, periodicidad != null ? periodicidad : "Puntual");
+                    esPuntual ? 0.0 : importe, periodicidad != null ? periodicidad : "Puntual");
             String telefono = txtTelefono.getText().trim();
             if (!telefono.isEmpty()) socio.setTelefono(telefono);
             String correo = txtCorreo.getText().trim();
@@ -91,12 +106,17 @@ public class AgregarSocioController {
                 }
                 socio.setCodigoPostal(cp);
             }
+            socio.setTipoDocumento(comboTipoDocumento.getValue());
             String formaPago = comboFormaPago.getValue();
             if (formaPago != null) socio.setFormaPago(formaPago);
 
-            // Generar primera donación automáticamente para periodicidades regulares
-            if (!esPuntual && cuota > 0) {
-                Donacion primera = new Donacion(LocalDate.now(), BigDecimal.valueOf(cuota), periodicidad, socio);
+            if (esPuntual) {
+                socio.setActivo(false);
+                Donacion puntual = new Donacion(fechaDonacion, BigDecimal.valueOf(importe), "Puntual", socio);
+                puntual.setFormaDonacion(formaPago);
+                socio.addDonacion(puntual);
+            } else {
+                Donacion primera = new Donacion(fechaDonacion, BigDecimal.valueOf(importe), periodicidad, socio);
                 primera.setFormaDonacion(formaPago);
                 socio.addDonacion(primera);
             }

@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -27,6 +30,9 @@ public class GestorConfig {
     private static final String CLAVE_BBDD = "ruta.bbdd";
     private static final String CLAVE_DOCUMENTOS = "ruta.documentos";
     private static final String CLAVE_CORREO_REMITENTE = "correo.remitente";
+    private static final String CLAVE_CORREO_PASSWORD_APP = "correo.password.app";
+    private static final String CLAVE_GRUPOS = "grupos";
+    private static final String GRUPOS_DEFECTO = "g1 lunes/miercoles,g2 lunes/miercoles,g1 martes/jueves,g2 martes/jueves";
     private static final String CLAVE_RECORDATORIO_DESTINATARIOS = "correo.recordatorio.destinatarios";
     private static final String CLAVE_RECORDATORIO_ASUNTO = "correo.recordatorio.asunto";
     private static final String CLAVE_RECORDATORIO_CUERPO = "correo.recordatorio.cuerpo";
@@ -117,6 +123,28 @@ public class GestorConfig {
 
     public static void setRecordatorioFecha(String fecha) {
         guardarPropiedad(CLAVE_RECORDATORIO_FECHA, fecha);
+    }
+
+    /**
+     * Devuelve la lista de grupos configurados. Si no hay ninguno guardado, devuelve los 4 grupos por defecto.
+     *
+     * @return lista mutable de nombres de grupos
+     */
+    public static List<String> getGrupos() {
+        String valor = leerPropiedad(CLAVE_GRUPOS);
+        if (valor == null || valor.isBlank()) {
+            return new ArrayList<>(Arrays.asList(GRUPOS_DEFECTO.split(",")));
+        }
+        return new ArrayList<>(Arrays.asList(valor.split(",")));
+    }
+
+    /**
+     * Guarda la lista de grupos en el fichero de configuración.
+     *
+     * @param grupos lista de nombres de grupos a persistir
+     */
+    public static void setGrupos(List<String> grupos) {
+        guardarPropiedad(CLAVE_GRUPOS, String.join(",", grupos));
     }
 
     /**

@@ -7,6 +7,7 @@ import com.practicasalma.proyectoalma.model.Tutor;
 import com.practicasalma.proyectoalma.service.AlumnoService;
 import com.practicasalma.proyectoalma.service.PersonaAutorizadaService;
 import com.practicasalma.proyectoalma.service.TutorService;
+import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import com.practicasalma.proyectoalma.util.doc.GestorDocumentos;
 import com.practicasalma.proyectoalma.util.validacion.Validador;
@@ -44,6 +45,8 @@ public class FichaAlumnoController {
     @FXML private TextField txtNombre;
     @FXML private TextField txtApellidos;
     @FXML private TextField txtDni;
+    @FXML private Label lblTipoDocLectura;
+    @FXML private ComboBox<String> comboTipoDocumento;
     @FXML private DatePicker dpFechaNacimiento;
     @FXML private TextField txtDireccion;
     @FXML private TextField txtTelefono;
@@ -127,12 +130,7 @@ public class FichaAlumnoController {
 
     @FXML
     public void initialize() {
-        comboGrupo.getItems().addAll(
-                "g1 lunes/miercoles",
-                "g2 lunes/miercoles",
-                "g1 martes/jueves",
-                "g2 martes/jueves"
-        );
+        comboGrupo.getItems().addAll(GestorConfig.getGrupos());
         comboCurso.getItems().addAll(
                 "1º Infantil", "2º Infantil", "3º Infantil",
                 "1º Primaria", "2º Primaria", "3º Primaria",
@@ -141,6 +139,7 @@ public class FichaAlumnoController {
         comboGenero.getItems().addAll(
                 "Masculino", "Femenino", "No binario", "Prefiero no especificar"
         );
+        comboTipoDocumento.getItems().addAll("DNI", "NIE", "Pasaporte");
 
         // Configurar columnas de Matrículas
         colMatAnyo.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getAnyoAcademico()));
@@ -209,6 +208,10 @@ public class FichaAlumnoController {
             txtNacionalidad.setText(alumnoActual.getNacionalidad() != null ? alumnoActual.getNacionalidad() : "");
             txtGeneroLectura.setText(alumnoActual.getGenero() != null ? alumnoActual.getGenero() : "");
             comboGenero.setValue(alumnoActual.getGenero());
+            String tipoDoc = alumnoActual.getTipoDocumento();
+            String tipoMostrar = (tipoDoc != null && !tipoDoc.isBlank()) ? tipoDoc : "DNI";
+            comboTipoDocumento.setValue(tipoMostrar);
+            lblTipoDocLectura.setText(tipoMostrar + ":");
             txtCiudad.setText(alumnoActual.getCiudad() != null ? alumnoActual.getCiudad() : "");
             txtCodigoPostal.setText(alumnoActual.getCodigoPostal() != null ? alumnoActual.getCodigoPostal() : "");
             dpFechaNacimiento.setValue(alumnoActual.getFechaNacimiento());
@@ -336,6 +339,12 @@ public class FichaAlumnoController {
         comboGenero.setVisible(editable);
         comboGenero.setManaged(editable);
 
+        // Truco visual para el Tipo de Documento
+        lblTipoDocLectura.setVisible(!editable);
+        lblTipoDocLectura.setManaged(!editable);
+        comboTipoDocumento.setVisible(editable);
+        comboTipoDocumento.setManaged(editable);
+
         // Nacionalidad, Ciudad y Código Postal
         txtNacionalidad.setEditable(editable);
         txtCiudad.setEditable(editable);
@@ -375,6 +384,8 @@ public class FichaAlumnoController {
             }
             // Sincronizamos el texto de lectura del género
             txtGeneroLectura.setText(comboGenero.getValue() != null ? comboGenero.getValue() : "");
+            // Sincronizamos el label del tipo de documento
+            lblTipoDocLectura.setText((comboTipoDocumento.getValue() != null ? comboTipoDocumento.getValue() : "DNI") + ":");
 
             Platform.runLater(() -> btnEditar.requestFocus());
         }
@@ -419,6 +430,7 @@ public class FichaAlumnoController {
             alumnoActual.setNombre(txtNombre.getText());
             alumnoActual.setApellidos(txtApellidos.getText());
             alumnoActual.setDocumentoIdentidad(txtDni.getText());
+            alumnoActual.setTipoDocumento(comboTipoDocumento.getValue());
             alumnoActual.setDireccion(txtDireccion.getText());
             alumnoActual.setTelefono(txtTelefono.getText());
             alumnoActual.setColegio(txtColegio.getText());
@@ -619,13 +631,16 @@ public class FichaAlumnoController {
 
         TextField nombre = new TextField(); nombre.setPromptText("Nombre");
         TextField apellidos = new TextField(); apellidos.setPromptText("Apellidos");
-        TextField dni = new TextField(); dni.setPromptText("Documento (DNI/NIE/Pasaporte)");
+        TextField dni = new TextField(); dni.setPromptText("DNI/NIE/Pasaporte");
         TextField telefono = new TextField(); telefono.setPromptText("Teléfono");
         TextField relacion = new TextField(); relacion.setPromptText("Ej: Abuela, Tío...");
+        ComboBox<String> comboTipoDocAuto = new ComboBox<>();
+        comboTipoDocAuto.getItems().addAll("DNI", "NIE", "Pasaporte");
+        comboTipoDocAuto.setValue("DNI");
 
         grid.add(new Label("Nombre:"), 0, 0); grid.add(nombre, 1, 0);
         grid.add(new Label("Apellidos:"), 0, 1); grid.add(apellidos, 1, 1);
-        grid.add(new Label("Documento:"), 0, 2); grid.add(dni, 1, 2);
+        grid.add(comboTipoDocAuto, 0, 2); grid.add(dni, 1, 2);
         grid.add(new Label("Teléfono:"), 0, 3); grid.add(telefono, 1, 3);
         grid.add(new Label("Relación:"), 0, 4); grid.add(relacion, 1, 4);
 
@@ -634,10 +649,21 @@ public class FichaAlumnoController {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == btnGuardarType && !nombre.getText().trim().isEmpty() && !dni.getText().trim().isEmpty()) {
-                return new PersonaAutorizada(
+                String dniVal = dni.getText().trim();
+                String tipoVal = comboTipoDocAuto.getValue();
+                if ("DNI".equals(tipoVal) && !Validador.esDni(dniVal)) {
+                    FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "DNI inválido", "El DNI introducido no es válido.");
+                    return null;
+                } else if ("NIE".equals(tipoVal) && !Validador.esNie(dniVal)) {
+                    FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "NIE inválido", "El NIE introducido no es válido.");
+                    return null;
+                }
+                PersonaAutorizada pa = new PersonaAutorizada(
                         nombre.getText().trim(), apellidos.getText().trim(),
-                        dni.getText().trim(), telefono.getText().trim(), relacion.getText().trim()
+                        dniVal, telefono.getText().trim(), relacion.getText().trim()
                 );
+                pa.setTipoDocumento(tipoVal);
+                return pa;
             }
             return null;
         });
@@ -726,14 +752,17 @@ public class FichaAlumnoController {
 
         TextField nombre    = new TextField(); nombre.setPromptText("Nombre");
         TextField apellidos = new TextField(); apellidos.setPromptText("Apellidos");
-        TextField dni       = new TextField(); dni.setPromptText("Documento (DNI/NIE/Pasaporte)");
+        TextField dni       = new TextField(); dni.setPromptText("DNI/NIE/Pasaporte");
         TextField telefono  = new TextField(); telefono.setPromptText("Teléfono");
         TextField relacion  = new TextField(); relacion.setPromptText("Ej: Madre, Padre...");
         relacion.setText("Tutor/a Legal");
+        ComboBox<String> comboTipoDocTutor = new ComboBox<>();
+        comboTipoDocTutor.getItems().addAll("DNI", "NIE", "Pasaporte");
+        comboTipoDocTutor.setValue("DNI");
 
         grid.add(new Label("Nombre:"),    0, 0); grid.add(nombre,    1, 0);
         grid.add(new Label("Apellidos:"), 0, 1); grid.add(apellidos, 1, 1);
-        grid.add(new Label("Documento:"),   0, 2); grid.add(dni,       1, 2);
+        grid.add(comboTipoDocTutor,       0, 2); grid.add(dni,       1, 2);
         grid.add(new Label("Teléfono:"),  0, 3); grid.add(telefono,  1, 3);
         grid.add(new Label("Relación:"),  0, 4); grid.add(relacion,  1, 4);
 
@@ -742,10 +771,22 @@ public class FichaAlumnoController {
 
         dialog.setResultConverter(btn -> {
             if (btn == btnOk && !nombre.getText().trim().isEmpty()) {
+                String dniVal = dni.getText().trim();
+                String tipoVal = comboTipoDocTutor.getValue();
+                if (!dniVal.isEmpty()) {
+                    if ("DNI".equals(tipoVal) && !Validador.esDni(dniVal)) {
+                        FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "DNI inválido", "El DNI introducido no es válido.");
+                        return null;
+                    } else if ("NIE".equals(tipoVal) && !Validador.esNie(dniVal)) {
+                        FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "NIE inválido", "El NIE introducido no es válido.");
+                        return null;
+                    }
+                }
                 Tutor t = new Tutor();
                 t.setNombre(nombre.getText().trim());
                 t.setApellidos(apellidos.getText().trim());
-                t.setDocumentoIdentidad(dni.getText().trim().isEmpty() ? null : dni.getText().trim());
+                t.setDocumentoIdentidad(dniVal.isEmpty() ? null : dniVal);
+                t.setTipoDocumento(tipoVal);
                 t.setTelefono(telefono.getText().trim().isEmpty() ? null : telefono.getText().trim());
                 t.setRelacion(relacion.getText().trim().isEmpty() ? "Tutor/a Legal" : relacion.getText().trim());
                 return t;

@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.service.AlumnoService;
+import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import com.practicasalma.proyectoalma.util.doc.GestorDocumentos;
 import com.practicasalma.proyectoalma.util.validacion.Validador;
 import javafx.event.ActionEvent;
@@ -37,6 +38,8 @@ public class AgregarAlumnoController {
     @FXML private DatePicker dpFechaNacimiento;
     @FXML private TextField txtTelefono;
     @FXML private TextField txtDireccion;
+
+    @FXML private ComboBox<String> comboTipoDocumento;
 
     // Datos Escolares / Sociales
     @FXML private TextField txtColegio;
@@ -78,6 +81,9 @@ public class AgregarAlumnoController {
 
     @FXML
     private void initialize() {
+        comboTipoDocumento.getItems().addAll("DNI", "NIE", "Pasaporte");
+        comboTipoDocumento.setValue("DNI");
+        comboGrupo.getItems().addAll(GestorConfig.getGrupos());
         try {
             String rutaDefault = getClass().getResource(RUTA_DEFECTO_IMAGEN).toExternalForm();
             fotoAlumno.setImage(new Image(rutaDefault));
@@ -126,6 +132,7 @@ public class AgregarAlumnoController {
         alumno.setRutaFotoPerfil(rutaFotoSeleccionada);
 
         if (dni != null) alumno.setDocumentoIdentidad(dni);
+        alumno.setTipoDocumento(comboTipoDocumento.getValue());
 
         alumno.setAutorizaUsoDatos(chkAutoDatos.isSelected());
         alumno.setAutorizaImagen(chkAutoImagen.isSelected());

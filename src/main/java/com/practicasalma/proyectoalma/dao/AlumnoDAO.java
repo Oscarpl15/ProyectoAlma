@@ -139,6 +139,35 @@ public class AlumnoDAO {
     }
 
     /**
+     * Actualiza el grupo asignado en las matrículas del año académico indicado
+     * cuyo grupo coincida con {@code grupoViejo}. Si {@code grupoNuevo} es {@code null},
+     * los registros quedan sin grupo (borrado lógico de la asignación).
+     *
+     * @param grupoViejo nombre actual del grupo tal como está almacenado en BD
+     * @param grupoNuevo nuevo nombre del grupo, o {@code null} para dejar sin grupo
+     * @param anyo       año académico en formato {@code "AAAA/AAAA+1"}
+     */
+    public void actualizarGrupoEnCursoActual(String grupoViejo, String grupoNuevo, String anyo) {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+            em.createQuery(
+                    "UPDATE Matricula m SET m.grupoAsignado = :nuevo WHERE m.grupoAsignado = :viejo AND m.anyoAcademico = :anyo")
+                    .setParameter("nuevo", grupoNuevo)
+                    .setParameter("viejo", grupoViejo)
+                    .setParameter("anyo", anyo)
+                    .executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw new PersistenciaException("Error al actualizar grupo en matrículas: " + e.getMessage(), e);
+        } finally {
+            if (em != null) em.close();
+        }
+    }
+
+    /**
      * Comprueba si ya existe un alumno con ese documento de identidad (sin distinguir mayúsculas).
      * Solo busca en la tabla {@code Alumno} — el mismo DNI puede existir en otras tablas (Socio, Docente…).
      *

@@ -50,7 +50,10 @@
                     <Label text="Apellidos:" GridPane.columnIndex="2" GridPane.rowIndex="0" styleClass="etiqueta-campo"/>
                     <TextField fx:id="txtApellidos" GridPane.columnIndex="3" GridPane.rowIndex="0" styleClass="campo-lectura"/>
 
-                    <Label text="DNI / NIF:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="etiqueta-campo"/>
+                    <StackPane GridPane.columnIndex="0" GridPane.rowIndex="1" alignment="CENTER_RIGHT">
+                        <Label fx:id="lblTipoDocLectura" text="DNI:" styleClass="etiqueta-campo"/>
+                        <ComboBox fx:id="comboTipoDocumento" styleClass="combo-tipo-doc" visible="false" managed="false"/>
+                    </StackPane>
                     <TextField fx:id="txtDni" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="campo-lectura"/>
 
                     <Label text="Teléfono:" GridPane.columnIndex="2" GridPane.rowIndex="1" styleClass="etiqueta-campo"/>
@@ -97,6 +100,9 @@
 
                     <Label text="Cuota (€):" GridPane.columnIndex="2" GridPane.rowIndex="6" styleClass="etiqueta-campo"/>
                     <TextField fx:id="txtCuota" GridPane.columnIndex="3" GridPane.rowIndex="6" styleClass="campo-lectura"/>
+
+                    <Label fx:id="lblFechaCambioPeriodicidad" text="Fecha inicio:" GridPane.columnIndex="0" GridPane.rowIndex="7" styleClass="etiqueta-campo" visible="false" managed="false"/>
+                    <DatePicker fx:id="dpFechaCambioPeriodicidad" GridPane.columnIndex="1" GridPane.rowIndex="7" maxWidth="Infinity" visible="false" managed="false"/>
                 </GridPane>
 
                 <VBox spacing="10">

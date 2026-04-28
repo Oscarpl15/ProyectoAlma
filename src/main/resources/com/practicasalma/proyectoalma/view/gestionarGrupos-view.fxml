@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.practicasalma.proyectoalma.controller.GestionarGruposController"
+            stylesheets="@../css/estilos.css"
+            styleClass="fondo-blanco"
+            prefWidth="400" prefHeight="380">
+
+    <top>
+        <VBox spacing="5" styleClass="padding-cabecera-ficha">
+            <Label text="Gestionar Grupos" styleClass="titulo-ventana"/>
+            <Label text="Doble clic para renombrar. Clic derecho para eliminar." styleClass="subtitulo-ventana"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox styleClass="padding-cuerpo-ficha">
+            <ListView fx:id="listaGrupos" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" styleClass="padding-pie-ficha">
+            <Button text="Eliminar" onAction="#eliminarSeleccionado" styleClass="boton-baja"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Añadir grupo" onAction="#anadirGrupo" styleClass="boton-accion"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Guardar" onAction="#guardarCambios" styleClass="boton-guardar-exito"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
