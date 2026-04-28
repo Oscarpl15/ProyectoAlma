@@ -39,6 +39,7 @@ public class AgregarDocenteController {
 
     @FXML private TextField txtTitulacion;
     @FXML private DatePicker dpFechaNacimiento;
+    @FXML private ComboBox<String> comboTipoDocumento;
     @FXML private TextField txtNacionalidad;
     @FXML private ComboBox<String> comboGenero;
     @FXML private TextField txtCiudad;
@@ -49,6 +50,12 @@ public class AgregarDocenteController {
     @FXML private CheckBox checkProtDatos;
 
     private final DocenteService docenteService = new DocenteService();
+
+    @FXML
+    private void initialize() {
+        comboTipoDocumento.getItems().addAll("DNI", "NIE", "Pasaporte");
+        comboTipoDocumento.setValue("DNI");
+    }
 
     @FXML
     private void guardarDocente(ActionEvent event) {
@@ -67,6 +74,7 @@ public class AgregarDocenteController {
 
         try {
             Docente docente = new Docente(nombre, apellidos, direccion, dni, telefono, correo, fechaNacimiento);
+            docente.setTipoDocumento(comboTipoDocumento.getValue());
             docente.setAutoDelitosSexuales(checkAuth1.isSelected());
             docente.setAutoProteccionDatos(checkProtDatos.isSelected());
             String titulacion = txtTitulacion.getText().trim();

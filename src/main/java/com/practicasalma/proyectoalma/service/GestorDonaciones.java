@@ -31,8 +31,9 @@ public class GestorDonaciones {
 
         for (Socio socio : socios) {
             if (!Boolean.TRUE.equals(socio.getActivo())) continue;
-            if (!PERIODICIDADES_REGULARES.contains(socio.getPeriodicidad())) continue;
             if (socio.getCuota() == null || socio.getCuota() <= 0) continue;
+
+            if (!PERIODICIDADES_REGULARES.contains(socio.getPeriodicidad())) continue;
             if (socio.getDonaciones() == null || socio.getDonaciones().isEmpty()) continue;
 
             LocalDate ultimaFecha = socio.getDonaciones().stream()

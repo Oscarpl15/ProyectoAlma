@@ -21,6 +21,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 import javafx.application.Platform;
 
 import java.io.File;
@@ -44,6 +46,8 @@ public class FichaSocioController {
     @FXML private TextField txtNombre;
     @FXML private TextField txtApellidos;
     @FXML private TextField txtDni;
+    @FXML private Label lblTipoDocLectura;
+    @FXML private ComboBox<String> comboTipoDocumento;
     @FXML private TextField txtTelefono;
     @FXML private TextField txtCorreo;
     @FXML private TextField txtDireccion;
@@ -75,8 +79,12 @@ public class FichaSocioController {
     @FXML private TableColumn<Donacion, String> colDonPeriodicidad;
     @FXML private TableColumn<Donacion, String> colDonDescripcion;
 
+    @FXML private Label lblFechaCambioPeriodicidad;
+    @FXML private DatePicker dpFechaCambioPeriodicidad;
+
     private Socio socioActual;
     private String rutaFotoSeleccionada = null;
+    private String periodicidadOriginal;
 
     private final SocioService socioService = new SocioService();
     private final GeneradorPdfService generadorPdfService = new GeneradorPdfService();
@@ -84,6 +92,7 @@ public class FichaSocioController {
     @FXML
     public void initialize() {
         comboGenero.getItems().addAll("Masculino", "Femenino", "No binario", "Prefiero no especificar");
+        comboTipoDocumento.getItems().addAll("DNI", "NIE", "Pasaporte");
         comboTipoEntidad.getItems().addAll("Física", "Empresa", "Asociación");
         comboPeriodicidad.getItems().addAll("Mensual", "Trimestral", "Anual", "Puntual");
         comboFormaPago.getItems().addAll("Domiciliación", "Transferencia", "Efectivo");
@@ -100,6 +109,7 @@ public class FichaSocioController {
 
     public void setSocio(Socio socio) {
         this.socioActual = socio;
+        this.periodicidadOriginal = socio.getPeriodicidad();
         cargarDatosEnVista();
         cambiarModoEdicion(false);
         Platform.runLater(() -> btnEditar.requestFocus());
@@ -117,6 +127,10 @@ public class FichaSocioController {
 
         txtGeneroLectura.setText(socioActual.getGenero() != null ? socioActual.getGenero() : "");
         comboGenero.setValue(socioActual.getGenero());
+        String tipoDoc = socioActual.getTipoDocumento();
+        String tipoMostrar = (tipoDoc != null && !tipoDoc.isBlank()) ? tipoDoc : "DNI";
+        comboTipoDocumento.setValue(tipoMostrar);
+        lblTipoDocLectura.setText(tipoMostrar + ":");
         txtCiudad.setText(socioActual.getCiudad() != null ? socioActual.getCiudad() : "");
         txtCodigoPostal.setText(socioActual.getCodigoPostal() != null ? socioActual.getCodigoPostal() : "");
 
@@ -177,12 +191,26 @@ public class FichaSocioController {
 
         if (editable) {
             comboPeriodicidad.setOnAction(e -> {
-                boolean puntual = "Puntual".equals(comboPeriodicidad.getValue());
+                String nuevaPeriodicidad = comboPeriodicidad.getValue();
+                boolean puntual = "Puntual".equals(nuevaPeriodicidad);
                 txtCuota.setEditable(!puntual);
                 if (puntual) txtCuota.setText("0.0");
+
+                boolean cambio = !Objects.equals(nuevaPeriodicidad, periodicidadOriginal);
+                boolean mostrarFecha = cambio && !puntual;
+                dpFechaCambioPeriodicidad.setVisible(mostrarFecha);
+                dpFechaCambioPeriodicidad.setManaged(mostrarFecha);
+                lblFechaCambioPeriodicidad.setVisible(mostrarFecha);
+                lblFechaCambioPeriodicidad.setManaged(mostrarFecha);
+                if (!mostrarFecha) dpFechaCambioPeriodicidad.setValue(null);
             });
         } else {
             comboPeriodicidad.setOnAction(null);
+            dpFechaCambioPeriodicidad.setVisible(false);
+            dpFechaCambioPeriodicidad.setManaged(false);
+            lblFechaCambioPeriodicidad.setVisible(false);
+            lblFechaCambioPeriodicidad.setManaged(false);
+            dpFechaCambioPeriodicidad.setValue(null);
         }
 
         btnCambiarFoto.setVisible(editable);
@@ -205,6 +233,15 @@ public class FichaSocioController {
         txtGeneroLectura.setManaged(!editable);
         comboGenero.setVisible(editable);
         comboGenero.setManaged(editable);
+
+        // Tipo Documento
+        lblTipoDocLectura.setVisible(!editable);
+        lblTipoDocLectura.setManaged(!editable);
+        comboTipoDocumento.setVisible(editable);
+        comboTipoDocumento.setManaged(editable);
+        if (!editable) {
+            lblTipoDocLectura.setText((comboTipoDocumento.getValue() != null ? comboTipoDocumento.getValue() : "DNI") + ":");
+        }
 
         // Tipo Entidad
         txtTipoEntidadLectura.setVisible(!editable);
@@ -254,6 +291,7 @@ public class FichaSocioController {
         socioActual.setNombre(txtNombre.getText().trim());
         socioActual.setApellidos(txtApellidos.getText().trim());
         socioActual.setDocumentoIdentidad(txtDni.getText().trim());
+        socioActual.setTipoDocumento(comboTipoDocumento.getValue());
         socioActual.setTelefono(txtTelefono.getText().trim());
         socioActual.setCorreo(txtCorreo.getText().trim());
         socioActual.setDireccion(txtDireccion.getText().trim());
@@ -291,22 +329,35 @@ public class FichaSocioController {
             }
         }
 
+        boolean periodicidadCambiada = !Objects.equals(newPeriodicidad, periodicidadOriginal);
+
+        // Si cambia a una periodicidad regular, fecha e importe son obligatorios
+        if (periodicidadCambiada && !"Puntual".equals(newPeriodicidad)) {
+            if (dpFechaCambioPeriodicidad.getValue() == null) {
+                FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Fecha obligatoria", "Debes indicar la fecha de inicio de la nueva periodicidad.");
+                return;
+            }
+            if (cuota <= 0) {
+                FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Cuota obligatoria", "Debes indicar una cuota mayor que 0 para la periodicidad seleccionada.");
+                return;
+            }
+        }
+
         // Manejar transiciones de periodicidad
         if ("Puntual".equals(newPeriodicidad) && !"Puntual".equals(oldPeriodicidad)) {
             // Regular → Puntual: desactivar
             socioActual.setActivo(false);
             socioActual.setPeriodicidad("Puntual");
             socioActual.setCuota(0.0);
-        } else if (!"Puntual".equals(newPeriodicidad) && "Puntual".equals(oldPeriodicidad)) {
-            // Puntual → Regular: reactivar y generar primera donación
+        } else if (periodicidadCambiada && !"Puntual".equals(newPeriodicidad)) {
+            // Cualquier cambio a periodicidad regular: reactivar y generar primera donación
             socioActual.setActivo(true);
             socioActual.setPeriodicidad(newPeriodicidad);
             socioActual.setCuota(cuota);
-            if (cuota > 0) {
-                Donacion primera = new Donacion(LocalDate.now(), BigDecimal.valueOf(cuota), newPeriodicidad, socioActual);
-                primera.setFormaDonacion(comboFormaPago.getValue());
-                socioActual.addDonacion(primera);
-            }
+            LocalDate fechaInicio = dpFechaCambioPeriodicidad.getValue();
+            Donacion primera = new Donacion(fechaInicio, BigDecimal.valueOf(cuota), newPeriodicidad, socioActual);
+            primera.setFormaDonacion(comboFormaPago.getValue());
+            socioActual.addDonacion(primera);
         } else {
             socioActual.setPeriodicidad(newPeriodicidad);
             socioActual.setCuota(cuota);
@@ -315,6 +366,7 @@ public class FichaSocioController {
         try {
             socioService.actualizarSocio(socioActual);
             socioActual = socioService.obtenerCompleto(socioActual.getId());
+            periodicidadOriginal = socioActual.getPeriodicidad();
             cambiarModoEdicion(false);
             cargarDatosEnVista();
         } catch (Exception e) {

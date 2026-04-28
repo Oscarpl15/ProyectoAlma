@@ -38,6 +38,8 @@ public class FichaVoluntarioController {
     @FXML private TextField txtNombre;
     @FXML private TextField txtApellidos;
     @FXML private TextField txtDni;
+    @FXML private Label lblTipoDocLectura;
+    @FXML private ComboBox<String> comboTipoDocumento;
     @FXML private DatePicker dpFechaNacimiento;
     @FXML private TextField txtTelefono;
     @FXML private TextField txtCorreo;
@@ -65,6 +67,7 @@ public class FichaVoluntarioController {
     @FXML
     public void initialize() {
         comboGenero.getItems().addAll("Masculino", "Femenino", "No binario", "Prefiero no especificar");
+        comboTipoDocumento.getItems().addAll("DNI", "NIE", "Pasaporte");
 
         colAsiAnyo.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
                 c.getValue().getAnyoAcademico() != null ? c.getValue().getAnyoAcademico() : "—"));
@@ -91,6 +94,10 @@ public class FichaVoluntarioController {
 
         txtGeneroLectura.setText(voluntarioActual.getGenero() != null ? voluntarioActual.getGenero() : "");
         comboGenero.setValue(voluntarioActual.getGenero());
+        String tipoDoc = voluntarioActual.getTipoDocumento();
+        String tipoMostrar = (tipoDoc != null && !tipoDoc.isBlank()) ? tipoDoc : "DNI";
+        comboTipoDocumento.setValue(tipoMostrar);
+        lblTipoDocLectura.setText(tipoMostrar + ":");
         txtCiudad.setText(voluntarioActual.getCiudad() != null ? voluntarioActual.getCiudad() : "");
         txtCodigoPostal.setText(voluntarioActual.getCodigoPostal() != null ? voluntarioActual.getCodigoPostal() : "");
 
@@ -151,6 +158,14 @@ public class FichaVoluntarioController {
         txtGeneroLectura.setManaged(!editable);
         comboGenero.setVisible(editable);
         comboGenero.setManaged(editable);
+
+        lblTipoDocLectura.setVisible(!editable);
+        lblTipoDocLectura.setManaged(!editable);
+        comboTipoDocumento.setVisible(editable);
+        comboTipoDocumento.setManaged(editable);
+        if (!editable) {
+            lblTipoDocLectura.setText((comboTipoDocumento.getValue() != null ? comboTipoDocumento.getValue() : "DNI") + ":");
+        }
     }
 
     private void actualizarLabelEstado(boolean activo) {
@@ -196,6 +211,7 @@ public class FichaVoluntarioController {
         voluntarioActual.setNombre(txtNombre.getText().trim());
         voluntarioActual.setApellidos(txtApellidos.getText().trim());
         voluntarioActual.setDocumentoIdentidad(txtDni.getText().trim());
+        voluntarioActual.setTipoDocumento(comboTipoDocumento.getValue());
         voluntarioActual.setFechaNacimiento(dpFechaNacimiento.getValue());
         voluntarioActual.setTelefono(txtTelefono.getText().trim());
         voluntarioActual.setCorreo(txtCorreo.getText().trim());

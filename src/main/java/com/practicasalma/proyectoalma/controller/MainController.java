@@ -8,7 +8,10 @@ import com.practicasalma.proyectoalma.service.GestorMatriculas;
 import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import com.practicasalma.proyectoalma.util.doc.GestorDocumentos;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
@@ -18,6 +21,8 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.Optional;
@@ -148,6 +153,26 @@ public class MainController {
         ok.setHeaderText(null);
         ok.setContentText("Directorio de documentos actualizado correctamente.");
         ok.showAndWait();
+    }
+
+    @FXML
+    private void gestionarGrupos() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/practicasalma/proyectoalma/view/gestionarGrupos-view.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Gestionar Grupos");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("No se pudo abrir la ventana de grupos: " + e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     @FXML

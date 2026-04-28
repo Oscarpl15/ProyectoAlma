@@ -58,6 +58,8 @@
                                 <MenuItem text="Cambiar directorio documentos" onAction="#cambiarDirectorioDocs"/>
                                 <SeparatorMenuItem/>
                                 <MenuItem text="Credenciales correo" onAction="#configurarCorreo"/>
+                                <SeparatorMenuItem/>
+                                <MenuItem text="Gestionar grupos" onAction="#gestionarGrupos"/>
                             </items>
                         </ContextMenu>
                     </fx:define>
