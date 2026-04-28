@@ -7,6 +7,7 @@ import com.practicasalma.proyectoalma.model.Socio;
 import com.practicasalma.proyectoalma.util.UtilFecha;
 
 import java.math.BigDecimal;
+import java.text.Normalizer;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
@@ -103,10 +104,66 @@ public class GraficasService {
             }
         }
 
-        LinkedHashMap<String, Number> valores = ordenarPorValorDesc(conteos);
+        LinkedHashMap<String, Number> valores;
+        if ("CURSO".equals(tipoDato)) {
+            valores = ordenarCursos(conteos);
+        } else if ("NACIONALIDAD".equals(tipoDato)) {
+            valores = ordenarNacionalidades(conteos);
+        } else {
+            valores = ordenarPorValorDesc(conteos);
+        }
 
         List<String> resumen = construirResumenAlumnos(tipoDato, valores, totalAlumnosFiltrados);
         return new ResultadoGrafica(valores, resumen, "Alumnos - " + tipoDato + " (" + anoAcademico + ")");
+    }
+
+    private LinkedHashMap<String, Number> ordenarCursos(Map<String, Integer> conteos) {
+        List<String> orden = List.of(
+                "1º Infantil",
+                "2º Infantil",
+                "3º Infantil",
+                "1º Primaria",
+                "2º Primaria",
+                "3º Primaria",
+                "4º Primaria",
+                "5º Primaria",
+                "6º Primaria",
+                "Sin curso"
+        );
+
+        LinkedHashMap<String, Number> resultado = new LinkedHashMap<>();
+        for (String curso : orden) {
+            Integer valor = conteos.get(curso);
+            if (valor != null) {
+                resultado.put(curso, valor);
+            }
+        }
+
+        conteos.keySet().stream()
+                .filter(clave -> !resultado.containsKey(clave))
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .forEach(clave -> resultado.put(clave, conteos.get(clave)));
+
+        return resultado;
+    }
+
+    private LinkedHashMap<String, Number> ordenarNacionalidades(Map<String, Integer> conteos) {
+        LinkedHashMap<String, Number> resultado = new LinkedHashMap<>();
+        String claveEspanola = conteos.keySet().stream()
+                .filter(clave -> normalizarParaOrden(clave).startsWith("espan"))
+                .findFirst()
+                .orElse(null);
+
+        if (claveEspanola != null) {
+            resultado.put(claveEspanola, conteos.get(claveEspanola));
+        }
+
+        conteos.keySet().stream()
+                .filter(clave -> !Objects.equals(clave, claveEspanola))
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .forEach(clave -> resultado.put(clave, conteos.get(clave)));
+
+        return resultado;
     }
 
     public ResultadoGrafica generarGraficaSocios(String ano, String tipoSocio, String periodicidad) {
@@ -296,6 +353,12 @@ public class GraficasService {
             return "";
         }
         return valor.trim().toLowerCase(LOCALE_ES);
+    }
+
+    private String normalizarParaOrden(String valor) {
+        String base = normalizar(valor);
+        String desacentuado = Normalizer.normalize(base, Normalizer.Form.NFD);
+        return desacentuado.replaceAll("\\p{M}", "");
     }
 
     private String valorOMarcaVacio(String valor, String defecto) {

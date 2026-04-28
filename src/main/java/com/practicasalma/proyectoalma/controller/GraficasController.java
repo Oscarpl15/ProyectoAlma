@@ -17,6 +17,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.WritableImage;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -39,10 +40,16 @@ public class GraficasController {
     @FXML private ComboBox<String> comboAno;
     @FXML private ComboBox<String> comboTipoSocio;
     @FXML private ComboBox<String> comboPeriodicidad;
-    @FXML private ComboBox<String> comboVisual;
 
+    @FXML private VBox boxTipoDato;
     @FXML private VBox boxTipoSocio;
     @FXML private VBox boxPeriodicidad;
+
+    @FXML private ColumnConstraints colEntidad;
+    @FXML private ColumnConstraints colTipoDato;
+    @FXML private ColumnConstraints colAno;
+    @FXML private ColumnConstraints colTipoSocio;
+    @FXML private ColumnConstraints colPeriodicidad;
 
     @FXML private Label lblResumen1;
     @FXML private Label lblResumen2;
@@ -62,11 +69,11 @@ public class GraficasController {
         imgFondoGraficas.fitHeightProperty().bind(rootGraficas.heightProperty());
 
         comboEntidad.setItems(FXCollections.observableArrayList("ALUMNOS", "SOCIOS"));
-        comboVisual.setItems(FXCollections.observableArrayList("BARRAS", "CIRCULAR"));
+        comboTipoDato.setItems(FXCollections.observableArrayList("Nacionalidad", "Curso", "Genero"));
+        comboTipoDato.getSelectionModel().select("Nacionalidad");
 
         comboTipoSocio.setItems(FXCollections.observableArrayList("TODOS", "Física", "Empresa", "Asociación"));
         comboPeriodicidad.setItems(FXCollections.observableArrayList("TODAS", "Mensual", "Trimestral", "Anual", "Puntual"));
-        comboVisual.setDisable(true);
 
         comboEntidad.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
             configurarFiltrosSegunEntidad(newV);
@@ -83,16 +90,28 @@ public class GraficasController {
     private void configurarFiltrosSegunEntidad(String entidad) {
         boolean esSocios = "SOCIOS".equals(entidad);
 
+        boxTipoDato.setManaged(!esSocios);
+        boxTipoDato.setVisible(!esSocios);
         boxTipoSocio.setManaged(esSocios);
         boxTipoSocio.setVisible(esSocios);
         boxPeriodicidad.setManaged(esSocios);
         boxPeriodicidad.setVisible(esSocios);
 
         if (esSocios) {
-            comboVisual.getSelectionModel().select("BARRAS");
-            comboTipoDato.setItems(FXCollections.observableArrayList("Ingresos por mes"));
-            comboTipoDato.getSelectionModel().select("Ingresos por mes");
+            colEntidad.setPercentWidth(25);
+            colTipoDato.setPercentWidth(0);
+            colAno.setPercentWidth(25);
+            colTipoSocio.setPercentWidth(25);
+            colPeriodicidad.setPercentWidth(25);
+        } else {
+            colEntidad.setPercentWidth(33.33);
+            colTipoDato.setPercentWidth(33.33);
+            colAno.setPercentWidth(33.34);
+            colTipoSocio.setPercentWidth(0);
+            colPeriodicidad.setPercentWidth(0);
+        }
 
+        if (esSocios) {
             List<String> anos = graficasService.obtenerAnosSocios();
             comboAno.setItems(FXCollections.observableArrayList(anos));
             if (!anos.isEmpty()) {
@@ -102,9 +121,12 @@ public class GraficasController {
             comboTipoSocio.getSelectionModel().select("TODOS");
             comboPeriodicidad.getSelectionModel().select("TODAS");
         } else {
-            comboVisual.getSelectionModel().select("CIRCULAR");
-            comboTipoDato.setItems(FXCollections.observableArrayList("Nacionalidad", "Curso", "Genero"));
-            comboTipoDato.getSelectionModel().select("Nacionalidad");
+            if (comboTipoDato.getItems().isEmpty()) {
+                comboTipoDato.setItems(FXCollections.observableArrayList("Nacionalidad", "Curso", "Genero"));
+            }
+            if (comboTipoDato.getSelectionModel().isEmpty()) {
+                comboTipoDato.getSelectionModel().select("Nacionalidad");
+            }
 
             List<String> anos = graficasService.obtenerAnosAcademicosAlumnos();
             comboAno.setItems(FXCollections.observableArrayList(anos));
@@ -144,6 +166,7 @@ public class GraficasController {
             barChart.setManaged(false);
             pieChart.setVisible(true);
             pieChart.setManaged(true);
+            pieChart.setStyle("-fx-pie-color-1: #2E5374; -fx-pie-color-2: #3F6B93; -fx-pie-color-3: #5885AC; -fx-pie-color-4: #6F9CC0; -fx-pie-color-5: #87B2D1; -fx-pie-color-6: #A4C5DF; -fx-pie-color-7: #BED7EA; -fx-pie-color-8: #D5E5F2;");
 
             List<PieChart.Data> data = new ArrayList<>();
             for (Map.Entry<String, Number> e : resultado.getValores().entrySet()) {
@@ -159,16 +182,24 @@ public class GraficasController {
         barChart.setVisible(true);
         barChart.setManaged(true);
 
-        xAxis.setLabel("Categoria");
-        yAxis.setLabel("Valor");
+        if ("SOCIOS".equals(comboEntidad.getValue())) {
+            xAxis.setLabel("Mes");
+            yAxis.setLabel("Dinero");
+        } else {
+            xAxis.setLabel("Categoria");
+            yAxis.setLabel("Valor");
+        }
         barChart.setTitle(resultado.getTitulo());
         barChart.getData().clear();
+        barChart.lookupAll(".default-color0.chart-bar").forEach(n -> n.setStyle("-fx-bar-fill: #2E5374;"));
 
         XYChart.Series<String, Number> serie = new XYChart.Series<>();
         for (Map.Entry<String, Number> e : resultado.getValores().entrySet()) {
             serie.getData().add(new XYChart.Data<>(e.getKey(), e.getValue()));
         }
         barChart.getData().add(serie);
+        barChart.applyCss();
+        barChart.lookupAll(".default-color0.chart-bar").forEach(n -> n.setStyle("-fx-bar-fill: #2E5374;"));
     }
 
     private void actualizarResumen(List<String> resumen) {
