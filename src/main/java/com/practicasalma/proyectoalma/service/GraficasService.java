@@ -177,7 +177,7 @@ public class GraficasService {
         LinkedHashMap<String, Number> ingresosPorMes = inicializarMesesEnCero();
         List<Socio> socios = socioService.obtenerTodosConDonaciones();
 
-        BigDecimal totalDonado = BigDecimal.ZERO;
+        Map<String, Integer> sociosPorTipo = new HashMap<>();
         int sociosFiltrados = 0;
         int donacionesAno = 0;
 
@@ -187,6 +187,8 @@ public class GraficasService {
             }
 
             sociosFiltrados++;
+
+            boolean aporto = false;
 
             if ((socio.getDonaciones() == null || socio.getDonaciones().isEmpty())
                     && socio.getCuota() != null
@@ -202,7 +204,7 @@ public class GraficasService {
                         String mes = nombreMesAbreviado(month);
                         double actual = ingresosPorMes.get(mes).doubleValue();
                         ingresosPorMes.put(mes, actual + cuota.doubleValue());
-                        totalDonado = totalDonado.add(cuota);
+                        aporto = true;
                         donacionesAno++;
                     }
                 } else if ("trimestral".equals(periodicidadSocio)) {
@@ -211,20 +213,20 @@ public class GraficasService {
                         String mes = nombreMesAbreviado(Month.of(mesNumero));
                         double actual = ingresosPorMes.get(mes).doubleValue();
                         ingresosPorMes.put(mes, actual + cuota.doubleValue());
-                        totalDonado = totalDonado.add(cuota);
+                        aporto = true;
                         donacionesAno++;
                     }
                 } else if ("anual".equals(periodicidadSocio)) {
                     String mes = nombreMesAbreviado(Month.JANUARY);
                     double actual = ingresosPorMes.get(mes).doubleValue();
                     ingresosPorMes.put(mes, actual + cuota.doubleValue());
-                    totalDonado = totalDonado.add(cuota);
+                    aporto = true;
                     donacionesAno++;
                 } else if ("puntual".equals(periodicidadSocio)) {
                     String mes = nombreMesAbreviado(Month.JANUARY);
                     double actual = ingresosPorMes.get(mes).doubleValue();
                     ingresosPorMes.put(mes, actual + cuota.doubleValue());
-                    totalDonado = totalDonado.add(cuota);
+                    aporto = true;
                     donacionesAno++;
                 }
             }
@@ -246,17 +248,55 @@ public class GraficasService {
                 double nuevo = actual + donacion.getImporte().doubleValue();
                 ingresosPorMes.put(mes, nuevo);
 
-                totalDonado = totalDonado.add(donacion.getImporte());
+                aporto = true;
                 donacionesAno++;
+            }
+
+            if (aporto) {
+                agregarSocioPorTipo(sociosPorTipo, socio);
             }
         }
 
         List<String> resumen = new ArrayList<>();
-        resumen.add("Total dinero donado: " + totalDonado.stripTrailingZeros().toPlainString() + " EUR");
         resumen.add("Socios filtrados: " + sociosFiltrados);
-        resumen.add("Donaciones del ano: " + donacionesAno);
+        resumen.add("Donaciones del año: " + donacionesAno);
+        String lineaTipos = construirLineaTiposSocio(sociosPorTipo);
+        if (!lineaTipos.isBlank()) {
+            resumen.add(lineaTipos);
+        }
 
         return new ResultadoGrafica(ingresosPorMes, resumen, "Socios - Ingresos por mes (" + anoNumerico + ")");
+    }
+
+    private void agregarSocioPorTipo(Map<String, Integer> sociosPorTipo, Socio socio) {
+        String tipo = valorOMarcaVacio(socio.getTipoEntidad(), "Sin tipo");
+        int actual = sociosPorTipo.getOrDefault(tipo, 0);
+        sociosPorTipo.put(tipo, actual + 1);
+    }
+
+    private String construirLineaTiposSocio(Map<String, Integer> sociosPorTipo) {
+        if (sociosPorTipo == null || sociosPorTipo.isEmpty()) {
+            return "";
+        }
+
+        List<String> partes = new ArrayList<>();
+        List<String> orden = List.of("Física", "Empresa", "Asociación", "Sin tipo");
+        for (String tipo : orden) {
+            if (sociosPorTipo.containsKey(tipo)) {
+                int total = sociosPorTipo.get(tipo);
+                partes.add(tipo + " " + total);
+            }
+        }
+
+        sociosPorTipo.keySet().stream()
+                .filter(tipo -> !orden.contains(tipo))
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .forEach(tipo -> {
+                    int total = sociosPorTipo.get(tipo);
+                    partes.add(tipo + " " + total);
+                });
+
+        return "Tipos: " + String.join(" | ", partes);
     }
 
     private List<String> construirResumenAlumnos(String tipoDato, LinkedHashMap<String, Number> valores, int total) {
@@ -273,25 +313,25 @@ public class GraficasService {
             int masculinos = obtenerValorGenero(valores, "masculino", "varon", "hombre");
             int femeninos = obtenerValorGenero(valores, "femenino", "mujer");
             resumen.add("Varones: " + masculinos + " | Mujeres: " + femeninos);
-        } else {
-            Map.Entry<String, Number> primero = valores.entrySet().iterator().next();
-            resumen.add(primero.getKey() + ": " + primero.getValue().intValue());
         }
 
-        StringBuilder resto = new StringBuilder();
-        int index = 0;
-        for (Map.Entry<String, Number> entry : valores.entrySet()) {
-            if (index >= 2) {
-                break;
-            }
-            if (index > 0) {
-                resto.append(" | ");
-            }
-            resto.append(entry.getKey()).append(": ").append(entry.getValue().intValue());
-            index++;
-        }
-        resumen.add(resto.toString());
+        resumen.add(construirLineaCategorias(valores));
         return resumen;
+    }
+
+    private String construirLineaCategorias(LinkedHashMap<String, Number> valores) {
+        if (valores == null || valores.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder linea = new StringBuilder();
+        for (Map.Entry<String, Number> entry : valores.entrySet()) {
+            if (linea.length() > 0) {
+                linea.append(" | ");
+            }
+            linea.append(entry.getKey()).append(": ").append(entry.getValue().intValue());
+        }
+        return linea.toString();
     }
 
     private int obtenerValorGenero(Map<String, Number> valores, String... aliases) {

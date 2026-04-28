@@ -22,6 +22,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -236,7 +238,7 @@ public class GraficasController {
                 resumen.add(lblResumen3.getText());
             }
 
-            String marcaTiempo = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
+            String marcaTiempo = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             String rutaDocumentos = GestorConfig.getRutaDocumentos();
             if (rutaDocumentos == null || rutaDocumentos.isBlank()) {
                 mostrarAlerta(
@@ -248,7 +250,9 @@ public class GraficasController {
             }
 
             Path rutaSalida = Paths.get(rutaDocumentos, "Informes", "graficas", "grafica_" + marcaTiempo + ".pdf");
+            Path rutaImagen = Paths.get(rutaDocumentos, "Informes", "graficas", "grafica_" + marcaTiempo + ".png");
 
+            guardarImagenGrafica(graficaImagen, rutaImagen);
             generadorPdfService.generarPdfGrafica(rutaSalida.toString(), titulo, graficaImagen, resumen);
 
             mostrarAlerta(
@@ -271,6 +275,37 @@ public class GraficasController {
             return "Grafica";
         }
         return titulo;
+    }
+
+    private void guardarImagenGrafica(WritableImage graficaImagen, Path rutaImagen) {
+        try {
+            if (rutaImagen.getParent() != null) {
+                java.nio.file.Files.createDirectories(rutaImagen.getParent());
+            }
+
+            BufferedImage buffered = new BufferedImage(
+                    (int) Math.round(graficaImagen.getWidth()),
+                    (int) Math.round(graficaImagen.getHeight()),
+                    BufferedImage.TYPE_INT_ARGB
+            );
+
+            javafx.scene.image.PixelReader pixelReader = graficaImagen.getPixelReader();
+            if (pixelReader != null) {
+                for (int y = 0; y < buffered.getHeight(); y++) {
+                    for (int x = 0; x < buffered.getWidth(); x++) {
+                        buffered.setRGB(x, y, pixelReader.getArgb(x, y));
+                    }
+                }
+            }
+
+            ImageIO.write(buffered, "png", rutaImagen.toFile());
+        } catch (Exception e) {
+            mostrarAlerta(
+                    Alert.AlertType.WARNING,
+                    "Imagen no guardada",
+                    "No se pudo guardar la imagen de la grafica: " + e.getMessage()
+            );
+        }
     }
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
