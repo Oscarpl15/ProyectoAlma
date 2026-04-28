@@ -27,7 +27,11 @@ public class GestorConfig {
     private static final String CLAVE_BBDD = "ruta.bbdd";
     private static final String CLAVE_DOCUMENTOS = "ruta.documentos";
     private static final String CLAVE_CORREO_REMITENTE = "correo.remitente";
-    private static final String CLAVE_CORREO_PASSWORD_APP = "correo.password.app";
+    private static final String CLAVE_RECORDATORIO_DESTINATARIOS = "correo.recordatorio.destinatarios";
+    private static final String CLAVE_RECORDATORIO_ASUNTO = "correo.recordatorio.asunto";
+    private static final String CLAVE_RECORDATORIO_CUERPO = "correo.recordatorio.cuerpo";
+    private static final String CLAVE_RECORDATORIO_ULTIMO_ANO = "correo.recordatorio.ultimo_ano";
+    private static final String CLAVE_RECORDATORIO_FECHA = "correo.recordatorio.fecha";
 
     private GestorConfig() {}
 
@@ -71,16 +75,48 @@ public class GestorConfig {
         return leerPropiedad(CLAVE_CORREO_REMITENTE);
     }
 
-    public static String getCorreoPasswordApp() {
-        return leerPropiedad(CLAVE_CORREO_PASSWORD_APP);
-    }
-
     public static void setCorreoRemitente(String correo) {
         guardarPropiedad(CLAVE_CORREO_REMITENTE, correo);
     }
 
-    public static void setCorreoPasswordApp(String passwordApp) {
-        guardarPropiedad(CLAVE_CORREO_PASSWORD_APP, passwordApp);
+    public static String getRecordatorioDestinatarios() {
+        return leerPropiedad(CLAVE_RECORDATORIO_DESTINATARIOS);
+    }
+
+    public static String getRecordatorioAsunto() {
+        return leerPropiedad(CLAVE_RECORDATORIO_ASUNTO);
+    }
+
+    public static String getRecordatorioCuerpo() {
+        return leerPropiedad(CLAVE_RECORDATORIO_CUERPO);
+    }
+
+    public static String getRecordatorioUltimoAno() {
+        return leerPropiedad(CLAVE_RECORDATORIO_ULTIMO_ANO);
+    }
+
+    public static String getRecordatorioFecha() {
+        return leerPropiedad(CLAVE_RECORDATORIO_FECHA);
+    }
+
+    public static void setRecordatorioDestinatarios(String destinatarios) {
+        guardarPropiedad(CLAVE_RECORDATORIO_DESTINATARIOS, destinatarios);
+    }
+
+    public static void setRecordatorioAsunto(String asunto) {
+        guardarPropiedad(CLAVE_RECORDATORIO_ASUNTO, asunto);
+    }
+
+    public static void setRecordatorioCuerpo(String cuerpo) {
+        guardarPropiedad(CLAVE_RECORDATORIO_CUERPO, cuerpo);
+    }
+
+    public static void setRecordatorioUltimoAno(String ano) {
+        guardarPropiedad(CLAVE_RECORDATORIO_ULTIMO_ANO, ano);
+    }
+
+    public static void setRecordatorioFecha(String fecha) {
+        guardarPropiedad(CLAVE_RECORDATORIO_FECHA, fecha);
     }
 
     /**

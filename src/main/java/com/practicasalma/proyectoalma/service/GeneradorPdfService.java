@@ -15,6 +15,7 @@ import com.lowagie.text.pdf.PdfStamper;
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.model.Donacion;
 import com.practicasalma.proyectoalma.model.Matricula;
+import com.practicasalma.proyectoalma.model.PersonaAutorizada;
 import com.practicasalma.proyectoalma.model.Socio;
 
 import java.io.FileOutputStream;
@@ -176,7 +177,7 @@ public class GeneradorPdfService {
         }
     }
 
-    public void generarPdfGruposAlumnos(String rutaSalida, List<Alumno> alumnos, String titulo) {
+    public void generarPdfGruposAlumnos(String rutaSalida, List<Alumno> alumnos, String titulo, String cursoEscolar) {
         if (rutaSalida == null || rutaSalida.trim().isEmpty()) {
             throw new IllegalArgumentException("La ruta de salida del PDF es obligatoria.");
         }
@@ -205,28 +206,26 @@ public class GeneradorPdfService {
             document.add(new Paragraph(tituloSeguro));
             document.add(new Paragraph("Fecha: " + LocalDate.now()));
             document.add(new Paragraph("Total alumnos: " + alumnos.size()));
+            if (cursoEscolar != null && !cursoEscolar.trim().isEmpty()) {
+                document.add(new Paragraph("Curso escolar: " + cursoEscolar.trim()));
+            }
             document.add(new Paragraph(" "));
 
-            Map<String, List<String>> alumnosPorGrupo = new LinkedHashMap<>();
+            Map<String, List<Alumno>> alumnosPorGrupo = new LinkedHashMap<>();
             for (Alumno alumno : alumnos) {
                 if (alumno == null) {
                     continue;
                 }
 
-                Matricula ultimaMatricula = obtenerUltimaMatricula(alumno);
-                String grupo = (ultimaMatricula != null && ultimaMatricula.getGrupoAsignado() != null
-                        && !ultimaMatricula.getGrupoAsignado().trim().isEmpty())
-                        ? ultimaMatricula.getGrupoAsignado().trim()
+                Matricula matricula = obtenerMatriculaParaCurso(alumno, cursoEscolar);
+                String grupo = (matricula != null && matricula.getGrupoAsignado() != null
+                        && !matricula.getGrupoAsignado().trim().isEmpty())
+                        ? matricula.getGrupoAsignado().trim()
                         : "Sin grupo";
-
-                String nombreCompleto = (valorSeguro(alumno.getNombre()) + " " + valorSeguro(alumno.getApellidos())).trim();
-                String curso = (ultimaMatricula != null && ultimaMatricula.getCurso() != null && !ultimaMatricula.getCurso().trim().isEmpty())
-                        ? ultimaMatricula.getCurso().trim()
-                        : "Sin curso";
 
                 alumnosPorGrupo
                         .computeIfAbsent(grupo, k -> new ArrayList<>())
-                        .add(nombreCompleto + " (" + curso + ")");
+                        .add(alumno);
             }
 
             List<String> grupos = new ArrayList<>(alumnosPorGrupo.keySet());
@@ -240,15 +239,27 @@ public class GeneradorPdfService {
                 document.add(new Paragraph("No hay alumnos para generar el listado."));
             } else {
                 for (String grupo : grupos) {
-                    List<String> nombres = alumnosPorGrupo.get(grupo);
-                    if (nombres == null) {
+                    List<Alumno> alumnosGrupo = alumnosPorGrupo.get(grupo);
+                    if (alumnosGrupo == null) {
                         continue;
                     }
 
-                    Collections.sort(nombres);
-                    document.add(new Paragraph("Grupo: " + grupo + " (" + nombres.size() + ")"));
-                    for (String nombre : nombres) {
-                        document.add(new Paragraph("- " + nombre));
+                    alumnosGrupo.sort(Comparator
+                            .comparing((Alumno a) -> valorSeguro(a.getApellidos()), String.CASE_INSENSITIVE_ORDER)
+                            .thenComparing(a -> valorSeguro(a.getNombre()), String.CASE_INSENSITIVE_ORDER));
+
+                    document.add(new Paragraph("GRUPO: " + grupo + " (" + alumnosGrupo.size() + ")"));
+                    document.add(new Paragraph("------------------------------------------------------------"));
+
+                    for (Alumno alumno : alumnosGrupo) {
+                        String nombreCompleto = construirNombreCompleto(alumno);
+                        Matricula matricula = obtenerMatriculaParaCurso(alumno, cursoEscolar);
+                        String curso = obtenerCursoTexto(matricula);
+
+                        document.add(new Paragraph("Alumno: " + nombreCompleto));
+                        document.add(new Paragraph("Curso: " + curso));
+                        document.add(new Paragraph("Autorizados a recoger: " + obtenerAutorizadosTexto(alumno)));
+                        document.add(new Paragraph(" "));
                     }
                     document.add(new Paragraph(" "));
                 }
@@ -273,6 +284,73 @@ public class GeneradorPdfService {
             return null;
         }
         return alumno.getMatriculas().get(alumno.getMatriculas().size() - 1);
+    }
+
+    private String obtenerAutorizadosTexto(Alumno alumno) {
+        if (alumno == null || alumno.getAutorizadaRecoger() == null || alumno.getAutorizadaRecoger().isEmpty()) {
+            return "Sin autorizados";
+        }
+
+        List<String> autorizados = new ArrayList<>();
+        for (PersonaAutorizada persona : alumno.getAutorizadaRecoger()) {
+            if (persona == null) {
+                continue;
+            }
+            String nombre = (valorSeguro(persona.getNombre()) + " " + valorSeguro(persona.getApellidos())).trim();
+            String relacion = valorSeguro(persona.getRelacion());
+            if (!"-".equals(nombre)) {
+                if (!"-".equals(relacion)) {
+                    autorizados.add(nombre + " (" + relacion + ")");
+                } else {
+                    autorizados.add(nombre);
+                }
+            }
+        }
+
+        if (autorizados.isEmpty()) {
+            return "Sin autorizados";
+        }
+
+        Collections.sort(autorizados, String.CASE_INSENSITIVE_ORDER);
+        return String.join(", ", autorizados);
+    }
+
+    private String construirNombreCompleto(Alumno alumno) {
+        String nombre = valorSeguro(alumno.getNombre());
+        String apellidos = valorSeguro(alumno.getApellidos());
+        String completo = (nombre + " " + apellidos).trim();
+        return completo.isBlank() ? "-" : completo;
+    }
+
+    private String obtenerCursoTexto(Matricula matricula) {
+        if (matricula == null || matricula.getCurso() == null || matricula.getCurso().trim().isEmpty()) {
+            return "Sin curso";
+        }
+        return matricula.getCurso().trim();
+    }
+
+    private Matricula obtenerMatriculaParaCurso(Alumno alumno, String cursoEscolar) {
+        if (alumno == null || alumno.getMatriculas() == null || alumno.getMatriculas().isEmpty()) {
+            return null;
+        }
+        if (cursoEscolar == null || cursoEscolar.trim().isEmpty()) {
+            return obtenerUltimaMatricula(alumno);
+        }
+        String normalizado = cursoEscolar.trim();
+        String alternativo = normalizado.replace("/", "-");
+        for (Matricula matricula : alumno.getMatriculas()) {
+            if (matricula == null) {
+                continue;
+            }
+            String ano = matricula.getAnyoAcademico();
+            if (ano == null) {
+                continue;
+            }
+            if (normalizado.equals(ano) || alternativo.equals(ano)) {
+                return matricula;
+            }
+        }
+        return null;
     }
 
     private byte[] convertirImagenPng(javafx.scene.image.Image imagen) throws IOException {

@@ -213,6 +213,28 @@ public class AlumnosController {
             return;
         }
 
+        String cursoEscolar = comboCursoFiltro.getValue();
+        if (cursoEscolar == null || "Todos".equalsIgnoreCase(cursoEscolar)) {
+            FxUtils.mostrarAlerta(Alert.AlertType.WARNING,
+                    "Curso requerido",
+                    "Selecciona un curso escolar para generar el PDF de grupos.");
+            return;
+        }
+
+        alumnosFiltrados.removeIf(alumno -> !Boolean.TRUE.equals(alumno.getActivo()));
+        if (alumnosFiltrados.isEmpty()) {
+            FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Sin datos", "No hay alumnos activos para generar el PDF.");
+            return;
+        }
+
+        List<Alumno> alumnosCompletos = new ArrayList<>();
+        for (Alumno alumno : alumnosFiltrados) {
+            if (alumno == null || alumno.getId() == null) {
+                continue;
+            }
+            alumnosCompletos.add(alumnoService.obtenerCompleto(alumno.getId()));
+        }
+
         String rutaDocumentos = GestorConfig.getRutaDocumentos();
         if (rutaDocumentos == null || rutaDocumentos.isBlank()) {
             FxUtils.mostrarAlerta(Alert.AlertType.WARNING,
@@ -224,7 +246,7 @@ public class AlumnosController {
         try {
             String marcaTiempo = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
             Path rutaSalida = Paths.get(rutaDocumentos, "Informes", "alumnos", "grupos_alumnos_" + marcaTiempo + ".pdf");
-            generadorPdfService.generarPdfGruposAlumnos(rutaSalida.toString(), alumnosFiltrados, "Listado de alumnos por grupos");
+            generadorPdfService.generarPdfGruposAlumnos(rutaSalida.toString(), alumnosCompletos, "Listado de alumnos por grupos", cursoEscolar);
 
             FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION,
                     "PDF generado",

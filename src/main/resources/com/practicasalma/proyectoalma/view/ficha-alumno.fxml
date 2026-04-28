@@ -147,7 +147,7 @@
                                         <columns>
                                             <TableColumn fx:id="colTutorNombre" text="Nombre" prefWidth="120" reorderable="false"/>
                                             <TableColumn fx:id="colTutorApellidos" text="Apellidos" prefWidth="150" reorderable="false"/>
-                                            <TableColumn fx:id="colTutorDni" text="DNI/NIE" prefWidth="90" reorderable="false"/>
+                                            <TableColumn fx:id="colTutorDni" text="Documento" prefWidth="90" reorderable="false"/>
                                             <TableColumn fx:id="colTutorTelefono" text="Teléfono" prefWidth="100" reorderable="false"/>
                                             <TableColumn fx:id="colTutorRelacion" text="Relación" prefWidth="90" reorderable="false"/>
                                         </columns>
@@ -168,7 +168,7 @@
                                         <columns>
                                             <TableColumn fx:id="colAutoNombre" text="Nombre" prefWidth="120" reorderable="false"/>
                                             <TableColumn fx:id="colAutoApellidos" text="Apellidos" prefWidth="150" reorderable="false"/>
-                                            <TableColumn fx:id="colAutoDni" text="DNI/NIE" prefWidth="90" reorderable="false"/>
+                                            <TableColumn fx:id="colAutoDni" text="Documento" prefWidth="90" reorderable="false"/>
                                             <TableColumn fx:id="colAutoTelefono" text="Teléfono" prefWidth="100" reorderable="false"/>
                                             <TableColumn fx:id="colAutoRelacion" text="Relación" prefWidth="90" reorderable="false"/>
                                         </columns>

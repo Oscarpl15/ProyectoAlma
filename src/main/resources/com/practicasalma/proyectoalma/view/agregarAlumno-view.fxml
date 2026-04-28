@@ -38,7 +38,7 @@
                     <Label text="Apellidos:" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
                     <TextField fx:id="txtApellidos" promptText="Ej: García Pérez" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
 
-                    <Label text="DNI/NIE:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <Label text="Documento:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
                     <TextField fx:id="txtDni" promptText="Ej: 12345678A" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
                     <Label text="Fecha Nac.:" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>

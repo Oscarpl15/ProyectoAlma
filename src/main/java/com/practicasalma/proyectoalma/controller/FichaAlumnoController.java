@@ -619,13 +619,13 @@ public class FichaAlumnoController {
 
         TextField nombre = new TextField(); nombre.setPromptText("Nombre");
         TextField apellidos = new TextField(); apellidos.setPromptText("Apellidos");
-        TextField dni = new TextField(); dni.setPromptText("DNI/NIE");
+        TextField dni = new TextField(); dni.setPromptText("Documento (DNI/NIE/Pasaporte)");
         TextField telefono = new TextField(); telefono.setPromptText("Teléfono");
         TextField relacion = new TextField(); relacion.setPromptText("Ej: Abuela, Tío...");
 
         grid.add(new Label("Nombre:"), 0, 0); grid.add(nombre, 1, 0);
         grid.add(new Label("Apellidos:"), 0, 1); grid.add(apellidos, 1, 1);
-        grid.add(new Label("DNI/NIE:"), 0, 2); grid.add(dni, 1, 2);
+        grid.add(new Label("Documento:"), 0, 2); grid.add(dni, 1, 2);
         grid.add(new Label("Teléfono:"), 0, 3); grid.add(telefono, 1, 3);
         grid.add(new Label("Relación:"), 0, 4); grid.add(relacion, 1, 4);
 
@@ -726,14 +726,14 @@ public class FichaAlumnoController {
 
         TextField nombre    = new TextField(); nombre.setPromptText("Nombre");
         TextField apellidos = new TextField(); apellidos.setPromptText("Apellidos");
-        TextField dni       = new TextField(); dni.setPromptText("DNI/NIE");
+        TextField dni       = new TextField(); dni.setPromptText("Documento (DNI/NIE/Pasaporte)");
         TextField telefono  = new TextField(); telefono.setPromptText("Teléfono");
         TextField relacion  = new TextField(); relacion.setPromptText("Ej: Madre, Padre...");
         relacion.setText("Tutor/a Legal");
 
         grid.add(new Label("Nombre:"),    0, 0); grid.add(nombre,    1, 0);
         grid.add(new Label("Apellidos:"), 0, 1); grid.add(apellidos, 1, 1);
-        grid.add(new Label("DNI/NIE:"),   0, 2); grid.add(dni,       1, 2);
+        grid.add(new Label("Documento:"),   0, 2); grid.add(dni,       1, 2);
         grid.add(new Label("Teléfono:"),  0, 3); grid.add(telefono,  1, 3);
         grid.add(new Label("Relación:"),  0, 4); grid.add(relacion,  1, 4);
 

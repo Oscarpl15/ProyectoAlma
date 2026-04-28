@@ -44,11 +44,11 @@
 
                 <GridPane hgap="12" vgap="10">
                     <columnConstraints>
-                        <ColumnConstraints percentWidth="20"/>
-                        <ColumnConstraints percentWidth="20"/>
-                        <ColumnConstraints percentWidth="20"/>
-                        <ColumnConstraints percentWidth="20"/>
-                        <ColumnConstraints percentWidth="20"/>
+                        <ColumnConstraints fx:id="colEntidad" percentWidth="20"/>
+                        <ColumnConstraints fx:id="colTipoDato" percentWidth="20"/>
+                        <ColumnConstraints fx:id="colAno" percentWidth="20"/>
+                        <ColumnConstraints fx:id="colTipoSocio" percentWidth="20"/>
+                        <ColumnConstraints fx:id="colPeriodicidad" percentWidth="20"/>
                     </columnConstraints>
 
                     <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
@@ -56,13 +56,13 @@
                         <ComboBox fx:id="comboEntidad" maxWidth="1.7976931348623157E308"/>
                     </VBox>
 
-                    <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <VBox fx:id="boxTipoDato" spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
                         <Label text="Tipo dato" styleClass="etiqueta-campo"/>
                         <ComboBox fx:id="comboTipoDato" maxWidth="1.7976931348623157E308"/>
                     </VBox>
 
                     <VBox spacing="4" GridPane.columnIndex="2" GridPane.rowIndex="0">
-                        <Label text="Ano" styleClass="etiqueta-campo"/>
+                        <Label text="Año" styleClass="etiqueta-campo"/>
                         <ComboBox fx:id="comboAno" maxWidth="1.7976931348623157E308"/>
                     </VBox>
 
@@ -78,8 +78,6 @@
                 </GridPane>
 
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label text="Visual" styleClass="etiqueta-campo"/>
-                    <ComboBox fx:id="comboVisual" prefWidth="180" disable="true"/>
                     <Region HBox.hgrow="ALWAYS"/>
                     <Button text="Exportar PDF" onAction="#exportarGraficaPdf" styleClass="boton-accion"/>
                 </HBox>
