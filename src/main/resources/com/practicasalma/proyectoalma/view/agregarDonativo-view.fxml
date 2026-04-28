@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.practicasalma.proyectoalma.controller.AgregarDonativoController"
+            styleClass="fondo-blanco"
+            stylesheets="@../css/estilos.css">
+
+    <top>
+        <VBox spacing="5" styleClass="padding-cabecera-ficha">
+            <Label text="Añadir Donativo" styleClass="titulo-ventana"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="15" styleClass="padding-cuerpo-ficha">
+            <GridPane hgap="15" vgap="12">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="110" halignment="RIGHT"/>
+                    <ColumnConstraints hgrow="ALWAYS" prefWidth="200"/>
+                </columnConstraints>
+                <Label text="Importe (€):" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="etiqueta-campo"/>
+                <TextField fx:id="txtImporte" promptText="Ej: 50.00" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <Label text="Fecha:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="etiqueta-campo"/>
+                <DatePicker fx:id="dpFecha" GridPane.columnIndex="1" GridPane.rowIndex="1" maxWidth="Infinity"/>
+                <Label text="Forma de Pago:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="etiqueta-campo"/>
+                <ComboBox fx:id="comboFormaPago" promptText="Seleccione..." GridPane.columnIndex="1" GridPane.rowIndex="2" maxWidth="Infinity"/>
+            </GridPane>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="15" alignment="CENTER_RIGHT" styleClass="padding-pie-ficha">
+            <Button text="Cancelar" onAction="#cancelar" styleClass="boton-cancelar"/>
+            <Button text="Guardar Donativo" onAction="#guardar" styleClass="boton-guardar-exito"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

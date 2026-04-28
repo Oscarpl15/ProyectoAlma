@@ -37,6 +37,7 @@ public class AgregarDocenteController {
     @FXML
     private TextField txtCorreo;
 
+    @FXML private TextField txtTitulacion;
     @FXML private DatePicker dpFechaNacimiento;
     @FXML private TextField txtNacionalidad;
     @FXML private ComboBox<String> comboGenero;
@@ -68,6 +69,8 @@ public class AgregarDocenteController {
             Docente docente = new Docente(nombre, apellidos, direccion, dni, telefono, correo, fechaNacimiento);
             docente.setAutoDelitosSexuales(checkAuth1.isSelected());
             docente.setAutoProteccionDatos(checkProtDatos.isSelected());
+            String titulacion = txtTitulacion.getText().trim();
+            if (!titulacion.isEmpty()) docente.setTitulacion(titulacion);
             String nacionalidad = txtNacionalidad.getText().trim();
             if (!nacionalidad.isEmpty()) docente.setNacionalidad(nacionalidad);
             String genero = comboGenero.getValue();

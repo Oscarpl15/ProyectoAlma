@@ -3,6 +3,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.service.GestorAsignaciones;
 import com.practicasalma.proyectoalma.service.GestorCorreo;
+import com.practicasalma.proyectoalma.service.GestorDonaciones;
 import com.practicasalma.proyectoalma.service.GestorMatriculas;
 import com.practicasalma.proyectoalma.service.RecordatorioCorreoService;
 import com.practicasalma.proyectoalma.util.config.GestorConfig;

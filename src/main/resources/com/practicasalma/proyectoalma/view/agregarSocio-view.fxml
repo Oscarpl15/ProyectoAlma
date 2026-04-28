@@ -40,34 +40,20 @@
                     <Label text="DNI:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
                     <TextField fx:id="txtDni" promptText="Ej: 00000000X" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-                    <Label text="Dirección:" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtDireccion" promptText="C/ Ejemplo 12" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+                    <Label text="Teléfono:" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtTelefono" promptText="Ej: 600 123 456" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
 
-                    <Label text="Cuota (€):" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtCuota" promptText="Ej: 0.0" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    <Label text="Correo:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCorreo" promptText="tuemail@ejemplo.com" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-                    <Label text="Tipo Entidad:" GridPane.rowIndex="2" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
-                    <ComboBox fx:id="comboTipoEntidad" promptText="Seleccione..." GridPane.rowIndex="2" GridPane.columnIndex="3" maxWidth="Infinity">
-                        <items>
-                            <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Física"/>
-                                <String fx:value="Empresa"/>
-                                <String fx:value="Asociación"/>
-                            </FXCollections>
-                        </items>
-                    </ComboBox>
+                    <Label text="Dirección:" GridPane.rowIndex="2" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtDireccion" promptText="C/ Ejemplo 12" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
 
-                    <Label text="Periodicidad:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-                    <ComboBox fx:id="comboPeriodicidad" promptText="Seleccione..." GridPane.rowIndex="3" GridPane.columnIndex="1" maxWidth="Infinity">
-                        <items>
-                            <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Mensual"/>
-                                <String fx:value="Trimestral"/>
-                                <String fx:value="Anual"/>
-                                <String fx:value="Puntual"/>
-                            </FXCollections>
-                        </items>
-                    </ComboBox>
+                    <Label text="Ciudad:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCiudad" promptText="Ej: Madrid" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                    <Label text="Cód. Postal:" GridPane.rowIndex="3" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCodigoPostal" promptText="Ej: 28001" GridPane.rowIndex="3" GridPane.columnIndex="3"/>
 
                     <Label text="Nacionalidad:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
                     <TextField fx:id="txtNacionalidad" promptText="Ej: Española" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
@@ -84,11 +70,42 @@
                         </items>
                     </ComboBox>
 
-                    <Label text="Ciudad:" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtCiudad" promptText="Ej: Madrid" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                    <Label text="Tipo Entidad:" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboTipoEntidad" promptText="Seleccione..." GridPane.rowIndex="5" GridPane.columnIndex="1" maxWidth="Infinity">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Física"/>
+                                <String fx:value="Empresa"/>
+                                <String fx:value="Asociación"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
 
-                    <Label text="Cód. Postal:" GridPane.rowIndex="5" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtCodigoPostal" promptText="Ej: 28001" GridPane.rowIndex="5" GridPane.columnIndex="3"/>
+                    <Label text="Forma de Pago:" GridPane.rowIndex="5" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboFormaPago" promptText="Seleccione..." GridPane.rowIndex="5" GridPane.columnIndex="3" maxWidth="Infinity">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Domiciliación"/>
+                                <String fx:value="Transferencia"/>
+                                <String fx:value="Efectivo"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+
+                    <Label text="Periodicidad:" GridPane.rowIndex="6" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboPeriodicidad" promptText="Seleccione..." GridPane.rowIndex="6" GridPane.columnIndex="1" maxWidth="Infinity">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Mensual"/>
+                                <String fx:value="Trimestral"/>
+                                <String fx:value="Anual"/>
+                                <String fx:value="Puntual"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+
+                    <Label text="Cuota (€):" GridPane.rowIndex="6" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCuota" promptText="Ej: 0.0" GridPane.rowIndex="6" GridPane.columnIndex="3"/>
                 </GridPane>
 
             </VBox>

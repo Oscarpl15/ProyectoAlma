@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -18,10 +19,13 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 
-<StackPane xmlns="http://javafx.com/javafx/21"
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:id="rootGraficas"
-           fx:controller="com.practicasalma.proyectoalma.controller.GraficasController">
+<ScrollPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fitToWidth="true"
+            styleClass="scroll-contenido"
+            fx:controller="com.practicasalma.proyectoalma.controller.GraficasController">
+
+<StackPane fx:id="rootGraficas">
 
     <ImageView fx:id="imgFondoGraficas" opacity="0.25" preserveRatio="false" mouseTransparent="true">
         <image>
@@ -29,7 +33,7 @@
         </image>
     </ImageView>
 
-    <BorderPane style="-fx-background-color: rgba(255,255,255,0.82); -fx-background-radius: 10;">
+    <BorderPane styleClass="fondo-graficas">
         <padding>
             <Insets top="16" right="16" bottom="16" left="16"/>
         </padding>
@@ -96,7 +100,7 @@
         </center>
 
         <bottom>
-            <VBox spacing="6" style="-fx-padding: 12 0 0 0;">
+            <VBox spacing="6" styleClass="resumen-graficas">
                 <Label text="Resumen" styleClass="titulo-seccion"/>
                 <Label fx:id="lblResumen1" text="-"/>
                 <Label fx:id="lblResumen2" text="-"/>
@@ -105,4 +109,5 @@
         </bottom>
     </BorderPane>
 
-</StackPane>
+    </StackPane>
+</ScrollPane>

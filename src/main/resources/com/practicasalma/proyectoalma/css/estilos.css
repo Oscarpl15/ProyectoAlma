@@ -505,3 +505,23 @@
     -fx-background-color: rgba(46, 83, 116, 0.15);
     -fx-background-radius: 50%;
 }
+
+/* === VISTA DE GRÁFICAS === */
+.scroll-contenido {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-contenido > .viewport {
+    -fx-background-color: transparent;
+}
+
+.fondo-graficas {
+    -fx-background-color: rgba(255, 255, 255, 0.82);
+    -fx-background-radius: 10;
+}
+
+.resumen-graficas {
+    -fx-padding: 12 0 0 0;
+}
