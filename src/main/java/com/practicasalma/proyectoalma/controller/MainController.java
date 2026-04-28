@@ -4,8 +4,11 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.service.GestorAsignaciones;
 import com.practicasalma.proyectoalma.service.GestorCorreo;
 import com.practicasalma.proyectoalma.service.GestorMatriculas;
+import com.practicasalma.proyectoalma.service.RecordatorioCorreoService;
 import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import com.practicasalma.proyectoalma.util.doc.GestorDocumentos;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.control.Alert;
@@ -50,6 +53,15 @@ public class MainController {
         imgFondo.fitHeightProperty().bind(rootPane.heightProperty());
         if (tabPrincipal != null) {
             tabPrincipal.getSelectionModel().select(0);
+        }
+
+        try {
+            RecordatorioCorreoService recordatorioService = new RecordatorioCorreoService();
+            recordatorioService.enviarSiCorresponde();
+        } catch (Exception e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.WARNING,
+                    "Recordatorio correo",
+                    "No se pudo enviar el recordatorio: " + e.getMessage());
         }
         GestorMatriculas.DatosDialogo datosSexto = GestorMatriculas.ejecutar();
         GestorAsignaciones.DatosPersonal datosPersonal = GestorAsignaciones.prepararDatos();
@@ -187,5 +199,32 @@ public class MainController {
         ok.showAndWait();
     }
 
+    @FXML
+    private void configurarRecordatorioCorreo(ActionEvent event) {
+        TextInputDialog fechaDialog = new TextInputDialog(obtenerFechaRecordatorio());
+        fechaDialog.setTitle("Recordatorio correo");
+        fechaDialog.setHeaderText("Fecha del recordatorio (dd/MM)");
+        fechaDialog.setContentText("Fecha:");
 
+        Optional<String> fechaResultado = fechaDialog.showAndWait();
+        if (fechaResultado.isEmpty()) {
+            return;
+        }
+
+        String fecha = fechaResultado.get().trim();
+        if (!fecha.isEmpty()) {
+            GestorConfig.setRecordatorioFecha(fecha);
+        }
+
+        Alert ok = new Alert(Alert.AlertType.INFORMATION);
+        ok.setTitle("Recordatorio guardado");
+        ok.setHeaderText(null);
+        ok.setContentText("Fecha actualizada. Se enviara en la fecha configurada al abrir la app.");
+        ok.showAndWait();
+    }
+
+    private String obtenerFechaRecordatorio() {
+        String configurada = GestorConfig.getRecordatorioFecha();
+        return (configurada == null || configurada.isBlank()) ? "20/01" : configurada.trim();
+    }
 }

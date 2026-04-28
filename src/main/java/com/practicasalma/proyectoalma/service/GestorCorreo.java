@@ -1,13 +1,18 @@
 package com.practicasalma.proyectoalma.service;
 
 import com.practicasalma.proyectoalma.util.config.GestorConfig;
+import jakarta.activation.DataHandler;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.util.ByteArrayDataSource;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -37,28 +42,26 @@ public class GestorCorreo {
         correoRemitente = correo != null ? correo.trim() : "";
         contrasenaRemitente = contrasena != null ? contrasena : "";
         GestorConfig.setCorreoRemitente(correoRemitente);
-        GestorConfig.setCorreoPasswordApp(contrasenaRemitente);
     }
 
     public static boolean estaConfigurado() {
-        cargarCredencialesDesdeConfigSiHaceFalta();
+        cargarCorreoDesdeConfigSiHaceFalta();
         return !correoRemitente.isBlank() && !contrasenaRemitente.isBlank();
     }
 
-    private static void cargarCredencialesDesdeConfigSiHaceFalta() {
-        if (!correoRemitente.isBlank() && !contrasenaRemitente.isBlank()) {
+    private static void cargarCorreoDesdeConfigSiHaceFalta() {
+        if (!correoRemitente.isBlank()) {
             return;
         }
 
         String correoGuardado = GestorConfig.getCorreoRemitente();
-        String contrasenaGuardada = GestorConfig.getCorreoPasswordApp();
-
-        if (correoRemitente.isBlank() && correoGuardado != null) {
+        if (correoGuardado != null && !correoGuardado.isBlank()) {
             correoRemitente = correoGuardado.trim();
         }
-        if (contrasenaRemitente.isBlank() && contrasenaGuardada != null) {
-            contrasenaRemitente = contrasenaGuardada;
-        }
+    }
+
+    public static void limpiarCredenciales() {
+        contrasenaRemitente = "";
     }
 
     private static Session crearSesion() {
@@ -139,6 +142,70 @@ public class GestorCorreo {
             Transport.send(mensaje);
         } catch (Exception e) {
             throw new com.practicasalma.proyectoalma.exception.AlmaException("Error al enviar el correo con adjunto: " + e.getMessage(), e);
+        }
+    }
+
+    public static void mandarEmailHtmlConAdjuntoImagen(
+            String destinatario,
+            String asunto,
+            String cuerpoHtml,
+            String rutaAdjunto,
+            String recursoImagen,
+            String contentId
+    ) {
+        Session sesion = crearSesion();
+
+        try {
+            MimeMessage mensaje = new MimeMessage(sesion);
+            mensaje.setFrom(new InternetAddress(correoRemitente));
+            mensaje.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
+            mensaje.setSubject(asunto, StandardCharsets.UTF_8.name());
+
+            MimeBodyPart htmlPart = new MimeBodyPart();
+            htmlPart.setContent(cuerpoHtml, "text/html; charset=UTF-8");
+
+            MimeMultipart related = new MimeMultipart("related");
+            related.addBodyPart(htmlPart);
+
+            if (recursoImagen != null && !recursoImagen.isBlank()) {
+                MimeBodyPart imagenPart = new MimeBodyPart();
+                byte[] imagenBytes = cargarRecursoBytes(recursoImagen);
+                if (imagenBytes != null) {
+                    imagenPart.setDataHandler(new DataHandler(new ByteArrayDataSource(imagenBytes, "image/png")));
+                    imagenPart.setFileName("logo.png");
+                    imagenPart.setHeader("Content-ID", "<" + contentId + ">");
+                    imagenPart.setDisposition(MimeBodyPart.INLINE);
+                    related.addBodyPart(imagenPart);
+                }
+            }
+
+            MimeBodyPart relatedWrapper = new MimeBodyPart();
+            relatedWrapper.setContent(related);
+
+            MimeBodyPart adjuntoPart = new MimeBodyPart();
+            adjuntoPart.attachFile(new File(rutaAdjunto));
+
+            MimeMultipart mixed = new MimeMultipart("mixed");
+            mixed.addBodyPart(relatedWrapper);
+            mixed.addBodyPart(adjuntoPart);
+
+            mensaje.setContent(mixed);
+
+            Transport.send(mensaje);
+        } catch (Exception e) {
+            throw new com.practicasalma.proyectoalma.exception.AlmaException(
+                    "Error al enviar el correo con adjunto: " + e.getMessage(), e);
+        }
+    }
+
+    private static byte[] cargarRecursoBytes(String recurso) {
+        try (InputStream input = GestorCorreo.class.getResourceAsStream(recurso)) {
+            if (input == null) {
+                return null;
+            }
+            return input.readAllBytes();
+        } catch (Exception e) {
+            return null;
         }
     }
 }

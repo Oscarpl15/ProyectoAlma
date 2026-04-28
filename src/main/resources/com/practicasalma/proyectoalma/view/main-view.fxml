@@ -39,7 +39,7 @@
                     <Button fx:id="btnAjustes" onAction="#abrirMenuAjustes" styleClass="boton-ajustes">
                         <graphic>
                             <ImageView fitWidth="52" fitHeight="52" preserveRatio="true">
-                                <image><Image url="@../assets/ajustes.png"/></image>
+                                <image><Image url="@../assets/Ajustes.png"/></image>
                             </ImageView>
                         </graphic>
                     </Button>
@@ -58,6 +58,7 @@
                                 <MenuItem text="Cambiar directorio documentos" onAction="#cambiarDirectorioDocs"/>
                                 <SeparatorMenuItem/>
                                 <MenuItem text="Credenciales correo" onAction="#configurarCorreo"/>
+                                <MenuItem text="Recordatorio correo (20 enero)" onAction="#configurarRecordatorioCorreo"/>
                             </items>
                         </ContextMenu>
                     </fx:define>

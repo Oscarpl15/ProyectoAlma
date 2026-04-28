@@ -20,8 +20,13 @@ import javafx.stage.Stage;
 import javafx.application.Platform;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Controlador JavaFX de la ficha de detalle de un socio ({@code fichaSocio-view.fxml}).
@@ -383,10 +388,9 @@ public class FichaSocioController {
         }
 
         if (!GestorCorreo.estaConfigurado()) {
-            FxUtils.mostrarAlerta(Alert.AlertType.WARNING,
-                    "Configurar correo",
-                    "Antes de enviar, configura el correo desde el botón 'Correo' en la pantalla principal.");
-            return;
+            if (!solicitarCredencialesCorreo()) {
+                return;
+            }
         }
 
         try {
@@ -405,11 +409,23 @@ public class FichaSocioController {
 
             generadorPdfService.generarInformeSocioConPlantilla(rutaInforme.toString(), socioActual);
 
-            GestorCorreo.mandarEmailConAdjunto(
+            Path rutaZip = Paths.get(rutaDocumentos,
+                    "Informes",
+                    "socios",
+                    "certificado_donaciones_" + (socioActual.getId() != null ? socioActual.getId() : "sin_id") + ".zip");
+            crearZip(rutaInforme, rutaZip);
+
+            int anoCertificado = obtenerAnoCertificado();
+            String asunto = "Certificado de donaciones " + anoCertificado;
+            String cuerpoHtml = construirCorreoHtml(socioActual.getNombre(), anoCertificado);
+
+            GestorCorreo.mandarEmailHtmlConAdjuntoImagen(
                     correoSocio,
-                    "Prueba",
-                    "Prueba",
-                    rutaInforme.toString()
+                    asunto,
+                    cuerpoHtml,
+                    rutaZip.toString(),
+                    "/com/practicasalma/proyectoalma/assets/logo.png",
+                    "logo"
             );
 
             FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION,
@@ -419,6 +435,97 @@ public class FichaSocioController {
             FxUtils.mostrarAlerta(Alert.AlertType.ERROR,
                     "Error al enviar informe",
                     "No se pudo generar o enviar el informe: " + e.getMessage());
+        } finally {
+            GestorCorreo.limpiarCredenciales();
         }
+    }
+
+    private void crearZip(Path archivoPdf, Path rutaZip) throws Exception {
+        if (archivoPdf == null || rutaZip == null) {
+            return;
+        }
+        if (rutaZip.getParent() != null) {
+            Files.createDirectories(rutaZip.getParent());
+        }
+        try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(rutaZip))) {
+            ZipEntry entry = new ZipEntry(archivoPdf.getFileName().toString());
+            zos.putNextEntry(entry);
+            Files.copy(archivoPdf, zos);
+            zos.closeEntry();
+        }
+    }
+
+    private int obtenerAnoCertificado() {
+        int anoActual = LocalDate.now().getYear();
+        if (socioActual == null || socioActual.getDonaciones() == null || socioActual.getDonaciones().isEmpty()) {
+            return anoActual;
+        }
+
+        return socioActual.getDonaciones().stream()
+                .filter(d -> d.getFecha() != null)
+                .map(d -> d.getFecha().getYear())
+                .max(Integer::compareTo)
+                .orElse(anoActual);
+    }
+
+    private String construirCorreoHtml(String nombre, int ano) {
+        String nombreSeguro = (nombre == null || nombre.isBlank()) ? "" : nombre.trim();
+        return "<html><body style='font-family: Arial, sans-serif; font-size: 12pt; color: #1a1a1a;'>"
+                + "<p>Hola " + nombreSeguro + ",</p>"
+                + "<p>Te informamos que ya está listo el certificado de tus donaciones (" + ano + "). "
+                + "Adjunto a este documento puedes descargártelo.</p>"
+                + "<p>Con este certificado podrás obtener desgravaciónes fiscales en la declaración de la renta que presentes este año.</p>"
+                + "<p>Conoce todos los detalles sobre desgravaciones fiscales en nuestra web.</p>"
+                + "<p>Un abrazo,</p>"
+                + "<p>Equipo de Fundación Alma.</p>"
+                + "<p><img src='cid:logo' alt='Fundación Alma' style='width:160px; height:auto;'/></p>"
+                + "<p>Calle Torrelaguna 21, Alcalá de Henares (Madrid)<br/>"
+                + "Tlfno: 685761563<br/>"
+                + "info@fundacionalma2022.org<br/>"
+                + "www.fundacionalma2022.org</p>"
+                + "<p>NOTA LEGAL: Este mensaje y cualquier archivo adjunto está destinado únicamente a quien se dirige y es confidencial. "
+                + "Si usted ha recibido este mensaje por error, comuníqueselo al remitente y bórrelo inmediatamente. "
+                + "La utilización, revelación y/o reproducción del mensaje puede constituir un delito.</p>"
+                + "<p>PROTECCIÓN DE DATOS – Responsable: FUNDACION ALMA 2022. Finalidad. Envío de información, respuesta a consultas y contactos genéricos. "
+                + "Legitimación. El interés legítimo del responsable, el cumplimiento de un contrato en el que el interesado es parte o su consentimiento, "
+                + "que puede ser retirado en cualquier momento. Conservación. Mientras sea necesario para el fin descrito y el interesado no se oponga. "
+                + "Destinatarios. No se cederán datos a terceros salvo obligación legal. Derechos. Puede ejercer los derechos de acceso, rectificación, supresión, "
+                + "limitación, oposición, y portabilidad mediante escrito, acompañado de copia de documento oficial que le identifique, dirigido a direccion@fundacionalma2022.org. "
+                + "También podrá oponerse a nuestras comunicaciones comerciales (Art.21.2 de la LSSI) en la misma dirección. En caso de disconformidad con el tratamiento, "
+                + "tiene derecho a presentar una reclamación ante la Agencia Española de Protección de Datos (www.aepd.es).</p>"
+                + "</body></html>";
+    }
+
+    private boolean solicitarCredencialesCorreo() {
+        TextInputDialog correoDialog = new TextInputDialog(GestorConfig.getCorreoRemitente());
+        correoDialog.setTitle("Configurar correo");
+        correoDialog.setHeaderText("Introduce el correo de envio");
+        correoDialog.setContentText("Correo:");
+
+        Optional<String> correoResultado = correoDialog.showAndWait();
+        if (correoResultado.isEmpty() || correoResultado.get().trim().isEmpty()) {
+            return false;
+        }
+
+        PasswordField passwordField = new PasswordField();
+        passwordField.setPromptText("Contraseña de aplicación");
+
+        Alert passwordAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        passwordAlert.setTitle("Configurar correo");
+        passwordAlert.setHeaderText("Introduce la contraseña del correo");
+        passwordAlert.getDialogPane().setContent(passwordField);
+
+        Optional<ButtonType> passwordResultado = passwordAlert.showAndWait();
+        if (passwordResultado.isEmpty() || passwordResultado.get() != ButtonType.OK) {
+            return false;
+        }
+
+        String contrasena = passwordField.getText();
+        if (contrasena == null || contrasena.isBlank()) {
+            return false;
+        }
+
+        GestorCorreo.configurarCredenciales(correoResultado.get().trim(), contrasena);
+        return true;
     }
 }
