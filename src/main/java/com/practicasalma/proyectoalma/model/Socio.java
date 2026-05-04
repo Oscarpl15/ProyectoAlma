@@ -49,6 +49,9 @@ public class Socio extends Persona {
     @Column(name = "forma_pago")
     private String formaPago;
 
+    @Column(name = "provincia")
+    private String provincia;
+
     @Column(name = "activo", nullable = false)
     private Boolean activo = true;
 
@@ -110,6 +113,9 @@ public class Socio extends Persona {
 
     public String getFormaPago() { return formaPago; }
     public void setFormaPago(String formaPago) { this.formaPago = formaPago; }
+
+    public String getProvincia() { return provincia; }
+    public void setProvincia(String provincia) { this.provincia = provincia; }
 
     public List<Donacion> getDonaciones() {return donaciones;}
 

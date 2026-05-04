@@ -65,6 +65,7 @@ public class FichaSocioController {
     @FXML private TextField txtTipoBanco;
     @FXML private TextField txtCiudad;
     @FXML private TextField txtCodigoPostal;
+    @FXML private TextField txtProvincia;
 
     @FXML private TextField txtGeneroLectura;
     @FXML private ComboBox<String> comboGenero;
@@ -140,6 +141,7 @@ public class FichaSocioController {
         lblTipoDocLectura.setText(tipoMostrar + ":");
         txtCiudad.setText(socioActual.getCiudad() != null ? socioActual.getCiudad() : "");
         txtCodigoPostal.setText(socioActual.getCodigoPostal() != null ? socioActual.getCodigoPostal() : "");
+        txtProvincia.setText(socioActual.getProvincia() != null ? socioActual.getProvincia() : "");
 
         txtTipoEntidadLectura.setText(socioActual.getTipoEntidad() != null ? socioActual.getTipoEntidad() : "");
         comboTipoEntidad.setValue(socioActual.getTipoEntidad());
@@ -191,6 +193,7 @@ public class FichaSocioController {
         txtTipoBanco.setEditable(editable);
         txtCiudad.setEditable(editable);
         txtCodigoPostal.setEditable(editable);
+        txtProvincia.setEditable(editable);
 
         // Cuota: editable solo si no es Puntual
         boolean esPuntual = "Puntual".equals(comboPeriodicidad.getValue());
@@ -312,6 +315,7 @@ public class FichaSocioController {
             return;
         }
         socioActual.setCodigoPostal(cp.isBlank() ? null : cp);
+        socioActual.setProvincia(txtProvincia.getText().isBlank() ? null : txtProvincia.getText().trim());
         socioActual.setTipoEntidad(comboTipoEntidad.getValue());
         socioActual.setFormaPago(comboFormaPago.getValue());
         socioActual.setCuentaBancaria(txtCuentaBancaria.getText().trim());

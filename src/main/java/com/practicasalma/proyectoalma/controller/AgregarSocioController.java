@@ -34,6 +34,7 @@ public class AgregarSocioController {
     @FXML private ComboBox<String> comboGenero;
     @FXML private TextField txtCiudad;
     @FXML private TextField txtCodigoPostal;
+    @FXML private TextField txtProvincia;
     @FXML private DatePicker dpFechaDonacion;
 
     private final SocioService socioService = new SocioService();
@@ -106,6 +107,8 @@ public class AgregarSocioController {
                 }
                 socio.setCodigoPostal(cp);
             }
+            String provincia = txtProvincia.getText().trim();
+            if (!provincia.isEmpty()) socio.setProvincia(provincia);
             socio.setTipoDocumento(comboTipoDocumento.getValue());
             String formaPago = comboFormaPago.getValue();
             if (formaPago != null) socio.setFormaPago(formaPago);

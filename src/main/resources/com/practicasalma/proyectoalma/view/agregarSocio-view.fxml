@@ -46,20 +46,23 @@
                     <Label text="Correo:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
                     <TextField fx:id="txtCorreo" promptText="tuemail@ejemplo.com" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-                    <Label text="Dirección:" GridPane.rowIndex="2" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtDireccion" promptText="C/ Ejemplo 12" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
-
-                    <Label text="Ciudad:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtCiudad" promptText="Ej: Madrid" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    <Label text="Dirección:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtDireccion" promptText="C/ Ejemplo 12" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
                     <Label text="Cód. Postal:" GridPane.rowIndex="3" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
                     <TextField fx:id="txtCodigoPostal" promptText="Ej: 28001" GridPane.rowIndex="3" GridPane.columnIndex="3"/>
 
-                    <Label text="Nacionalidad:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtNacionalidad" promptText="Ej: Española" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                    <Label text="Ciudad:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCiudad" promptText="Ej: Madrid" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
-                    <Label text="Género:" GridPane.rowIndex="4" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
-                    <ComboBox fx:id="comboGenero" promptText="Seleccione..." GridPane.rowIndex="4" GridPane.columnIndex="3" maxWidth="Infinity">
+                    <Label text="Provincia:" GridPane.rowIndex="4" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtProvincia" promptText="Ej: Madrid" GridPane.rowIndex="4" GridPane.columnIndex="3"/>
+
+                    <Label text="Nacionalidad:" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtNacionalidad" promptText="Ej: Española" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+                    <Label text="Género:" GridPane.rowIndex="5" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboGenero" promptText="Seleccione..." GridPane.rowIndex="5" GridPane.columnIndex="3" maxWidth="Infinity">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="Masculino"/>
@@ -70,8 +73,8 @@
                         </items>
                     </ComboBox>
 
-                    <Label text="Tipo Entidad:" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-                    <ComboBox fx:id="comboTipoEntidad" promptText="Seleccione..." GridPane.rowIndex="5" GridPane.columnIndex="1" maxWidth="Infinity">
+                    <Label text="Tipo Entidad:" GridPane.rowIndex="6" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboTipoEntidad" promptText="Seleccione..." GridPane.rowIndex="6" GridPane.columnIndex="1" maxWidth="Infinity">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="Física"/>
@@ -81,8 +84,8 @@
                         </items>
                     </ComboBox>
 
-                    <Label text="Forma de Pago:" GridPane.rowIndex="5" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
-                    <ComboBox fx:id="comboFormaPago" promptText="Seleccione..." GridPane.rowIndex="5" GridPane.columnIndex="3" maxWidth="Infinity">
+                    <Label text="Forma de Pago:" GridPane.rowIndex="6" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboFormaPago" promptText="Seleccione..." GridPane.rowIndex="6" GridPane.columnIndex="3" maxWidth="Infinity">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="Domiciliación"/>
@@ -92,8 +95,8 @@
                         </items>
                     </ComboBox>
 
-                    <Label text="Periodicidad:" GridPane.rowIndex="6" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-                    <ComboBox fx:id="comboPeriodicidad" promptText="Seleccione..." GridPane.rowIndex="6" GridPane.columnIndex="1" maxWidth="Infinity">
+                    <Label text="Periodicidad:" GridPane.rowIndex="7" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboPeriodicidad" promptText="Seleccione..." GridPane.rowIndex="7" GridPane.columnIndex="1" maxWidth="Infinity">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="Mensual"/>
@@ -104,11 +107,11 @@
                         </items>
                     </ComboBox>
 
-                    <Label text="Cuota (€):" GridPane.rowIndex="6" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
-                    <TextField fx:id="txtCuota" promptText="Ej: 0.0" GridPane.rowIndex="6" GridPane.columnIndex="3"/>
+                    <Label text="Cuota (€):" GridPane.rowIndex="7" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="txtCuota" promptText="Ej: 0.0" GridPane.rowIndex="7" GridPane.columnIndex="3"/>
 
-                    <Label text="Fecha donación:" GridPane.rowIndex="7" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
-                    <DatePicker fx:id="dpFechaDonacion" GridPane.rowIndex="7" GridPane.columnIndex="1" maxWidth="Infinity"/>
+                    <Label text="Fecha donación:" GridPane.rowIndex="8" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <DatePicker fx:id="dpFechaDonacion" GridPane.rowIndex="8" GridPane.columnIndex="1" maxWidth="Infinity"/>
                 </GridPane>
 
             </VBox>

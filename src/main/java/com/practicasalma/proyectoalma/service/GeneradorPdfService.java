@@ -710,22 +710,23 @@ public class GeneradorPdfService {
         String direccion = socio.getDireccion() != null ? socio.getDireccion().trim() : "";
         String ciudad = socio.getCiudad() != null ? socio.getCiudad().trim() : "";
         String cp = socio.getCodigoPostal() != null ? socio.getCodigoPostal().trim() : "";
+        String provincia = socio.getProvincia() != null ? socio.getProvincia().trim() : "";
 
         StringBuilder sb = new StringBuilder();
         if (!direccion.isEmpty()) {
             sb.append(direccion);
         }
         if (!cp.isEmpty()) {
-            if (!sb.isEmpty()) {
-                sb.append(", ");
-            }
+            if (!sb.isEmpty()) sb.append(", ");
             sb.append(cp);
         }
         if (!ciudad.isEmpty()) {
-            if (!sb.isEmpty()) {
-                sb.append(" ");
-            }
+            if (!sb.isEmpty()) sb.append(" ");
             sb.append(ciudad);
+        }
+        if (!provincia.isEmpty()) {
+            if (!sb.isEmpty()) sb.append(" ");
+            sb.append("(").append(provincia).append(")");
         }
 
         String resultado = sb.toString().trim();
