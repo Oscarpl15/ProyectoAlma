@@ -41,11 +41,7 @@ public class GestorConfig {
     private static final String CLAVE_CORREO_REMITENTE        = "correo.remitente";
     private static final String CLAVE_CORREO_PASSWORD_APP     = "correo.password.app";
     private static final String CLAVE_GRUPOS                  = "grupos";
-    private static final String CLAVE_RECORDATORIO_DESTINATARIOS = "correo.recordatorio.destinatarios";
-    private static final String CLAVE_RECORDATORIO_ASUNTO     = "correo.recordatorio.asunto";
-    private static final String CLAVE_RECORDATORIO_CUERPO     = "correo.recordatorio.cuerpo";
-    private static final String CLAVE_RECORDATORIO_ULTIMO_ANO = "correo.recordatorio.ultimo_ano";
-    private static final String CLAVE_RECORDATORIO_FECHA      = "correo.recordatorio.fecha";
+    private static final String CLAVE_CERTIFICADOS_ULTIMO_ANO = "certificados.ultimo_ano";
 
     private static final String GRUPOS_DEFECTO =
             "g1 lunes/miercoles,g2 lunes/miercoles,g1 martes/jueves,g2 martes/jueves";
@@ -167,51 +163,16 @@ public class GestorConfig {
         configuracionDAO.set(CLAVE_GRUPOS, String.join(",", grupos));
     }
 
-    // ── RECORDATORIO DE CORREO (BD) ───────────────────────────────────────────
+    // ── CERTIFICADOS ANUALES (BD) ─────────────────────────────────────────────
 
-    /** @return destinatarios del recordatorio, o {@code null} si no configurado */
-    public static String getRecordatorioDestinatarios() {
-        return configuracionDAO.get(CLAVE_RECORDATORIO_DESTINATARIOS);
+    /** @return año en que se enviaron por última vez los certificados, o {@code null} si nunca */
+    public static String getCertificadosUltimoAno() {
+        return configuracionDAO.get(CLAVE_CERTIFICADOS_ULTIMO_ANO);
     }
 
-    /** @return asunto del recordatorio, o {@code null} si no configurado */
-    public static String getRecordatorioAsunto() {
-        return configuracionDAO.get(CLAVE_RECORDATORIO_ASUNTO);
-    }
-
-    /** @return cuerpo del recordatorio, o {@code null} si no configurado */
-    public static String getRecordatorioCuerpo() {
-        return configuracionDAO.get(CLAVE_RECORDATORIO_CUERPO);
-    }
-
-    /** @return último año en que se envió el recordatorio, o {@code null} si nunca */
-    public static String getRecordatorioUltimoAno() {
-        return configuracionDAO.get(CLAVE_RECORDATORIO_ULTIMO_ANO);
-    }
-
-    /** @return fecha configurada para el recordatorio, o {@code null} si no configurada */
-    public static String getRecordatorioFecha() {
-        return configuracionDAO.get(CLAVE_RECORDATORIO_FECHA);
-    }
-
-    public static void setRecordatorioDestinatarios(String destinatarios) {
-        configuracionDAO.set(CLAVE_RECORDATORIO_DESTINATARIOS, destinatarios);
-    }
-
-    public static void setRecordatorioAsunto(String asunto) {
-        configuracionDAO.set(CLAVE_RECORDATORIO_ASUNTO, asunto);
-    }
-
-    public static void setRecordatorioCuerpo(String cuerpo) {
-        configuracionDAO.set(CLAVE_RECORDATORIO_CUERPO, cuerpo);
-    }
-
-    public static void setRecordatorioUltimoAno(String ano) {
-        configuracionDAO.set(CLAVE_RECORDATORIO_ULTIMO_ANO, ano);
-    }
-
-    public static void setRecordatorioFecha(String fecha) {
-        configuracionDAO.set(CLAVE_RECORDATORIO_FECHA, fecha);
+    /** Persiste el año en que se han enviado los certificados anuales. */
+    public static void setCertificadosUltimoAno(String ano) {
+        configuracionDAO.set(CLAVE_CERTIFICADOS_ULTIMO_ANO, ano);
     }
 
     // ── ACCESO AL FICHERO DE PROPIEDADES (privado) ────────────────────────────

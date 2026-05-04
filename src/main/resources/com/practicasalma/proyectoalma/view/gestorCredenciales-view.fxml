@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.practicasalma.proyectoalma.controller.GestorCredencialesController"
+            styleClass="fondo-blanco"
+            stylesheets="@../css/estilos.css"
+            prefWidth="500">
+
+    <top>
+        <VBox spacing="5" styleClass="padding-cabecera-ficha">
+            <Label text="Gestor de credenciales de correo" styleClass="titulo-ventana"/>
+            <Label text="Correo y contraseña de aplicación para el envío de certificados." styleClass="subtitulo-ventana"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="20" styleClass="padding-cuerpo-ficha">
+            <GridPane hgap="15" vgap="15">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="NEVER" minWidth="110" halignment="RIGHT"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+
+                <Label text="Correo:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                <TextField fx:id="txtCorreo" GridPane.rowIndex="0" GridPane.columnIndex="1" promptText="correo@gmail.com"/>
+
+                <Label text="Contraseña:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                <PasswordField fx:id="txtPassword" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="Contraseña de aplicación"/>
+            </GridPane>
+
+            <Label text="Nota: se requiere una contraseña de aplicación de Gmail, no la contraseña normal de la cuenta. Se genera en la configuración de seguridad de Google con la verificación en dos pasos activada."
+                   styleClass="subtitulo-ventana" wrapText="true"/>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="15" alignment="CENTER_RIGHT" styleClass="padding-pie-ficha">
+            <Button text="Cancelar" onAction="#cancelar" styleClass="boton-cancelar"/>
+            <Button text="Guardar" onAction="#guardar" styleClass="boton-accion"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

@@ -504,6 +504,69 @@ public class GeneradorPdfService {
         );
     }
 
+    /**
+     * Genera el certificado de donaciones filtrando solo las del año indicado.
+     *
+     * @param rutaSalida ruta del fichero PDF de salida
+     * @param socio      socio para el que se emite el certificado (con donaciones cargadas)
+     * @param ano        año de las donaciones a certificar (p. ej. año actual para envío manual)
+     */
+    public void generarInformeSocioConPlantilla(String rutaSalida, Socio socio, int ano) {
+        if (socio == null) {
+            throw new IllegalArgumentException("El socio es obligatorio para generar el informe.");
+        }
+
+        String rutaPlantilla = resolverRutaPlantillaCertificado();
+
+        List<Donacion> donaciones = socio.getDonaciones();
+        if (donaciones != null && ano > 0) {
+            donaciones = donaciones.stream()
+                    .filter(d -> d.getFecha() != null && d.getFecha().getYear() == ano)
+                    .collect(java.util.stream.Collectors.toList());
+        }
+
+        BigDecimal totalDonado = BigDecimal.ZERO;
+        int anoInicial = (ano > 0) ? ano : LocalDate.now().getYear();
+
+        if (donaciones != null && !donaciones.isEmpty()) {
+            for (Donacion donacion : donaciones) {
+                if (donacion.getImporte() != null) {
+                    totalDonado = totalDonado.add(donacion.getImporte());
+                }
+            }
+            if (ano <= 0) {
+                Donacion masReciente = donaciones.stream()
+                        .filter(d -> d.getFecha() != null)
+                        .max(Comparator.comparing(Donacion::getFecha))
+                        .orElse(null);
+                if (masReciente != null) {
+                    anoInicial = masReciente.getFecha().getYear();
+                }
+            }
+        }
+
+        LocalDate hoy = LocalDate.now();
+        String nombreCompleto = (valorSeguro(socio.getNombre()) + " " + valorSeguro(socio.getApellidos())).trim();
+        String domicilio = construirDomicilioObligatorio(socio);
+        BigDecimal cantidadInforme = obtenerCantidadInforme(totalDonado, socio.getCuota());
+        String cantidadNumero = formatearCantidad(cantidadInforme);
+        String cantidadLetra = convertirImporteALetras(cantidadInforme);
+
+        generarCertificadoDonacion(
+                rutaPlantilla,
+                rutaSalida,
+                String.valueOf(anoInicial),
+                nombreCompleto,
+                valorSeguro(socio.getDocumentoIdentidad()),
+                domicilio,
+                cantidadNumero,
+                cantidadLetra,
+                String.valueOf(hoy.getDayOfMonth()),
+                hoy.getMonth().getDisplayName(TextStyle.FULL, new Locale("es", "ES")).toUpperCase(Locale.ROOT),
+                String.valueOf(hoy.getYear())
+        );
+    }
+
     public void generarCertificadoDonacion(
             String rutaPlantilla,
             String rutaSalida,

@@ -1,5 +1,6 @@
 package com.practicasalma.proyectoalma.service;
 
+import com.practicasalma.proyectoalma.util.CifradoUtil;
 import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import jakarta.activation.DataHandler;
 import jakarta.mail.*;
@@ -42,26 +43,33 @@ public class GestorCorreo {
         correoRemitente = correo != null ? correo.trim() : "";
         contrasenaRemitente = contrasena != null ? contrasena : "";
         GestorConfig.setCorreoRemitente(correoRemitente);
+        if (!contrasenaRemitente.isBlank()) {
+            GestorConfig.setCorreoPasswordApp(CifradoUtil.cifrar(contrasenaRemitente));
+        }
     }
 
     public static boolean estaConfigurado() {
-        cargarCorreoDesdeConfigSiHaceFalta();
+        cargarCredencionalesDesdeConfigSiHaceFalta();
         return !correoRemitente.isBlank() && !contrasenaRemitente.isBlank();
     }
 
-    private static void cargarCorreoDesdeConfigSiHaceFalta() {
-        if (!correoRemitente.isBlank()) {
-            return;
+    private static void cargarCredencionalesDesdeConfigSiHaceFalta() {
+        if (correoRemitente.isBlank()) {
+            String correoGuardado = GestorConfig.getCorreoRemitente();
+            if (correoGuardado != null && !correoGuardado.isBlank()) {
+                correoRemitente = correoGuardado.trim();
+            }
         }
-
-        String correoGuardado = GestorConfig.getCorreoRemitente();
-        if (correoGuardado != null && !correoGuardado.isBlank()) {
-            correoRemitente = correoGuardado.trim();
+        if (contrasenaRemitente.isBlank()) {
+            String passwordCifrada = GestorConfig.getCorreoPasswordApp();
+            if (passwordCifrada != null && !passwordCifrada.isBlank()) {
+                contrasenaRemitente = CifradoUtil.descifrar(passwordCifrada);
+            }
         }
     }
 
     public static void limpiarCredenciales() {
-        contrasenaRemitente = "";
+        // Las credenciales son persistentes; no se limpian entre envíos
     }
 
     private static Session crearSesion() {

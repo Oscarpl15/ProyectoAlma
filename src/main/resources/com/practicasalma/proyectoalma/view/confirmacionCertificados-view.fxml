@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.practicasalma.proyectoalma.controller.ConfirmacionCertificadosController"
+            styleClass="fondo-blanco"
+            stylesheets="@../css/estilos.css"
+            prefWidth="500" prefHeight="420">
+
+    <top>
+        <VBox spacing="5" styleClass="padding-cabecera-ficha">
+            <Label text="Certificados de donaciones" styleClass="titulo-ventana"/>
+            <Label fx:id="lblSubtitulo" styleClass="subtitulo-ventana"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="10" styleClass="padding-cuerpo-ficha">
+            <Label text="Se enviarán certificados a los siguientes socios:" styleClass="etiqueta-campo"/>
+            <ListView fx:id="listaConfirmacion" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="15" alignment="CENTER_RIGHT" styleClass="padding-pie-ficha">
+            <Button text="Confirmar" onAction="#confirmar" styleClass="boton-accion"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

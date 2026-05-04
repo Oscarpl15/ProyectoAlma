@@ -26,13 +26,6 @@ import java.util.Objects;
 import javafx.application.Platform;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.util.Optional;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -495,7 +488,10 @@ public class FichaSocioController {
         }
 
         if (!GestorCorreo.estaConfigurado()) {
-            if (!solicitarCredencialesCorreo()) {
+            abrirGestorCredenciales();
+            if (!GestorCorreo.estaConfigurado()) {
+                FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Sin credenciales",
+                        "No se han configurado las credenciales de correo.");
                 return;
             }
         }
@@ -509,27 +505,20 @@ public class FichaSocioController {
                 return;
             }
 
-            Path rutaInforme = Paths.get(rutaDocumentos,
-                    "Informes", "socios",
+            int anoActual = LocalDate.now().getYear();
+            Path rutaInforme = Paths.get(rutaDocumentos, "Informes", "socios",
                     "informe_socio_" + (socioActual.getId() != null ? socioActual.getId() : "sin_id") + ".pdf");
 
-            generadorPdfService.generarInformeSocioConPlantilla(rutaInforme.toString(), socioActual);
+            generadorPdfService.generarInformeSocioConPlantilla(rutaInforme.toString(), socioActual, anoActual);
 
-            Path rutaZip = Paths.get(rutaDocumentos,
-                    "Informes",
-                    "socios",
-                    "certificado_donaciones_" + (socioActual.getId() != null ? socioActual.getId() : "sin_id") + ".zip");
-            crearZip(rutaInforme, rutaZip);
-
-            int anoCertificado = obtenerAnoCertificado();
-            String asunto = "Certificado de donaciones " + anoCertificado;
-            String cuerpoHtml = construirCorreoHtml(socioActual.getNombre(), anoCertificado);
+            String asunto = "Certificado de donaciones " + anoActual;
+            String cuerpoHtml = construirCorreoHtml(socioActual.getNombre(), anoActual);
 
             GestorCorreo.mandarEmailHtmlConAdjuntoImagen(
                     correoSocio,
                     asunto,
                     cuerpoHtml,
-                    rutaZip.toString(),
+                    rutaInforme.toString(),
                     "/com/practicasalma/proyectoalma/assets/logo.png",
                     "logo"
             );
@@ -539,37 +528,15 @@ public class FichaSocioController {
         } catch (Exception e) {
             FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error al enviar informe",
                     "No se pudo generar o enviar el informe: " + e.getMessage());
-        } finally {
-            GestorCorreo.limpiarCredenciales();
         }
     }
 
-    private void crearZip(Path archivoPdf, Path rutaZip) throws Exception {
-        if (archivoPdf == null || rutaZip == null) {
-            return;
+    private void abrirGestorCredenciales() {
+        try {
+            FxUtils.abrirModal("gestorCredenciales-view.fxml", "Gestor de credenciales de correo");
+        } catch (Exception e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir el gestor de credenciales: " + e.getMessage());
         }
-        if (rutaZip.getParent() != null) {
-            Files.createDirectories(rutaZip.getParent());
-        }
-        try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(rutaZip))) {
-            ZipEntry entry = new ZipEntry(archivoPdf.getFileName().toString());
-            zos.putNextEntry(entry);
-            Files.copy(archivoPdf, zos);
-            zos.closeEntry();
-        }
-    }
-
-    private int obtenerAnoCertificado() {
-        int anoActual = LocalDate.now().getYear();
-        if (socioActual == null || socioActual.getDonaciones() == null || socioActual.getDonaciones().isEmpty()) {
-            return anoActual;
-        }
-
-        return socioActual.getDonaciones().stream()
-                .filter(d -> d.getFecha() != null)
-                .map(d -> d.getFecha().getYear())
-                .max(Integer::compareTo)
-                .orElse(anoActual);
     }
 
     private String construirCorreoHtml(String nombre, int ano) {
@@ -600,36 +567,4 @@ public class FichaSocioController {
                 + "</body></html>";
     }
 
-    private boolean solicitarCredencialesCorreo() {
-        TextInputDialog correoDialog = new TextInputDialog(GestorConfig.getCorreoRemitente());
-        correoDialog.setTitle("Configurar correo");
-        correoDialog.setHeaderText("Introduce el correo de envio");
-        correoDialog.setContentText("Correo:");
-
-        Optional<String> correoResultado = correoDialog.showAndWait();
-        if (correoResultado.isEmpty() || correoResultado.get().trim().isEmpty()) {
-            return false;
-        }
-
-        PasswordField passwordField = new PasswordField();
-        passwordField.setPromptText("Contraseña de aplicación");
-
-        Alert passwordAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        passwordAlert.setTitle("Configurar correo");
-        passwordAlert.setHeaderText("Introduce la contraseña del correo");
-        passwordAlert.getDialogPane().setContent(passwordField);
-
-        Optional<ButtonType> passwordResultado = passwordAlert.showAndWait();
-        if (passwordResultado.isEmpty() || passwordResultado.get() != ButtonType.OK) {
-            return false;
-        }
-
-        String contrasena = passwordField.getText();
-        if (contrasena == null || contrasena.isBlank()) {
-            return false;
-        }
-
-        GestorCorreo.configurarCredenciales(correoResultado.get().trim(), contrasena);
-        return true;
-    }
 }

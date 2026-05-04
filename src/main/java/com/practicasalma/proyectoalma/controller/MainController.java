@@ -2,14 +2,14 @@ package com.practicasalma.proyectoalma.controller;
 
 
 import com.practicasalma.proyectoalma.service.GestorAsignaciones;
+import com.practicasalma.proyectoalma.service.GestorCertificadosAnuales;
 import com.practicasalma.proyectoalma.service.GestorCorreo;
 import com.practicasalma.proyectoalma.service.GestorDonaciones;
 import com.practicasalma.proyectoalma.service.GestorMatriculas;
-import com.practicasalma.proyectoalma.service.RecordatorioCorreoService;
 import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import com.practicasalma.proyectoalma.util.doc.GestorDocumentos;
 import com.practicasalma.proyectoalma.util.ui.FxUtils;
-import javafx.event.ActionEvent;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
@@ -18,17 +18,20 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import com.practicasalma.proyectoalma.model.Socio;
+
 import java.io.File;
-import java.util.Optional;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Controlador principal de la aplicación ({@code main-view.fxml}).
@@ -61,14 +64,58 @@ public class MainController {
             tabPrincipal.getSelectionModel().select(0);
         }
 
-        try {
-            RecordatorioCorreoService recordatorioService = new RecordatorioCorreoService();
-            recordatorioService.enviarSiCorresponde();
-        } catch (Exception e) {
-            FxUtils.mostrarAlerta(Alert.AlertType.WARNING,
-                    "Recordatorio correo",
-                    "No se pudo enviar el recordatorio: " + e.getMessage());
-        }
+        Platform.runLater(() -> {
+            // Aviso de credenciales no configuradas (a partir del 1 de diciembre)
+            if (LocalDate.now().getMonthValue() == 12 && !GestorCorreo.estaConfigurado()) {
+                FxUtils.mostrarAlerta(Alert.AlertType.WARNING,
+                        "Credenciales no configuradas",
+                        "No hay credenciales de correo configuradas. Los certificados anuales se envían el 20 de enero. " +
+                        "Configúralas en Ajustes → Gestor de credenciales de correo.");
+            }
+
+            // Envío automático de certificados anuales (≥ 20 enero, solo una vez por año)
+            if (GestorCertificadosAnuales.esPeriodoEnvio() && !GestorCertificadosAnuales.yaEnviadoEsteAno()) {
+                int anoAnterior = LocalDate.now().getYear() - 1;
+                List<Socio> socios = GestorCertificadosAnuales.obtenerSociosConDonacionesEnAno(anoAnterior);
+                if (!socios.isEmpty()) {
+                    List<String> lineas = GestorCertificadosAnuales.construirLineasConfirmacion(socios, anoAnterior);
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                                "/com/practicasalma/proyectoalma/view/confirmacionCertificados-view.fxml"));
+                        Parent root = loader.load();
+                        ConfirmacionCertificadosController ctrl = loader.getController();
+                        ctrl.setDatos("Donaciones del año " + anoAnterior + " — socios con donaciones registradas", lineas);
+                        Stage stage = new Stage();
+                        stage.setTitle("Certificados de donaciones " + anoAnterior);
+                        stage.initModality(Modality.APPLICATION_MODAL);
+                        stage.initOwner(rootPane.getScene().getWindow());
+                        stage.setScene(new Scene(root));
+                        try { stage.getIcons().add(new Image(getClass().getResourceAsStream(
+                                "/com/practicasalma/proyectoalma/assets/logo.png"))); } catch (Exception ignored) {}
+                        stage.showAndWait();
+                        if (ctrl.isConfirmado()) {
+                            if (!GestorCorreo.estaConfigurado()) {
+                                FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Sin credenciales",
+                                        "No se han configurado las credenciales de correo. " +
+                                        "Configúralas en Ajustes → Gestor de credenciales de correo.");
+                                return;
+                            }
+                            GestorCertificadosAnuales.enviarCertificados(socios, anoAnterior);
+                            GestorCertificadosAnuales.marcarEnviados();
+                            FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Certificados enviados",
+                                    "Se han enviado los certificados de donaciones del año " + anoAnterior + ".");
+                        }
+                    } catch (IOException e) {
+                        FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                                "No se pudo mostrar el diálogo de certificados: " + e.getMessage());
+                    } catch (Exception e) {
+                        FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error al enviar certificados",
+                                "No se pudieron enviar todos los certificados: " + e.getMessage());
+                    }
+                }
+            }
+        });
+
         GestorMatriculas.DatosDialogo datosSexto = GestorMatriculas.ejecutar();
         GestorAsignaciones.DatosPersonal datosPersonal = GestorAsignaciones.prepararDatos();
         if (datosSexto != null || datosPersonal != null) {
@@ -189,69 +236,10 @@ public class MainController {
 
     @FXML
     private void configurarCorreo() {
-        TextInputDialog correoDialog = new TextInputDialog();
-        correoDialog.setTitle("Configurar correo");
-        correoDialog.setHeaderText("Introduce el correo de envío");
-        correoDialog.setContentText("Correo:");
-
-        Optional<String> correoResultado = correoDialog.showAndWait();
-        if (correoResultado.isEmpty() || correoResultado.get().trim().isEmpty()) {
-            return;
+        try {
+            FxUtils.abrirModal("gestorCredenciales-view.fxml", "Gestor de credenciales de correo");
+        } catch (IOException e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir el gestor de credenciales: " + e.getMessage());
         }
-
-        PasswordField passwordField = new PasswordField();
-        passwordField.setPromptText("Contraseña de aplicación");
-
-        Alert passwordAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        passwordAlert.setTitle("Configurar correo");
-        passwordAlert.setHeaderText("Introduce la contraseña del correo");
-        passwordAlert.getDialogPane().setContent(passwordField);
-
-        Optional<javafx.scene.control.ButtonType> passwordResultado = passwordAlert.showAndWait();
-        if (passwordResultado.isEmpty() || passwordResultado.get() != javafx.scene.control.ButtonType.OK) {
-            return;
-        }
-
-        String contrasena = passwordField.getText();
-        if (contrasena == null || contrasena.isBlank()) {
-            return;
-        }
-
-        GestorCorreo.configurarCredenciales(correoResultado.get().trim(), contrasena);
-
-        Alert ok = new Alert(Alert.AlertType.INFORMATION);
-        ok.setTitle("Correo configurado");
-        ok.setHeaderText(null);
-        ok.setContentText("Correo de envío configurado correctamente.");
-        ok.showAndWait();
-    }
-
-    @FXML
-    private void configurarRecordatorioCorreo(ActionEvent event) {
-        TextInputDialog fechaDialog = new TextInputDialog(obtenerFechaRecordatorio());
-        fechaDialog.setTitle("Recordatorio correo");
-        fechaDialog.setHeaderText("Fecha del recordatorio (dd/MM)");
-        fechaDialog.setContentText("Fecha:");
-
-        Optional<String> fechaResultado = fechaDialog.showAndWait();
-        if (fechaResultado.isEmpty()) {
-            return;
-        }
-
-        String fecha = fechaResultado.get().trim();
-        if (!fecha.isEmpty()) {
-            GestorConfig.setRecordatorioFecha(fecha);
-        }
-
-        Alert ok = new Alert(Alert.AlertType.INFORMATION);
-        ok.setTitle("Recordatorio guardado");
-        ok.setHeaderText(null);
-        ok.setContentText("Fecha actualizada. Se enviara en la fecha configurada al abrir la app.");
-        ok.showAndWait();
-    }
-
-    private String obtenerFechaRecordatorio() {
-        String configurada = GestorConfig.getRecordatorioFecha();
-        return (configurada == null || configurada.isBlank()) ? "20/01" : configurada.trim();
     }
 }
