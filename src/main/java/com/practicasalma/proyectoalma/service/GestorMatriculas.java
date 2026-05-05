@@ -1,6 +1,7 @@
 package com.practicasalma.proyectoalma.service;
 
 import com.practicasalma.proyectoalma.dao.AlumnoDAO;
+import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import com.practicasalma.proyectoalma.dao.MatriculaDAO;
 import com.practicasalma.proyectoalma.exception.PersistenciaException;
 import com.practicasalma.proyectoalma.model.Alumno;
@@ -131,10 +132,11 @@ public class GestorMatriculas {
      */
     public static boolean esPeriodoGeneracion() {
         LocalDate hoy = LocalDate.now();
-        int mes = hoy.getMonthValue();
-        int dia = hoy.getDayOfMonth();
-        //return mes == 7 || mes == 8 || (mes == 9 && dia <= 10);
-        return mes == 4;
+        int mesInicio = GestorConfig.getMatriculasMesInicio();
+        int diaInicio = GestorConfig.getMatriculasDiaInicio();
+        LocalDate inicio = LocalDate.of(hoy.getYear(), mesInicio, diaInicio);
+        LocalDate fin = LocalDate.of(hoy.getYear(), 9, 10);
+        return !hoy.isBefore(inicio) && !hoy.isAfter(fin);
     }
 
     public static String calcularAnyoAcademico() {

@@ -265,8 +265,8 @@ public class FichaAlumnoController {
                     } else {
                         imgFoto.setImage(new Image(new File(rutaAlumno).toURI().toString()));
                     }
-                } catch (Exception e) {
-                    System.out.println("Error al cargar la imagen: " + rutaAlumno);
+                } catch (Exception ignored) {
+                    cargarFotoPorDefecto();
                 }
             } else {
                 cargarFotoPorDefecto();
@@ -278,8 +278,7 @@ public class FichaAlumnoController {
     private void cargarFotoPorDefecto() {
         try {
             imgFoto.setImage(new Image(getClass().getResource("/com/practicasalma/proyectoalma/assets/default.png").toExternalForm()));
-        } catch (Exception e) {
-            System.out.println("No se encontró imagen por defecto.");
+        } catch (Exception ignored) {
         }
     }
 
@@ -482,22 +481,13 @@ public class FichaAlumnoController {
             // --- ¡GUARDAMOS EN BASE DE DATOS! ---
             alumnoService.actualizarAlumno(alumnoActual);
 
-            // Volvemos al modo lectura
             cambiarModoEdicion(false);
-
-            // Avisamos al usuario
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Éxito");
-            alert.setHeaderText(null);
-            alert.setContentText("Los datos de " + alumnoActual.getNombre() + " se han actualizado correctamente.");
-            alert.showAndWait();
+            FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                    "Los datos de " + alumnoActual.getNombre() + " se han actualizado correctamente.");
 
         } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("No se han podido guardar los cambios");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error al guardar",
+                    "No se han podido guardar los cambios: " + (e.getMessage() != null ? e.getMessage() : "Error inesperado."));
         }
     }
 
@@ -520,6 +510,8 @@ public class FichaAlumnoController {
                     rutaFotoSeleccionada = destino.getAbsolutePath();
                 } catch (java.io.IOException e) {
                     rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();
+                    FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Foto no copiada",
+                            "No se pudo copiar la foto al directorio de documentos. Se usará la ubicación original.");
                 }
             } else {
                 rutaFotoSeleccionada = archivoSeleccionado.getAbsolutePath();

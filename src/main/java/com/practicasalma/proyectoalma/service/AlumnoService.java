@@ -80,6 +80,10 @@ public class AlumnoService {
 
     public void actualizarAlumno(Alumno alumno) {
         validarAlumno(alumno);
+        String dni = alumno.getDocumentoIdentidad();
+        if (dni != null && !dni.isBlank() && alumnoDAO.existeDniParaOtro(dni, alumno.getId())) {
+            throw new EntidadDuplicadaException("Ya existe otro alumno registrado con ese DNI/NIE.");
+        }
         alumnoDAO.actualizar(alumno);
     }
 

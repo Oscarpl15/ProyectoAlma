@@ -60,6 +60,8 @@
                                 <MenuItem text="Gestor de credenciales de correo" onAction="#configurarCorreo"/>
                                 <SeparatorMenuItem/>
                                 <MenuItem text="Gestionar grupos" onAction="#gestionarGrupos"/>
+                                <SeparatorMenuItem/>
+                                <MenuItem text="Fechas automáticas" onAction="#abrirAjustesFechas"/>
                             </items>
                         </ContextMenu>
                     </fx:define>
@@ -94,7 +96,7 @@
                             <Tab><content><fx:include fx:id="docentes" source="docentes-view.fxml" /></content></Tab>
                             <Tab><content><fx:include fx:id="voluntarios" source="voluntarios-view.fxml" /></content></Tab>
                             <Tab><content><fx:include source="socios-view.fxml"/></content></Tab>
-                            <Tab><content><fx:include source="graficas-view.fxml"/></content></Tab>
+                            <Tab><content><fx:include fx:id="graficas" source="graficas-view.fxml"/></content></Tab>
                         </tabs>
                     </TabPane>
                 </center>

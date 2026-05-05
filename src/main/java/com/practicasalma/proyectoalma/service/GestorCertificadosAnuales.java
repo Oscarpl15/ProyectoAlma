@@ -24,12 +24,15 @@ public class GestorCertificadosAnuales {
     private GestorCertificadosAnuales() {}
 
     /**
-     * Indica si la fecha actual corresponde al periodo de envío anual (≥ 20 de enero).
+     * Indica si la fecha actual corresponde al periodo de envío anual.
+     * El día y mes de inicio se leen de configuración (por defecto: 20 de enero).
      */
     public static boolean esPeriodoEnvio() {
         LocalDate hoy = LocalDate.now();
-        return hoy.getMonthValue() > 1
-                || (hoy.getMonthValue() == 1 && hoy.getDayOfMonth() >= 20);
+        int mes = GestorConfig.getCertificadosMesEnvio();
+        int dia = GestorConfig.getCertificadosDiaEnvio();
+        return hoy.getMonthValue() > mes
+                || (hoy.getMonthValue() == mes && hoy.getDayOfMonth() >= dia);
     }
 
     /**

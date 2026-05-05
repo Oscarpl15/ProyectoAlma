@@ -1,5 +1,6 @@
 package com.practicasalma.proyectoalma.util;
 
+import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import java.time.LocalDate;
 
 /**
@@ -29,13 +30,14 @@ public class UtilFecha {
      */
     public static String calcularCursoAcademico() {
         LocalDate hoy = LocalDate.now();
-        int anyoActual = hoy.getYear();
-        int mesActual = hoy.getMonthValue();
-
-        if (mesActual >= 6) {
-            return anyoActual + "/" + (anyoActual + 1);
+        int mes = GestorConfig.getMatriculasMesInicio();
+        int dia = GestorConfig.getMatriculasDiaInicio();
+        LocalDate inicioNuevoCurso = LocalDate.of(hoy.getYear(), mes, dia);
+        int anyo = hoy.getYear();
+        if (!hoy.isBefore(inicioNuevoCurso)) {
+            return anyo + "/" + (anyo + 1);
         }
-        return (anyoActual - 1) + "/" + anyoActual;
+        return (anyo - 1) + "/" + anyo;
     }
 
     /**

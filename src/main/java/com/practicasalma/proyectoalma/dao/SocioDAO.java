@@ -114,6 +114,27 @@ public class SocioDAO {
         }
     }
 
+    /**
+     * Comprueba si otro socio distinto al indicado ya tiene ese DNI.
+     * Se usa en actualizaciones para evitar duplicados sin bloquear al propio registro.
+     *
+     * @param dni         documento de identidad a verificar
+     * @param idExcluido  ID del socio que se está editando (se excluye de la búsqueda)
+     * @return {@code true} si otro socio distinto ya tiene ese DNI
+     */
+    public boolean existeDniParaOtro(String dni, Long idExcluido) {
+        try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
+            Long count = em.createQuery(
+                    "SELECT COUNT(s) FROM Socio s WHERE UPPER(s.documentoIdentidad) = UPPER(:dni) AND s.id <> :id", Long.class)
+                    .setParameter("dni", dni)
+                    .setParameter("id", idExcluido)
+                    .getSingleResult();
+            return count > 0;
+        } catch (Exception e) {
+            throw new PersistenciaException("Error al verificar DNI del socio: " + e.getMessage(), e);
+        }
+    }
+
     public List<Socio> obtenerTodosConDonaciones() {
         try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -125,8 +146,7 @@ public class SocioDAO {
 
             return em.createQuery(query).getResultList();
         } catch (Exception e) {
-            System.err.println("Error al cargar socios con donaciones: " + e.getMessage());
-            return List.of();
+            throw new PersistenciaException("Error al cargar socios con donaciones: " + e.getMessage(), e);
         }
     }
 }

@@ -80,6 +80,10 @@ public class VoluntarioService {
 
     public void actualizarVoluntario(Voluntario voluntario) {
         validarVoluntario(voluntario);
+        String dni = voluntario.getDocumentoIdentidad();
+        if (dni != null && !dni.isBlank() && voluntarioDAO.existeDniParaOtro(dni, voluntario.getId())) {
+            throw new EntidadDuplicadaException("Ya existe otro voluntario registrado con ese DNI/NIE.");
+        }
         voluntarioDAO.actualizar(voluntario);
     }
 

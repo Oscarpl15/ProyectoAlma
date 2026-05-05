@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.practicasalma.proyectoalma.controller.AjustesFechasController"
+            styleClass="fondo-blanco"
+            stylesheets="@../css/estilos.css"
+            prefWidth="480">
+
+    <top>
+        <VBox spacing="5" styleClass="padding-cabecera-ficha">
+            <Label text="Fechas automáticas" styleClass="titulo-ventana"/>
+            <Label text="Configura cuándo se activan los procesos automáticos." styleClass="subtitulo-ventana"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="24" styleClass="padding-cuerpo-ficha">
+
+            <VBox spacing="10">
+                <Label text="Automatriculación" styleClass="etiqueta-campo"/>
+                <Label text="El período se abre en la fecha indicada y se cierra el 10 de septiembre."
+                       styleClass="subtitulo-ventana" wrapText="true"/>
+                <GridPane hgap="15" vgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" minWidth="50" halignment="RIGHT"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                        <ColumnConstraints hgrow="NEVER" minWidth="50" halignment="RIGHT"/>
+                        <ColumnConstraints hgrow="NEVER" minWidth="80"/>
+                    </columnConstraints>
+                    <Label text="Mes:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboMesMatricula" GridPane.rowIndex="0" GridPane.columnIndex="1" maxWidth="Infinity"/>
+                    <Label text="Día:" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <Spinner fx:id="spinnerDiaMatricula" GridPane.rowIndex="0" GridPane.columnIndex="3" prefWidth="80"/>
+                </GridPane>
+            </VBox>
+
+            <Separator/>
+
+            <VBox spacing="10">
+                <Label text="Envío automático de certificados de donaciones" styleClass="etiqueta-campo"/>
+                <Label text="Los certificados se envían a partir del día indicado de cada año."
+                       styleClass="subtitulo-ventana" wrapText="true"/>
+                <GridPane hgap="15" vgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" minWidth="50" halignment="RIGHT"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                        <ColumnConstraints hgrow="NEVER" minWidth="50" halignment="RIGHT"/>
+                        <ColumnConstraints hgrow="NEVER" minWidth="80"/>
+                    </columnConstraints>
+                    <Label text="Mes:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="comboMesCertificados" GridPane.rowIndex="0" GridPane.columnIndex="1" maxWidth="Infinity"/>
+                    <Label text="Día:" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="etiqueta-campo"/>
+                    <Spinner fx:id="spinnerDiaCertificados" GridPane.rowIndex="0" GridPane.columnIndex="3" prefWidth="80"/>
+                </GridPane>
+            </VBox>
+
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="15" alignment="CENTER_RIGHT" styleClass="padding-pie-ficha">
+            <Button text="Cancelar" onAction="#cancelar" styleClass="boton-cancelar"/>
+            <Button text="Guardar" onAction="#guardar" styleClass="boton-accion"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

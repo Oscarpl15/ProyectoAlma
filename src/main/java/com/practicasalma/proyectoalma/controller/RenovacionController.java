@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.Launcher;
 import com.practicasalma.proyectoalma.model.Alumno;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import com.practicasalma.proyectoalma.model.Docente;
 import com.practicasalma.proyectoalma.model.Matricula;
 import com.practicasalma.proyectoalma.model.Voluntario;
@@ -15,6 +16,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -120,7 +122,7 @@ public class RenovacionController {
                 m.setEsRepeticion(true);
                 datosSexto.matriculaDAO.guardar(m);
             } catch (Exception ex) {
-                System.err.println("Error al guardar matrícula de repetición: " + ex.getMessage());
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error al guardar matrícula", "No se pudo registrar la repetición de " + alumno.getNombre() + ": " + ex.getMessage());
             }
             quitarFila(fila);
         });
@@ -129,7 +131,7 @@ public class RenovacionController {
             try {
                 datosSexto.alumnoDAO.actualizarActivo(alumno.getId(), false);
             } catch (Exception ex) {
-                System.err.println("Error al dar de baja alumno: " + ex.getMessage());
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error al dar de baja", "No se pudo dar de baja a " + alumno.getNombre() + ": " + ex.getMessage());
             }
             quitarFila(fila);
         });
@@ -169,7 +171,7 @@ public class RenovacionController {
             try {
                 docenteService.registrarContinuacion(docente, datosPersonal.anyoNuevo);
             } catch (Exception ex) {
-                System.err.println("Error al registrar continuación docente: " + ex.getMessage());
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error al renovar", "No se pudo registrar la continuación de " + docente.getNombre() + ": " + ex.getMessage());
             }
             quitarFila(fila);
         });
@@ -178,7 +180,7 @@ public class RenovacionController {
             try {
                 docenteService.actualizarActivo(docente.getId(), false);
             } catch (Exception ex) {
-                System.err.println("Error al dar de baja docente: " + ex.getMessage());
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error al dar de baja", "No se pudo dar de baja a " + docente.getNombre() + ": " + ex.getMessage());
             }
             quitarFila(fila);
         });
@@ -218,7 +220,7 @@ public class RenovacionController {
             try {
                 voluntarioService.registrarContinuacion(voluntario, datosPersonal.anyoNuevo);
             } catch (Exception ex) {
-                System.err.println("Error al registrar continuación voluntario: " + ex.getMessage());
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error al renovar", "No se pudo registrar la continuación de " + voluntario.getNombre() + ": " + ex.getMessage());
             }
             quitarFila(fila);
         });
@@ -227,7 +229,7 @@ public class RenovacionController {
             try {
                 voluntarioService.actualizarActivo(voluntario.getId(), false);
             } catch (Exception ex) {
-                System.err.println("Error al dar de baja voluntario: " + ex.getMessage());
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error al dar de baja", "No se pudo dar de baja a " + voluntario.getNombre() + ": " + ex.getMessage());
             }
             quitarFila(fila);
         });
@@ -287,7 +289,7 @@ public class RenovacionController {
             stage.showAndWait();
 
         } catch (IOException e) {
-            System.err.println("Error al abrir renovacion-view: " + e.getMessage());
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir el diálogo de renovación: " + e.getMessage());
         }
     }
 }

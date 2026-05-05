@@ -32,9 +32,9 @@
 
     <TableView fx:id="tablaAlumnos" VBox.vgrow="ALWAYS" styleClass="striped, bordered">
         <columns>
-            <TableColumn fx:id="colNombre" text="Nombre" prefWidth="150" reorderable="false"/>
-            <TableColumn fx:id="colApellidos" text="Apellidos" prefWidth="200" reorderable="false"/>
-            <TableColumn fx:id="colTelefono" text="Teléfono" prefWidth="110" reorderable="false"/>
+            <TableColumn fx:id="colNombre" text="Nombre" prefWidth="120" reorderable="false"/>
+            <TableColumn fx:id="colApellidos" text="Apellidos" prefWidth="190" reorderable="false"/>
+            <TableColumn fx:id="colTelefono" text="Teléfono" prefWidth="150" reorderable="false"/>
             <TableColumn fx:id="colGrupo" text="Grupo" prefWidth="90" reorderable="false"/>
 
             <TableColumn text="Autorizaciones" reorderable="false">

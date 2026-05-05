@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Docente;
 import com.practicasalma.proyectoalma.service.DocenteService;
+import com.practicasalma.proyectoalma.util.UtilFecha;
 import com.practicasalma.proyectoalma.util.filtro.DocenteFiltro;
 import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -107,9 +108,9 @@ public class DocentesController {
     }
 
     private void poblarCursoEscolar() {
-        LocalDate hoy = LocalDate.now();
         int anyoInicio = 2022;
-        int anyoActual = (hoy.getMonthValue() >= 9) ? hoy.getYear() : hoy.getYear() - 1;
+        String cursoActual = UtilFecha.calcularCursoAcademico();
+        int anyoActual = Integer.parseInt(cursoActual.split("/")[0]);
 
         ObservableList<String> cursos = FXCollections.observableArrayList();
         cursos.add("Todos");
@@ -117,7 +118,7 @@ public class DocentesController {
             cursos.add(anyo + "/" + (anyo + 1));
         }
         comboCursoFiltro.setItems(cursos);
-        comboCursoFiltro.setValue(anyoActual + "/" + (anyoActual + 1));
+        comboCursoFiltro.setValue(cursoActual);
     }
 
     private void poblarEstado() {

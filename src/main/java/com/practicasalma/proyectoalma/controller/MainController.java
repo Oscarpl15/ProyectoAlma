@@ -4,7 +4,6 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.service.GestorAsignaciones;
 import com.practicasalma.proyectoalma.service.GestorCertificadosAnuales;
 import com.practicasalma.proyectoalma.service.GestorCorreo;
-import com.practicasalma.proyectoalma.service.GestorDonaciones;
 import com.practicasalma.proyectoalma.service.GestorMatriculas;
 import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import com.practicasalma.proyectoalma.util.doc.GestorDocumentos;
@@ -53,6 +52,7 @@ public class MainController {
     @FXML private AlumnosController alumnosController;
     @FXML private DocentesController docentesController;
     @FXML private VoluntariosController voluntariosController;
+    @FXML private GraficasController graficasController;
 
     @FXML private ContextMenu menuAjustes;
 
@@ -62,6 +62,11 @@ public class MainController {
         imgFondo.fitHeightProperty().bind(rootPane.heightProperty());
         if (tabPrincipal != null) {
             tabPrincipal.getSelectionModel().select(0);
+            tabPrincipal.getSelectionModel().selectedIndexProperty().addListener((obs, oldIdx, newIdx) -> {
+                if (newIdx.intValue() == 4) {
+                    graficasController.refrescar();
+                }
+            });
         }
 
         Platform.runLater(() -> {
@@ -240,6 +245,15 @@ public class MainController {
             FxUtils.abrirModal("gestorCredenciales-view.fxml", "Gestor de credenciales de correo");
         } catch (IOException e) {
             FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir el gestor de credenciales: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void abrirAjustesFechas() {
+        try {
+            FxUtils.abrirModal("ajustesFechas-view.fxml", "Fechas automáticas");
+        } catch (IOException e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir el ajuste de fechas: " + e.getMessage());
         }
     }
 }

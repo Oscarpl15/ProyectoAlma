@@ -29,7 +29,7 @@ public class AgregarDocenteController {
     @FXML
     private TextField txtApellidos;
     @FXML
-    private TextField txtDireccion; // Nuevo campo
+    private TextField txtDireccion;
     @FXML
     private TextField txtTelefono;
     @FXML
@@ -45,7 +45,6 @@ public class AgregarDocenteController {
     @FXML private TextField txtCiudad;
     @FXML private TextField txtCodigoPostal;
 
-    // Checkboxes
     @FXML private CheckBox checkAuth1;
     @FXML private CheckBox checkProtDatos;
 
@@ -96,7 +95,7 @@ public class AgregarDocenteController {
             docenteService.guardarDocente(docente);
             cerrarVentana(event);
         } catch (Exception e) {
-            mostrarError("No se pudo guardar el docente: " + e.getMessage());
+            mostrarError("No se pudo guardar el docente: " + (e.getMessage() != null ? e.getMessage() : "Error inesperado."));
         }
     }
 

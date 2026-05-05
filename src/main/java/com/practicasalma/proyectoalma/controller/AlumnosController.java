@@ -4,6 +4,7 @@ import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.service.AlumnoService;
 import com.practicasalma.proyectoalma.service.GeneradorPdfService;
 import com.practicasalma.proyectoalma.util.config.GestorConfig;
+import com.practicasalma.proyectoalma.util.UtilFecha;
 import com.practicasalma.proyectoalma.util.filtro.AlumnoFiltro;
 import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import javafx.beans.property.SimpleObjectProperty;
@@ -68,8 +69,17 @@ public class AlumnosController {
     public void initialize() {
         colNombre.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNombre()));
         colApellidos.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getApellidos()));
-        colTelefono.setCellValueFactory(cellData -> new SimpleStringProperty(
-                cellData.getValue().getTelefono() != null ? cellData.getValue().getTelefono() : ""));
+        colTelefono.setCellValueFactory(cellData -> {
+            Alumno alumno = cellData.getValue();
+            if (alumno.getTutores() == null || alumno.getTutores().isEmpty()) {
+                return new SimpleStringProperty("");
+            }
+            String valor = alumno.getTutores().stream()
+                    .filter(t -> t.getTelefono() != null && !t.getTelefono().isBlank())
+                    .map(t -> t.getNombre() + ": " + t.getTelefono().trim())
+                    .collect(java.util.stream.Collectors.joining(" / "));
+            return new SimpleStringProperty(valor);
+        });
         colGrupo.setCellValueFactory(cellData -> {
             Alumno alumno = cellData.getValue();
             if (alumno.getMatriculas() != null && !alumno.getMatriculas().isEmpty()) {
@@ -121,9 +131,9 @@ public class AlumnosController {
     }
 
     private void poblarCursoEscolar() {
-        LocalDate hoy = LocalDate.now();
         int anyoInicio = 2022;
-        int anyoActual = (hoy.getMonthValue() >= 9) ? hoy.getYear() : hoy.getYear() - 1;
+        String cursoActual = UtilFecha.calcularCursoAcademico();
+        int anyoActual = Integer.parseInt(cursoActual.split("/")[0]);
 
         ObservableList<String> cursos = FXCollections.observableArrayList();
         cursos.add("Todos");
@@ -131,7 +141,7 @@ public class AlumnosController {
             cursos.add(anyo + "/" + (anyo + 1));
         }
         comboCursoFiltro.setItems(cursos);
-        comboCursoFiltro.setValue(anyoActual + "/" + (anyoActual + 1));
+        comboCursoFiltro.setValue(cursoActual);
     }
 
     private void poblarCursoAlumno() {

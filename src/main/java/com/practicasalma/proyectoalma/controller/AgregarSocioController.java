@@ -51,14 +51,25 @@ public class AgregarSocioController {
         String apellidos = txtApellidos.getText().trim();
         String direccion = txtDireccion.getText().trim();
         String dni = txtDni.getText().trim();
+        String correo = txtCorreo.getText().trim();
+        String ciudad = txtCiudad.getText().trim();
+        String cp = txtCodigoPostal.getText().trim();
+        String provincia = txtProvincia.getText().trim();
         String tipoEntidad = comboTipoEntidad.getValue();
         String periodicidad = comboPeriodicidad.getValue();
         String cuotaTexto = txtCuota.getText().trim();
 
-        if (nombre.isEmpty() || apellidos.isEmpty() || dni.isEmpty() || tipoEntidad == null) {
-            mostrarError("Nombre, apellidos, DNI y tipo de entidad son obligatorios.");
-            return;
-        }
+        if (nombre.isEmpty()) { mostrarError("El nombre es obligatorio."); return; }
+        if (apellidos.isEmpty()) { mostrarError("Los apellidos son obligatorios."); return; }
+        if (dni.isEmpty()) { mostrarError("El documento de identidad es obligatorio."); return; }
+        if (tipoEntidad == null) { mostrarError("El tipo de entidad es obligatorio."); return; }
+        if (correo.isEmpty()) { mostrarError("El correo electrónico es obligatorio."); return; }
+        if (!Validador.esEmailValido(correo)) { mostrarError("El correo electrónico no tiene un formato válido."); return; }
+        if (direccion.isEmpty()) { mostrarError("La dirección es obligatoria."); return; }
+        if (cp.isEmpty()) { mostrarError("El código postal es obligatorio."); return; }
+        if (!Validador.esCodigoPostalValido(cp)) { mostrarError("El código postal debe tener exactamente 5 dígitos."); return; }
+        if (ciudad.isEmpty()) { mostrarError("La ciudad es obligatoria."); return; }
+        if (provincia.isEmpty()) { mostrarError("La provincia es obligatoria."); return; }
 
         boolean esPuntual = "Puntual".equals(periodicidad) || periodicidad == null;
         double importe = 0.0;
@@ -91,24 +102,14 @@ public class AgregarSocioController {
                     esPuntual ? 0.0 : importe, periodicidad != null ? periodicidad : "Puntual");
             String telefono = txtTelefono.getText().trim();
             if (!telefono.isEmpty()) socio.setTelefono(telefono);
-            String correo = txtCorreo.getText().trim();
-            if (!correo.isEmpty()) socio.setCorreo(correo);
+            socio.setCorreo(correo);
             String nacionalidad = txtNacionalidad.getText().trim();
             if (!nacionalidad.isEmpty()) socio.setNacionalidad(nacionalidad);
             String genero = comboGenero.getValue();
             if (genero != null) socio.setGenero(genero);
-            String ciudad = txtCiudad.getText().trim();
-            if (!ciudad.isEmpty()) socio.setCiudad(ciudad);
-            String cp = txtCodigoPostal.getText().trim();
-            if (!cp.isEmpty()) {
-                if (!Validador.esCodigoPostalValido(cp)) {
-                    mostrarError("El código postal debe tener exactamente 5 dígitos.");
-                    return;
-                }
-                socio.setCodigoPostal(cp);
-            }
-            String provincia = txtProvincia.getText().trim();
-            if (!provincia.isEmpty()) socio.setProvincia(provincia);
+            socio.setCiudad(ciudad);
+            socio.setCodigoPostal(cp);
+            socio.setProvincia(provincia);
             socio.setTipoDocumento(comboTipoDocumento.getValue());
             String formaPago = comboFormaPago.getValue();
             if (formaPago != null) socio.setFormaPago(formaPago);
@@ -127,7 +128,7 @@ public class AgregarSocioController {
             socioService.guardarSocio(socio);
             cerrarVentana(event);
         } catch (Exception e) {
-            mostrarError("No se pudo guardar el socio: " + e.getMessage());
+            mostrarError("No se pudo guardar el socio: " + (e.getMessage() != null ? e.getMessage() : "Error inesperado."));
         }
     }
 

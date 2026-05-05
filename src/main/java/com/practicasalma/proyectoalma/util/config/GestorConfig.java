@@ -163,6 +163,57 @@ public class GestorConfig {
         configuracionDAO.set(CLAVE_GRUPOS, String.join(",", grupos));
     }
 
+    // ── FECHAS AUTOMÁTICAS (BD) ───────────────────────────────────────────────
+
+    private static final String CLAVE_MATRICULAS_MES = "matriculas.fecha.mes";
+    private static final String CLAVE_MATRICULAS_DIA = "matriculas.fecha.dia";
+    private static final String CLAVE_CERTIFICADOS_MES = "certificados.fecha.mes";
+    private static final String CLAVE_CERTIFICADOS_DIA = "certificados.fecha.dia";
+
+    /** @return mes de inicio del período de automatriculación (por defecto julio = 7) */
+    public static int getMatriculasMesInicio() {
+        String v = configuracionDAO.get(CLAVE_MATRICULAS_MES);
+        try { return (v != null && !v.isBlank()) ? Integer.parseInt(v) : 7; } catch (NumberFormatException e) { return 7; }
+    }
+
+    /** Guarda el mes de inicio del período de automatriculación. */
+    public static void setMatriculasMesInicio(int mes) {
+        configuracionDAO.set(CLAVE_MATRICULAS_MES, String.valueOf(mes));
+    }
+
+    /** @return día de inicio del período de automatriculación (por defecto 1) */
+    public static int getMatriculasDiaInicio() {
+        String v = configuracionDAO.get(CLAVE_MATRICULAS_DIA);
+        try { return (v != null && !v.isBlank()) ? Integer.parseInt(v) : 1; } catch (NumberFormatException e) { return 1; }
+    }
+
+    /** Guarda el día de inicio del período de automatriculación. */
+    public static void setMatriculasDiaInicio(int dia) {
+        configuracionDAO.set(CLAVE_MATRICULAS_DIA, String.valueOf(dia));
+    }
+
+    /** @return mes de envío automático de certificados (por defecto enero = 1) */
+    public static int getCertificadosMesEnvio() {
+        String v = configuracionDAO.get(CLAVE_CERTIFICADOS_MES);
+        try { return (v != null && !v.isBlank()) ? Integer.parseInt(v) : 1; } catch (NumberFormatException e) { return 1; }
+    }
+
+    /** Guarda el mes de envío automático de certificados. */
+    public static void setCertificadosMesEnvio(int mes) {
+        configuracionDAO.set(CLAVE_CERTIFICADOS_MES, String.valueOf(mes));
+    }
+
+    /** @return día de envío automático de certificados (por defecto 20) */
+    public static int getCertificadosDiaEnvio() {
+        String v = configuracionDAO.get(CLAVE_CERTIFICADOS_DIA);
+        try { return (v != null && !v.isBlank()) ? Integer.parseInt(v) : 20; } catch (NumberFormatException e) { return 20; }
+    }
+
+    /** Guarda el día de envío automático de certificados. */
+    public static void setCertificadosDiaEnvio(int dia) {
+        configuracionDAO.set(CLAVE_CERTIFICADOS_DIA, String.valueOf(dia));
+    }
+
     // ── CERTIFICADOS ANUALES (BD) ─────────────────────────────────────────────
 
     /** @return año en que se enviaron por última vez los certificados, o {@code null} si nunca */

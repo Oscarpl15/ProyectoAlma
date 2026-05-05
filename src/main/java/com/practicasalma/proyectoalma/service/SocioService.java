@@ -66,6 +66,10 @@ public class SocioService {
 
     public void actualizarSocio(Socio socio) {
         validarSocio(socio);
+        String dni = socio.getDocumentoIdentidad();
+        if (dni != null && !dni.isBlank() && socioDAO.existeDniParaOtro(dni, socio.getId())) {
+            throw new EntidadDuplicadaException("Ya existe otro socio registrado con ese DNI/NIE.");
+        }
         socioDAO.actualizar(socio);
     }
 

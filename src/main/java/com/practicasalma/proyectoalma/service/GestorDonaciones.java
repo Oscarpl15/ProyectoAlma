@@ -23,7 +23,6 @@ public class GestorDonaciones {
         try {
             socios = socioService.obtenerTodosConDonaciones();
         } catch (Exception e) {
-            System.err.println("GestorDonaciones: error al cargar socios: " + e.getMessage());
             return;
         }
 
@@ -59,7 +58,7 @@ public class GestorDonaciones {
                 try {
                     socioService.actualizarSocio(socio);
                 } catch (Exception e) {
-                    System.err.println("GestorDonaciones: error al actualizar socio " + socio.getId() + ": " + e.getMessage());
+                    // fallo silencioso: no bloquear el resto de socios
                 }
             }
         }

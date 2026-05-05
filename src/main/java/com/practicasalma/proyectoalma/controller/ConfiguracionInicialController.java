@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.Launcher;
 import com.practicasalma.proyectoalma.util.config.GestorConfig;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -235,7 +236,7 @@ public class ConfiguracionInicialController {
             stage.showAndWait();
 
         } catch (IOException e) {
-            System.err.println("Error al abrir configuracion-inicial-view: " + e.getMessage());
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error de configuración", "No se pudo abrir la pantalla de configuración inicial: " + e.getMessage());
         }
     }
 }

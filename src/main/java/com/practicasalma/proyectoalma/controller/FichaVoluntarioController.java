@@ -121,8 +121,7 @@ public class FichaVoluntarioController {
             try {
                 imgFoto.setImage(new Image(getClass().getResource(
                         "/com/practicasalma/proyectoalma/assets/default.png").toExternalForm()));
-            } catch (Exception e) {
-                System.out.println("No se encontró imagen por defecto.");
+            } catch (Exception ignored) {
             }
         }
     }
@@ -238,7 +237,7 @@ public class FichaVoluntarioController {
             cargarDatosEnVista();
         } catch (Exception e) {
             FxUtils.mostrarAlerta(Alert.AlertType.ERROR,
-                    "Error al guardar", "No se pudieron guardar los cambios: " + e.getMessage());
+                    "Error al guardar", "No se pudieron guardar los cambios: " + (e.getMessage() != null ? e.getMessage() : "Error inesperado."));
         }
     }
 
@@ -259,6 +258,8 @@ public class FichaVoluntarioController {
                     rutaFotoSeleccionada = destino.getAbsolutePath();
                 } catch (java.io.IOException e) {
                     rutaFotoSeleccionada = file.getAbsolutePath();
+                    FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Foto no copiada",
+                            "No se pudo copiar la foto al directorio de documentos. Se usará la ubicación original.");
                 }
             } else {
                 rutaFotoSeleccionada = file.getAbsolutePath();

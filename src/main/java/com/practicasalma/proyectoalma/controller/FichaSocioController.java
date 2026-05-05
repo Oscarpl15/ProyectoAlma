@@ -167,8 +167,7 @@ public class FichaSocioController {
             try {
                 imgFoto.setImage(new Image(getClass().getResource(
                         "/com/practicasalma/proyectoalma/assets/default.png").toExternalForm()));
-            } catch (Exception e) {
-                System.out.println("No se encontró imagen por defecto.");
+            } catch (Exception ignored) {
             }
         }
     }
@@ -291,24 +290,38 @@ public class FichaSocioController {
     private void guardarDatos() {
         String oldPeriodicidad = socioActual.getPeriodicidad();
 
-        socioActual.setNombre(txtNombre.getText().trim());
-        socioActual.setApellidos(txtApellidos.getText().trim());
-        socioActual.setDocumentoIdentidad(txtDni.getText().trim());
+        String valNombre    = txtNombre.getText().trim();
+        String valApellidos = txtApellidos.getText().trim();
+        String valDni       = txtDni.getText().trim();
+        String valCorreo    = txtCorreo.getText().trim();
+        String valDireccion = txtDireccion.getText().trim();
+        String valCp        = txtCodigoPostal.getText().trim();
+        String valCiudad    = txtCiudad.getText().trim();
+        String valProvincia = txtProvincia.getText().trim();
+
+        if (valNombre.isEmpty())    { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Campo obligatorio", "El nombre es obligatorio."); return; }
+        if (valApellidos.isEmpty()) { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Campo obligatorio", "Los apellidos son obligatorios."); return; }
+        if (valDni.isEmpty())       { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Campo obligatorio", "El documento de identidad es obligatorio."); return; }
+        if (valCorreo.isEmpty())    { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Campo obligatorio", "El correo electrónico es obligatorio."); return; }
+        if (!Validador.esEmailValido(valCorreo)) { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Correo inválido", "El correo electrónico no tiene un formato válido."); return; }
+        if (valDireccion.isEmpty()) { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Campo obligatorio", "La dirección es obligatoria."); return; }
+        if (valCp.isEmpty())        { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Campo obligatorio", "El código postal es obligatorio."); return; }
+        if (!Validador.esCodigoPostalValido(valCp)) { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Código postal inválido", "El código postal debe tener exactamente 5 dígitos."); return; }
+        if (valCiudad.isEmpty())    { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Campo obligatorio", "La ciudad es obligatoria."); return; }
+        if (valProvincia.isEmpty()) { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Campo obligatorio", "La provincia es obligatoria."); return; }
+
+        socioActual.setNombre(valNombre);
+        socioActual.setApellidos(valApellidos);
+        socioActual.setDocumentoIdentidad(valDni);
         socioActual.setTipoDocumento(comboTipoDocumento.getValue());
         socioActual.setTelefono(txtTelefono.getText().trim());
-        socioActual.setCorreo(txtCorreo.getText().trim());
-        socioActual.setDireccion(txtDireccion.getText().trim());
+        socioActual.setCorreo(valCorreo);
+        socioActual.setDireccion(valDireccion);
         socioActual.setNacionalidad(txtNacionalidad.getText().trim());
         socioActual.setGenero(comboGenero.getValue());
-        socioActual.setCiudad(txtCiudad.getText().isBlank() ? null : txtCiudad.getText().trim());
-
-        String cp = txtCodigoPostal.getText().trim();
-        if (!cp.isBlank() && !Validador.esCodigoPostalValido(cp)) {
-            FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Código postal inválido", "El código postal debe tener exactamente 5 dígitos.");
-            return;
-        }
-        socioActual.setCodigoPostal(cp.isBlank() ? null : cp);
-        socioActual.setProvincia(txtProvincia.getText().isBlank() ? null : txtProvincia.getText().trim());
+        socioActual.setCiudad(valCiudad);
+        socioActual.setCodigoPostal(valCp);
+        socioActual.setProvincia(valProvincia);
         socioActual.setTipoEntidad(comboTipoEntidad.getValue());
         socioActual.setFormaPago(comboFormaPago.getValue());
         socioActual.setCuentaBancaria(txtCuentaBancaria.getText().trim());
@@ -395,6 +408,8 @@ public class FichaSocioController {
                     rutaFotoSeleccionada = destino.getAbsolutePath();
                 } catch (java.io.IOException e) {
                     rutaFotoSeleccionada = file.getAbsolutePath();
+                    FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Foto no copiada",
+                            "No se pudo copiar la foto al directorio de documentos. Se usará la ubicación original.");
                 }
             } else {
                 rutaFotoSeleccionada = file.getAbsolutePath();
@@ -545,7 +560,7 @@ public class FichaSocioController {
                 + "<p>Hola " + nombreSeguro + ",</p>"
                 + "<p>Te informamos que ya está listo el certificado de tus donaciones (" + ano + "). "
                 + "Adjunto a este documento puedes descargártelo.</p>"
-                + "<p>Con este certificado podrás obtener desgravaciónes fiscales en la declaración de la renta que presentes este año.</p>"
+                + "<p>Con este certificado podrás obtener desgravaciones fiscales en la declaración de la renta que presentes este año.</p>"
                 + "<p>Conoce todos los detalles sobre desgravaciones fiscales en nuestra web.</p>"
                 + "<p>Un abrazo,</p>"
                 + "<p>Equipo de Fundación Alma.</p>"

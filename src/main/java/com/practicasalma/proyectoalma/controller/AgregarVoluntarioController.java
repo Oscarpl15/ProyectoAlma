@@ -84,7 +84,7 @@ public class AgregarVoluntarioController {
             voluntarioService.guardarVoluntario(voluntario);
             cerrarVentana(event);
         } catch (Exception e) {
-            mostrarError("No se pudo guardar el voluntario: " + e.getMessage());
+            mostrarError("No se pudo guardar el voluntario: " + (e.getMessage() != null ? e.getMessage() : "Error inesperado."));
         }
     }
 

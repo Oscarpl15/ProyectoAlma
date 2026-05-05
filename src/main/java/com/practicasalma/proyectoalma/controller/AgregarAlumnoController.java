@@ -76,7 +76,6 @@ public class AgregarAlumnoController {
     private String rutaFotoSeleccionada = null;
     private File fotoArchivoSeleccionado = null;
 
-    // Instanciamos el servicio
     private final AlumnoService alumnoService = new AlumnoService();
 
     @FXML
@@ -87,14 +86,12 @@ public class AgregarAlumnoController {
         try {
             String rutaDefault = getClass().getResource(RUTA_DEFECTO_IMAGEN).toExternalForm();
             fotoAlumno.setImage(new Image(rutaDefault));
-        } catch (NullPointerException e) {
-            System.out.println("ERROR: No se encontró la imagen por defecto.");
+        } catch (NullPointerException ignored) {
         }
     }
 
     @FXML
     private void guardarAlumno(ActionEvent event) {
-        // Recoger datos UI
         String nombre = limpiarTexto(txtNombre.getText());
         String apellidos = limpiarTexto(txtApellidos.getText());
         String curso = comboCurso.getValue();
@@ -104,13 +101,11 @@ public class AgregarAlumnoController {
         String dni = limpiarTexto(txtDni.getText());
         String telefono = limpiarTexto(txtTelefono.getText());
 
-        // Validación de campos obligatorios de interfaz
         if (nombre == null || apellidos == null || fechaNac == null || cursoNormalizado == null) {
             mostrarMensaje("Datos incompletos", "Nombre, apellidos, fecha de nacimiento y curso son obligatorios.", Alert.AlertType.WARNING);
             return;
         }
 
-        // Empaquetar los datos en el Modelo
         Alumno alumno = new Alumno(nombre, apellidos, limpiarTexto(txtDireccion.getText()), fechaNac);
         alumno.setTelefono(telefono);
         alumno.setColegio(limpiarTexto(txtColegio.getText()));
@@ -126,6 +121,7 @@ public class AgregarAlumnoController {
                     rutaFotoSeleccionada = destino.getAbsolutePath();
                 } catch (java.io.IOException e) {
                     rutaFotoSeleccionada = fotoArchivoSeleccionado.getAbsolutePath();
+                    mostrarMensaje("Foto no copiada", "No se pudo copiar la foto al directorio de documentos. Se usará la ubicación original.", Alert.AlertType.WARNING);
                 }
             }
         }
@@ -139,18 +135,13 @@ public class AgregarAlumnoController {
         alumno.setAutorizaActividades(chkAutoActividades.isSelected());
         alumno.setAutorizaComunicaciones(chkAutoComunicaciones.isSelected());
         alumno.setAutorizaIrseSolo(chkAutoIrseSolo.isSelected());
-        // Guardar Seguimiento
         alumno.setSeguimientoServiciosSociales(chkSeguimientoSS.isSelected());
         alumno.setSeguimientoSaf(chkSeguimientoSAF.isSelected());
-
-        // Guardar Derivación
         alumno.setDerivacionSS(chkDerivacionSS.isSelected());
         alumno.setDerivacionSaf(chkDerivacionSAF.isSelected());
         alumno.setDerivacionEoep(chkDerivacionEOEP.isSelected());
         alumno.setDerivacionColegio(chkDerivacionColegio.isSelected());
         alumno.setDerivacionOtro(chkDerivacionOtro.isSelected());
-
-        alumno.setDerivadoPor(limpiarTexto(txtDerivado.getText()));
 
         String nacionalidad = limpiarTexto(txtNacionalidad.getText());
         if (nacionalidad != null) alumno.setNacionalidad(nacionalidad);
@@ -169,7 +160,6 @@ public class AgregarAlumnoController {
             alumno.setCodigoPostal(cp);
         }
 
-        // Delegar la responsabilidad al Servicio
         try {
             alumnoService.matricularNuevoAlumno(alumno, cursoNormalizado, grupo);
 
@@ -178,8 +168,7 @@ public class AgregarAlumnoController {
 
         } catch (Exception e) {
             // Si el servicio o el DAO fallan, capturamos el error aquí
-            System.err.println("Error en el proceso de guardado: " + e.getMessage());
-            mostrarMensaje("Error", "No se pudo guardar el alumno: " + e.getMessage(), Alert.AlertType.ERROR);
+            mostrarMensaje("Error", "No se pudo guardar el alumno: " + (e.getMessage() != null ? e.getMessage() : "Error inesperado."), Alert.AlertType.ERROR);
         }
     }
 
@@ -199,15 +188,9 @@ public class AgregarAlumnoController {
 
     @FXML
     private void onSeleccionarFotoClick(ActionEvent event) {
-        // Es para que te salga la ventana de seleccionar archivos
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Selecciona foto del alumno");
-
-        // Indicas que extensiones son validos para poder selccionar y te filtre
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Imagen", "*.png", "*.jpg", "*.jpeg"));
-
-        // Sirve para que solo se pueda darle click a la ventana "padre" hasta que seleciones una foto o canceles
-        // y aparte guarda el archivo que hayas seleccionado
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         File archivoSeleccionado = fileChooser.showOpenDialog(stage);
 

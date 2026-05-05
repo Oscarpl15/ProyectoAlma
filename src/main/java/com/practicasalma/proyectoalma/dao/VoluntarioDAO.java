@@ -137,4 +137,25 @@ public class VoluntarioDAO {
             throw new PersistenciaException("Error al verificar DNI del voluntario: " + e.getMessage(), e);
         }
     }
+
+    /**
+     * Comprueba si otro voluntario distinto al indicado ya tiene ese DNI.
+     * Se usa en actualizaciones para evitar duplicados sin bloquear al propio registro.
+     *
+     * @param dni         documento de identidad a verificar
+     * @param idExcluido  ID del voluntario que se está editando (se excluye de la búsqueda)
+     * @return {@code true} si otro voluntario distinto ya tiene ese DNI
+     */
+    public boolean existeDniParaOtro(String dni, Long idExcluido) {
+        try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
+            Long count = em.createQuery(
+                    "SELECT COUNT(v) FROM Voluntario v WHERE UPPER(v.documentoIdentidad) = UPPER(:dni) AND v.id <> :id", Long.class)
+                    .setParameter("dni", dni)
+                    .setParameter("id", idExcluido)
+                    .getSingleResult();
+            return count > 0;
+        } catch (Exception e) {
+            throw new PersistenciaException("Error al verificar DNI del voluntario: " + e.getMessage(), e);
+        }
+    }
 }

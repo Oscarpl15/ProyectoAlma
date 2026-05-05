@@ -138,4 +138,25 @@ public class DocenteDAO {
             throw new PersistenciaException("Error al verificar DNI del docente: " + e.getMessage(), e);
         }
     }
+
+    /**
+     * Comprueba si otro docente distinto al indicado ya tiene ese DNI.
+     * Se usa en actualizaciones para evitar duplicados sin bloquear al propio registro.
+     *
+     * @param dni         documento de identidad a verificar
+     * @param idExcluido  ID del docente que se está editando (se excluye de la búsqueda)
+     * @return {@code true} si otro docente distinto ya tiene ese DNI
+     */
+    public boolean existeDniParaOtro(String dni, Long idExcluido) {
+        try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
+            Long count = em.createQuery(
+                    "SELECT COUNT(d) FROM Docente d WHERE UPPER(d.documentoIdentidad) = UPPER(:dni) AND d.id <> :id", Long.class)
+                    .setParameter("dni", dni)
+                    .setParameter("id", idExcluido)
+                    .getSingleResult();
+            return count > 0;
+        } catch (Exception e) {
+            throw new PersistenciaException("Error al verificar DNI del docente: " + e.getMessage(), e);
+        }
+    }
 }

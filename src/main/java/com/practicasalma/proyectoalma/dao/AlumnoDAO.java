@@ -69,8 +69,8 @@ public class AlumnoDAO {
     }
 
     /**
-     * Devuelve todos los alumnos con sus matrículas pre-cargadas (LEFT JOIN FETCH).
-     * El DISTINCT evita duplicados provocados por el join.
+     * Devuelve todos los alumnos con sus matrículas y tutores pre-cargados.
+     * El DISTINCT evita duplicados provocados por el join de matrículas.
      *
      * @return lista de alumnos, vacía si no hay ninguno
      */
@@ -81,7 +81,9 @@ public class AlumnoDAO {
             Root<Alumno> root = query.from(Alumno.class);
             root.fetch("matriculas", JoinType.LEFT);
             query.select(root).distinct(true);
-            return em.createQuery(query).getResultList();
+            List<Alumno> alumnos = em.createQuery(query).getResultList();
+            alumnos.forEach(a -> a.getTutores().size());
+            return alumnos;
         } catch (Exception e) {
             throw new PersistenciaException("Error al cargar los alumnos: " + e.getMessage(), e);
         }
@@ -204,6 +206,27 @@ public class AlumnoDAO {
             Long count = em.createQuery(
                     "SELECT COUNT(a) FROM Alumno a WHERE UPPER(a.documentoIdentidad) = UPPER(:dni)", Long.class)
                     .setParameter("dni", dni)
+                    .getSingleResult();
+            return count > 0;
+        } catch (Exception e) {
+            throw new PersistenciaException("Error al verificar DNI del alumno: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Comprueba si otro alumno distinto al indicado ya tiene ese DNI.
+     * Se usa en actualizaciones para evitar duplicados sin bloquear al propio registro.
+     *
+     * @param dni         documento de identidad a verificar
+     * @param idExcluido  ID del alumno que se está editando (se excluye de la búsqueda)
+     * @return {@code true} si otro alumno distinto ya tiene ese DNI
+     */
+    public boolean existeDniParaOtro(String dni, Long idExcluido) {
+        try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
+            Long count = em.createQuery(
+                    "SELECT COUNT(a) FROM Alumno a WHERE UPPER(a.documentoIdentidad) = UPPER(:dni) AND a.id <> :id", Long.class)
+                    .setParameter("dni", dni)
+                    .setParameter("id", idExcluido)
                     .getSingleResult();
             return count > 0;
         } catch (Exception e) {

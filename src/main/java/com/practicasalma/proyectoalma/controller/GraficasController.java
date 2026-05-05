@@ -316,6 +316,24 @@ public class GraficasController {
         alert.showAndWait();
     }
 
+    public void refrescar() {
+        String entidad = comboEntidad.getValue();
+        String anoActual = comboAno.getValue();
+
+        List<String> anos = "SOCIOS".equals(entidad)
+                ? graficasService.obtenerAnosSocios()
+                : graficasService.obtenerAnosAcademicosAlumnos();
+
+        comboAno.setItems(FXCollections.observableArrayList(anos));
+        if (anos.contains(anoActual)) {
+            comboAno.setValue(anoActual);
+        } else if (!anos.isEmpty()) {
+            comboAno.getSelectionModel().select(0);
+        }
+
+        refrescarGraficas();
+    }
+
     private String mapearTipoDatoAlumno(String etiquetaUi) {
         if (etiquetaUi == null) {
             return "NACIONALIDAD";

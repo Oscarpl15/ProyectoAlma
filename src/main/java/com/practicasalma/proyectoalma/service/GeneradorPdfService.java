@@ -6,6 +6,7 @@ import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.AcroFields;
+import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfDictionary;
 import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfReader;
@@ -42,15 +43,17 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Servicio de generación de documentos PDF para la fundación.
  * <p>
- * Genera dos tipos de documentos usando la librería OpenPDF:
+ * Genera tres tipos de documentos usando la librería OpenPDF:
  * <ol>
- *   <li><b>Informe de socio</b> — datos básicos del socio y sus donaciones en formato simple.</li>
- *   <li><b>Certificado de donaciones</b> — rellena una plantilla PDF oficial (con AcroForm o
- *       reemplazo de texto plano como fallback) con los datos del socio y el importe total.</li>
+ *   <li><b>Certificado de donaciones</b> — rellena la plantilla PDF oficial (con AcroForm o
+ *       reemplazo de texto plano como fallback) con los datos del socio y el importe del año indicado.</li>
+ *   <li><b>Listado de alumnos por grupos</b> — PDF con la distribución de alumnos por grupo en un curso escolar.</li>
+ *   <li><b>Informe de gráficas</b> — captura de una gráfica con su resumen en PDF.</li>
  * </ol>
  * La plantilla del certificado se busca automáticamente en varias ubicaciones: raíz del proyecto,
  * escritorio del usuario, carpeta de recursos y classpath (en ese orden).
@@ -73,44 +76,6 @@ public class GeneradorPdfService {
     private static final String CAMPO_ANO_FINAL = "ANO_FINAL";
     private static final String NOMBRE_PLANTILLA_1 = "modelo_certificado_donaciones_deafult.pdf";
     private static final String NOMBRE_PLANTILLA_2 = "modelo_certificado_donaciones_default.pdf";
-
-    public void generarPdfPrueba(String rutaSalida) {
-        if (rutaSalida == null || rutaSalida.trim().isEmpty()) {
-            throw new IllegalArgumentException("La ruta de salida del PDF es obligatoria.");
-        }
-
-        Path ruta = Paths.get(rutaSalida.trim());
-
-        try {
-            Path carpetaPadre = ruta.getParent();
-            if (carpetaPadre != null) {
-                Files.createDirectories(carpetaPadre);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("No se pudo crear la carpeta de salida para el PDF.", e);
-        }
-
-        Document document = new Document();
-        FileOutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(ruta.toFile());
-            PdfWriter.getInstance(document, outputStream);
-            document.open();
-            document.add(new Paragraph("Hola texto de prueba"));
-        } catch (IOException | DocumentException e) {
-            throw new RuntimeException("Error al generar el PDF de prueba.", e);
-        } finally {
-            if (document.isOpen()) {
-                document.close();
-            }
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException ignored) {
-                }
-            }
-        }
-    }
 
     public void generarPdfGrafica(String rutaSalida, String titulo, javafx.scene.image.Image grafica, List<String> resumen) {
         if (rutaSalida == null || rutaSalida.trim().isEmpty()) {
@@ -378,132 +343,6 @@ public class GeneradorPdfService {
         return buffered;
     }
 
-    public void generarInformeSocio(String rutaSalida, Socio socio) {
-        if (rutaSalida == null || rutaSalida.trim().isEmpty()) {
-            throw new IllegalArgumentException("La ruta de salida del PDF es obligatoria.");
-        }
-        if (socio == null) {
-            throw new IllegalArgumentException("El socio es obligatorio para generar el informe.");
-        }
-
-        Path ruta = Paths.get(rutaSalida.trim());
-
-        try {
-            Path carpetaPadre = ruta.getParent();
-            if (carpetaPadre != null) {
-                Files.createDirectories(carpetaPadre);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("No se pudo crear la carpeta de salida para el informe.", e);
-        }
-
-        Document document = new Document();
-        FileOutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(ruta.toFile());
-            PdfWriter.getInstance(document, outputStream);
-            document.open();
-
-            document.add(new Paragraph("INFORME DE SOCIO"));
-            document.add(new Paragraph("Fecha: " + LocalDate.now()));
-            document.add(new Paragraph(" "));
-
-            document.add(new Paragraph("Nombre: " + valorSeguro(socio.getNombre())));
-            document.add(new Paragraph("Apellidos: " + valorSeguro(socio.getApellidos())));
-            document.add(new Paragraph("DNI/NIF: " + valorSeguro(socio.getDocumentoIdentidad())));
-            document.add(new Paragraph("Correo: " + valorSeguro(socio.getCorreo())));
-            document.add(new Paragraph("Telefono: " + valorSeguro(socio.getTelefono())));
-            document.add(new Paragraph("Direccion: " + valorSeguro(socio.getDireccion())));
-            document.add(new Paragraph("Tipo entidad: " + valorSeguro(socio.getTipoEntidad())));
-            document.add(new Paragraph("Periodicidad: " + valorSeguro(socio.getPeriodicidad())));
-            document.add(new Paragraph("Cuota: " + (socio.getCuota() != null ? socio.getCuota() + " EUR" : "-")));
-            document.add(new Paragraph(" "));
-            document.add(new Paragraph("Donaciones:"));
-
-            if (socio.getDonaciones() == null || socio.getDonaciones().isEmpty()) {
-                document.add(new Paragraph("- Sin donaciones registradas"));
-            } else {
-                for (Donacion donacion : socio.getDonaciones()) {
-                    String fecha = donacion.getFecha() != null ? donacion.getFecha().toString() : "-";
-                    String importe = donacion.getImporte() != null ? donacion.getImporte().toPlainString() + " EUR" : "-";
-                    String forma = valorSeguro(donacion.getFormaDonacion());
-                    document.add(new Paragraph("- " + fecha + " | " + importe + " | " + forma));
-                }
-            }
-        } catch (IOException | DocumentException e) {
-            throw new RuntimeException("Error al generar el informe PDF del socio.", e);
-        } finally {
-            if (document.isOpen()) {
-                document.close();
-            }
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException ignored) {
-                }
-            }
-        }
-    }
-
-    /**
-     * Genera el certificado oficial de donaciones usando la plantilla PDF de la fundación.
-     * Calcula automáticamente el importe total y lo convierte a letras para rellenar el certificado.
-     *
-     * @param rutaSalida ruta del fichero PDF de salida
-     * @param socio      socio para el que se emite el certificado (con donaciones cargadas)
-     * @throws IllegalArgumentException si el socio no tiene domicilio configurado
-     * @throws IllegalStateException    si no se encuentra la plantilla PDF en ninguna ubicación
-     */
-    public void generarInformeSocioConPlantilla(String rutaSalida, Socio socio) {
-        if (socio == null) {
-            throw new IllegalArgumentException("El socio es obligatorio para generar el informe.");
-        }
-
-        String rutaPlantilla = resolverRutaPlantillaCertificado();
-
-        List<Donacion> donaciones = socio.getDonaciones();
-        BigDecimal totalDonado = BigDecimal.ZERO;
-        int anoInicial = LocalDate.now().getYear();
-
-        if (donaciones != null && !donaciones.isEmpty()) {
-            for (Donacion donacion : donaciones) {
-                if (donacion.getImporte() != null) {
-                    totalDonado = totalDonado.add(donacion.getImporte());
-                }
-            }
-
-            Donacion masReciente = donaciones.stream()
-                    .filter(d -> d.getFecha() != null)
-                    .max(Comparator.comparing(Donacion::getFecha))
-                    .orElse(null);
-
-            if (masReciente != null) {
-                anoInicial = masReciente.getFecha().getYear();
-            }
-        }
-
-        LocalDate hoy = LocalDate.now();
-        String nombreCompleto = (valorSeguro(socio.getNombre()) + " " + valorSeguro(socio.getApellidos())).trim();
-        String domicilio = construirDomicilioObligatorio(socio);
-        BigDecimal cantidadInforme = obtenerCantidadInforme(totalDonado, socio.getCuota());
-        String cantidadNumero = formatearCantidad(cantidadInforme);
-        String cantidadLetra = convertirImporteALetras(cantidadInforme);
-
-        generarCertificadoDonacion(
-                rutaPlantilla,
-                rutaSalida,
-                String.valueOf(anoInicial),
-                nombreCompleto,
-                valorSeguro(socio.getDocumentoIdentidad()),
-                domicilio,
-                cantidadNumero,
-                cantidadLetra,
-                String.valueOf(hoy.getDayOfMonth()),
-                hoy.getMonth().getDisplayName(TextStyle.FULL, new Locale("es", "ES")).toUpperCase(Locale.ROOT),
-                String.valueOf(hoy.getYear())
-        );
-    }
-
     /**
      * Genera el certificado de donaciones filtrando solo las del año indicado.
      *
@@ -627,6 +466,10 @@ public class GeneradorPdfService {
         }
     }
 
+    private static final Set<String> CAMPOS_CENTRADOS = Set.of(
+            CAMPO_DIA, CAMPO_MES, CAMPO_ANO_INICIAL, CAMPO_ANO_FINAL
+    );
+
     private boolean reemplazarPorAcroForm(PdfStamper stamper, Map<String, String> valores)
             throws IOException, DocumentException {
         AcroFields form = stamper.getAcroFields();
@@ -634,11 +477,23 @@ public class GeneradorPdfService {
             return false;
         }
 
+        BaseFont fuente = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.NOT_EMBEDDED);
+        form.setGenerateAppearances(true);
         boolean huboReemplazo = false;
 
         for (Map.Entry<String, String> entrada : valores.entrySet()) {
-            if (form.getFieldItem(entrada.getKey()) != null) {
-                form.setField(entrada.getKey(), entrada.getValue());
+            String campo = entrada.getKey();
+            AcroFields.Item item = form.getFieldItem(campo);
+            if (item != null) {
+                // Eliminar apariencias previas para que OpenPDF regenere con nuestra fuente
+                for (int i = 0; i < item.size(); i++) {
+                    item.getWidget(i).remove(PdfName.AP);
+                }
+                form.setFieldProperty(campo, "textfont", fuente, null);
+                form.setFieldProperty(campo, "textsize", 12f, null);
+                int alineacion = CAMPOS_CENTRADOS.contains(campo) ? 1 : 0;
+                form.setFieldProperty(campo, "alignment", alineacion, null);
+                form.setField(campo, entrada.getValue());
                 huboReemplazo = true;
             }
         }
