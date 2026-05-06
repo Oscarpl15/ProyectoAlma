@@ -4,7 +4,8 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Nitropc\\\\Desktop\\\\DAM\\\\Presencial\\\\Gith\\\\ProyectoAlma\" -Recurse -Directory -ErrorAction SilentlyContinue)",
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(dir \"C:\\\\Users\\\\Nitropc\\\\Desktop\\\\DAM\\\\Presencial\\\\Gith\\\\ProyectoAlma\\\\src\" /b)",
-      "Bash(dir \"C:\\\\Users\\\\Nitropc\\\\Desktop\\\\DAM\\\\Presencial\\\\Gith\\\\ProyectoAlma\" /b)"
+      "Bash(dir \"C:\\\\Users\\\\Nitropc\\\\Desktop\\\\DAM\\\\Presencial\\\\Gith\\\\ProyectoAlma\" /b)",
+      "Bash(mvn test *)"
     ]
   }
 }

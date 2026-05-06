@@ -176,8 +176,8 @@ public class AlumnoService {
         if (ultima == null) {
             return CURSOS_PRIMARIA.get(0);
         }
-        int indice = CURSOS_PRIMARIA.indexOf(ultima.getCurso());
-        if (indice == -1) indice = 0;
+        int indice = ultima.getCurso() != null ? CURSOS_PRIMARIA.indexOf(ultima.getCurso()) : -1;
+        if (indice == -1) return CURSOS_PRIMARIA.get(0);
 
         String anyoAcademicoUltimo = ultima.getAnyoAcademico();
         if (anyoAcademicoUltimo != null && anyoAcademicoUltimo.contains("/")) {

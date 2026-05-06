@@ -1,11 +1,15 @@
 package com.practicasalma.proyectoalma.service;
 
+import com.practicasalma.proyectoalma.dao.AsignacionPersonalDAO;
 import com.practicasalma.proyectoalma.dao.DocenteDAO;
 import com.practicasalma.proyectoalma.exception.EntidadDuplicadaException;
 import com.practicasalma.proyectoalma.exception.ValidacionException;
+import com.practicasalma.proyectoalma.model.AsignacionPersonal;
 import com.practicasalma.proyectoalma.model.Docente;
+import com.practicasalma.proyectoalma.util.UtilFecha;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
@@ -19,14 +23,19 @@ class DocenteServiceTest {
 
     private DocenteService service;
     private DocenteDAO mockDAO;
+    private AsignacionPersonalDAO mockAsignacionDAO;
 
     @BeforeEach
     void setUp() throws Exception {
         service = new DocenteService();
         mockDAO = Mockito.mock(DocenteDAO.class);
-        Field campo = DocenteService.class.getDeclaredField("docenteDAO");
-        campo.setAccessible(true);
-        campo.set(service, mockDAO);
+        mockAsignacionDAO = Mockito.mock(AsignacionPersonalDAO.class);
+        Field campoDAO = DocenteService.class.getDeclaredField("docenteDAO");
+        campoDAO.setAccessible(true);
+        campoDAO.set(service, mockDAO);
+        Field campoAsig = DocenteService.class.getDeclaredField("asignacionDAO");
+        campoAsig.setAccessible(true);
+        campoAsig.set(service, mockAsignacionDAO);
     }
 
     // ---- Validación: fecha de nacimiento ----
@@ -143,9 +152,111 @@ class DocenteServiceTest {
         verify(mockDAO, times(1)).actualizar(docente);
     }
 
-    // ---- Auxiliar ----
+    // ---- darDeBaja ----
+
+    @Test
+    void darDeBaja_enPeriodo_eliminaAsignacionDelCursoActual() {
+        Docente docente = docenteConAsignacion("2025/2026");
+        when(mockDAO.obtenerCompleto(1L)).thenReturn(docente);
+        LocalDate fechaMock = LocalDate.of(2025, 8, 15);
+
+        try (MockedStatic<LocalDate> ld = Mockito.mockStatic(LocalDate.class, Mockito.CALLS_REAL_METHODS)) {
+            ld.when(LocalDate::now).thenReturn(fechaMock);
+
+            service.darDeBaja(1L);
+
+            assertTrue(docente.getHistorialAsignaciones().isEmpty());
+            assertFalse(docente.getActivo());
+            verify(mockDAO).actualizar(docente);
+            verify(mockDAO, never()).actualizarActivo(anyLong(), anyBoolean());
+        }
+    }
+
+    @Test
+    void darDeBaja_enPeriodo_noEliminaAsignacionDeAnioAnterior() {
+        Docente docente = docenteConAsignacion("2024/2025");
+        when(mockDAO.obtenerCompleto(1L)).thenReturn(docente);
+        LocalDate fechaMock = LocalDate.of(2025, 8, 15);
+
+        try (MockedStatic<LocalDate> ld = Mockito.mockStatic(LocalDate.class, Mockito.CALLS_REAL_METHODS)) {
+            ld.when(LocalDate::now).thenReturn(fechaMock);
+
+            service.darDeBaja(1L);
+
+            assertEquals(1, docente.getHistorialAsignaciones().size());
+            assertEquals("2024/2025", docente.getHistorialAsignaciones().get(0).getAnyoAcademico());
+        }
+    }
+
+    @Test
+    void darDeBaja_fueraPeriodo_usaActualizarActivoLigero() {
+        LocalDate fechaMock = LocalDate.of(2025, 11, 15);
+        try (MockedStatic<LocalDate> ld = Mockito.mockStatic(LocalDate.class, Mockito.CALLS_REAL_METHODS)) {
+            ld.when(LocalDate::now).thenReturn(fechaMock);
+
+            service.darDeBaja(1L);
+
+            verify(mockDAO).actualizarActivo(1L, false);
+            verify(mockDAO, never()).obtenerCompleto(anyLong());
+            verify(mockDAO, never()).actualizar(any());
+        }
+    }
+
+    @Test
+    void darDeBaja_enJunio_usaActualizarActivoLigero() {
+        LocalDate fechaMock = LocalDate.of(2025, 6, 15);
+        try (MockedStatic<LocalDate> ld = Mockito.mockStatic(LocalDate.class, Mockito.CALLS_REAL_METHODS)) {
+            ld.when(LocalDate::now).thenReturn(fechaMock);
+
+            service.darDeBaja(1L);
+
+            verify(mockDAO).actualizarActivo(1L, false);
+            verify(mockDAO, never()).obtenerCompleto(anyLong());
+        }
+    }
+
+    // ---- darDeAlta ----
+
+    @Test
+    void darDeAlta_sinAsignacion_creaAsignacionParaCursoActual() {
+        Docente docente = docenteBase();
+        when(mockDAO.obtenerCompleto(1L)).thenReturn(docente);
+
+        try (MockedStatic<UtilFecha> uf = Mockito.mockStatic(UtilFecha.class)) {
+            uf.when(UtilFecha::calcularCursoAcademicoPersonal).thenReturn("2025/2026");
+
+            service.darDeAlta(1L);
+
+            verify(mockAsignacionDAO).guardar(any(AsignacionPersonal.class));
+        }
+    }
+
+    @Test
+    void darDeAlta_yaAsignado_noCreaNuevaAsignacion() {
+        Docente docente = docenteConAsignacion("2025/2026");
+        when(mockDAO.obtenerCompleto(1L)).thenReturn(docente);
+
+        try (MockedStatic<UtilFecha> uf = Mockito.mockStatic(UtilFecha.class)) {
+            uf.when(UtilFecha::calcularCursoAcademicoPersonal).thenReturn("2025/2026");
+
+            service.darDeAlta(1L);
+
+            verify(mockAsignacionDAO, never()).guardar(any());
+        }
+    }
+
+    // ---- Auxiliares ----
 
     private Docente docenteBase() {
         return new Docente("Test", "Apellido", "Calle 1", null, null, null, LocalDate.of(1985, 6, 15));
+    }
+
+    private Docente docenteConAsignacion(String anyo) {
+        Docente docente = docenteBase();
+        AsignacionPersonal a = new AsignacionPersonal();
+        a.setAnyoAcademico(anyo);
+        a.setGrupoAsignado("Sin asignar");
+        docente.addAsignacion(a);
+        return docente;
     }
 }

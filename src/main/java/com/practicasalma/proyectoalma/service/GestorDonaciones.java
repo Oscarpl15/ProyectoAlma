@@ -25,9 +25,10 @@ public class GestorDonaciones {
         } catch (Exception e) {
             return;
         }
+        procesarSocios(socios, LocalDate.now(), socioService);
+    }
 
-        LocalDate hoy = LocalDate.now();
-
+    static void procesarSocios(List<Socio> socios, LocalDate hoy, SocioService socioService) {
         for (Socio socio : socios) {
             if (!Boolean.TRUE.equals(socio.getActivo())) continue;
             if (socio.getCuota() == null || socio.getCuota() <= 0) continue;

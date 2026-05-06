@@ -339,7 +339,7 @@ public class FichaSocioController {
 
         if (!"Puntual".equals(newPeriodicidad) && !cuotaTexto.isEmpty()) {
             try {
-                cuota = Double.parseDouble(cuotaTexto);
+                cuota = Double.parseDouble(cuotaTexto.replace(",", "."));
             } catch (NumberFormatException e) {
                 FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Cuota inválida", "Introduce un número válido para la cuota.");
                 return;

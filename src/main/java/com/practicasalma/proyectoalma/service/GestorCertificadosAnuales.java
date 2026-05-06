@@ -57,6 +57,10 @@ public class GestorCertificadosAnuales {
     public static List<Socio> obtenerSociosConDonacionesEnAno(int ano) {
         SocioService socioService = new SocioService();
         List<Socio> todos = socioService.obtenerTodosConDonaciones();
+        return filtrarConDonacionesEnAno(todos, ano);
+    }
+
+    static List<Socio> filtrarConDonacionesEnAno(List<Socio> todos, int ano) {
         List<Socio> resultado = new ArrayList<>();
         for (Socio socio : todos) {
             if (socio == null || socio.getDonaciones() == null) continue;

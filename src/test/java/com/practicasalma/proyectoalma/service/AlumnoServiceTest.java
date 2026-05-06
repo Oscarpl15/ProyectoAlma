@@ -4,8 +4,12 @@ import com.practicasalma.proyectoalma.dao.AlumnoDAO;
 import com.practicasalma.proyectoalma.exception.EntidadDuplicadaException;
 import com.practicasalma.proyectoalma.exception.ValidacionException;
 import com.practicasalma.proyectoalma.model.Alumno;
+import com.practicasalma.proyectoalma.model.Matricula;
+import com.practicasalma.proyectoalma.util.UtilFecha;
+import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
@@ -34,7 +38,7 @@ class AlumnoServiceTest {
     @Test
     void matricularNuevoAlumno_dniInvalidoLanzaValidacionException() {
         Alumno alumno = alumnoConFecha(LocalDate.of(2010, 1, 1));
-        alumno.setDocumentoIdentidad("00000000A"); // letra incorrecta
+        alumno.setDocumentoIdentidad("00000000A");
         alumno.setTipoDocumento("DNI");
 
         assertThrows(ValidacionException.class,
@@ -44,7 +48,7 @@ class AlumnoServiceTest {
     @Test
     void matricularNuevoAlumno_nieInvalidoLanzaValidacionException() {
         Alumno alumno = alumnoConFecha(LocalDate.of(2010, 1, 1));
-        alumno.setDocumentoIdentidad("X0000000A"); // letra incorrecta
+        alumno.setDocumentoIdentidad("X0000000A");
         alumno.setTipoDocumento("NIE");
 
         assertThrows(ValidacionException.class,
@@ -54,7 +58,7 @@ class AlumnoServiceTest {
     @Test
     void matricularNuevoAlumno_telefonoInvalidoLanzaValidacionException() {
         Alumno alumno = alumnoConFecha(LocalDate.of(2010, 1, 1));
-        alumno.setTelefono("12345"); // menos de 9 dígitos
+        alumno.setTelefono("12345");
 
         assertThrows(ValidacionException.class,
                 () -> service.matricularNuevoAlumno(alumno, "1º Primaria", null));
@@ -133,9 +137,181 @@ class AlumnoServiceTest {
         verify(mockDAO, times(1)).actualizar(alumno);
     }
 
-    // ---- Auxiliar ----
+    // ---- darDeBaja ----
+
+    @Test
+    void darDeBaja_enPeriodo_eliminaMatriculaDelCursoActual() {
+        Alumno alumno = alumnoConMatricula("2025/2026", "1º Primaria");
+        when(mockDAO.obtenerCompleto(1L)).thenReturn(alumno);
+        LocalDate fechaMock = LocalDate.of(2025, 8, 15);
+
+        try (MockedStatic<LocalDate> ld = Mockito.mockStatic(LocalDate.class, Mockito.CALLS_REAL_METHODS);
+             MockedStatic<GestorConfig> gc = Mockito.mockStatic(GestorConfig.class)) {
+            ld.when(LocalDate::now).thenReturn(fechaMock);
+            gc.when(GestorConfig::getMatriculasMesInicio).thenReturn(6);
+
+            service.darDeBaja(1L);
+
+            assertTrue(alumno.getMatriculas().isEmpty());
+            assertFalse(alumno.getActivo());
+            verify(mockDAO).actualizar(alumno);
+        }
+    }
+
+    @Test
+    void darDeBaja_enPeriodo_formatoGuion_eliminaMatricula() {
+        Alumno alumno = alumnoConMatricula("2025-2026", "1º Primaria");
+        when(mockDAO.obtenerCompleto(1L)).thenReturn(alumno);
+        LocalDate fechaMock = LocalDate.of(2025, 8, 15);
+
+        try (MockedStatic<LocalDate> ld = Mockito.mockStatic(LocalDate.class, Mockito.CALLS_REAL_METHODS);
+             MockedStatic<GestorConfig> gc = Mockito.mockStatic(GestorConfig.class)) {
+            ld.when(LocalDate::now).thenReturn(fechaMock);
+            gc.when(GestorConfig::getMatriculasMesInicio).thenReturn(6);
+
+            service.darDeBaja(1L);
+
+            assertTrue(alumno.getMatriculas().isEmpty());
+        }
+    }
+
+    @Test
+    void darDeBaja_enPeriodo_noEliminaMatriculaDeAnioAnterior() {
+        // alumno pospuesto: solo tiene la matrícula del año anterior
+        Alumno alumno = alumnoConMatricula("2024/2025", "5º Primaria");
+        when(mockDAO.obtenerCompleto(1L)).thenReturn(alumno);
+        LocalDate fechaMock = LocalDate.of(2025, 8, 15);
+
+        try (MockedStatic<LocalDate> ld = Mockito.mockStatic(LocalDate.class, Mockito.CALLS_REAL_METHODS);
+             MockedStatic<GestorConfig> gc = Mockito.mockStatic(GestorConfig.class)) {
+            ld.when(LocalDate::now).thenReturn(fechaMock);
+            gc.when(GestorConfig::getMatriculasMesInicio).thenReturn(6);
+
+            service.darDeBaja(1L);
+
+            assertEquals(1, alumno.getMatriculas().size());
+            assertEquals("2024/2025", alumno.getMatriculas().get(0).getAnyoAcademico());
+        }
+    }
+
+    @Test
+    void darDeBaja_fueraPeriodo_noEliminaMatricula() {
+        Alumno alumno = alumnoConMatricula("2024/2025", "3º Primaria");
+        when(mockDAO.obtenerCompleto(1L)).thenReturn(alumno);
+        LocalDate fechaMock = LocalDate.of(2025, 2, 15);
+
+        try (MockedStatic<LocalDate> ld = Mockito.mockStatic(LocalDate.class, Mockito.CALLS_REAL_METHODS);
+             MockedStatic<GestorConfig> gc = Mockito.mockStatic(GestorConfig.class)) {
+            ld.when(LocalDate::now).thenReturn(fechaMock);
+            gc.when(GestorConfig::getMatriculasMesInicio).thenReturn(6);
+
+            service.darDeBaja(1L);
+
+            assertEquals(1, alumno.getMatriculas().size());
+        }
+    }
+
+    @Test
+    void darDeBaja_enOctubre_noEliminaMatricula() {
+        Alumno alumno = alumnoConMatricula("2025/2026", "1º Primaria");
+        when(mockDAO.obtenerCompleto(1L)).thenReturn(alumno);
+        LocalDate fechaMock = LocalDate.of(2025, 10, 5);
+
+        try (MockedStatic<LocalDate> ld = Mockito.mockStatic(LocalDate.class, Mockito.CALLS_REAL_METHODS);
+             MockedStatic<GestorConfig> gc = Mockito.mockStatic(GestorConfig.class)) {
+            ld.when(LocalDate::now).thenReturn(fechaMock);
+            gc.when(GestorConfig::getMatriculasMesInicio).thenReturn(6);
+
+            service.darDeBaja(1L);
+
+            assertEquals(1, alumno.getMatriculas().size());
+        }
+    }
+
+    // ---- darDeAlta ----
+
+    @Test
+    void darDeAlta_sinMatriculas_creaMatriculaEn1eroInfantil() {
+        Alumno alumno = alumnoConFecha(LocalDate.of(2010, 1, 1));
+        when(mockDAO.obtenerCompleto(1L)).thenReturn(alumno);
+
+        try (MockedStatic<UtilFecha> uf = Mockito.mockStatic(UtilFecha.class)) {
+            uf.when(UtilFecha::calcularCursoAcademico).thenReturn("2025/2026");
+
+            String aviso = service.darDeAlta(1L);
+
+            assertNull(aviso);
+            assertTrue(alumno.getActivo());
+            assertEquals(1, alumno.getMatriculas().size());
+            assertEquals("2025/2026", alumno.getMatriculas().get(0).getAnyoAcademico());
+            assertEquals("1º Infantil", alumno.getMatriculas().get(0).getCurso());
+            verify(mockDAO).actualizar(alumno);
+        }
+    }
+
+    @Test
+    void darDeAlta_yaMatriculadoEnCursoActual_noCreaNuevaMatricula() {
+        Alumno alumno = alumnoConMatricula("2025/2026", "1º Primaria");
+        when(mockDAO.obtenerCompleto(1L)).thenReturn(alumno);
+
+        try (MockedStatic<UtilFecha> uf = Mockito.mockStatic(UtilFecha.class)) {
+            uf.when(UtilFecha::calcularCursoAcademico).thenReturn("2025/2026");
+
+            service.darDeAlta(1L);
+
+            assertEquals(1, alumno.getMatriculas().size());
+        }
+    }
+
+    @Test
+    void darDeAlta_conMatriculaAnterior_avanzaCursoSegunAnioTranscurridos() {
+        // 3º Primaria en 2023/2024 + 2 años = 5º Primaria en 2025/2026
+        Alumno alumno = alumnoConMatricula("2023/2024", "3º Primaria");
+        when(mockDAO.obtenerCompleto(1L)).thenReturn(alumno);
+
+        try (MockedStatic<UtilFecha> uf = Mockito.mockStatic(UtilFecha.class)) {
+            uf.when(UtilFecha::calcularCursoAcademico).thenReturn("2025/2026");
+
+            service.darDeAlta(1L);
+
+            Matricula nueva = alumno.getMatriculas().get(1);
+            assertEquals("2025/2026", nueva.getAnyoAcademico());
+            assertEquals("5º Primaria", nueva.getCurso());
+        }
+    }
+
+    @Test
+    void darDeAlta_ultimaMatriculaSinCurso_devuelveAvisoYAsigna1eroInfantil() {
+        Alumno alumno = alumnoConFecha(LocalDate.of(2010, 1, 1));
+        Matricula m = new Matricula();
+        m.setAnyoAcademico("2024/2025");
+        m.setCurso(null);
+        alumno.addMatricula(m);
+        when(mockDAO.obtenerCompleto(1L)).thenReturn(alumno);
+
+        try (MockedStatic<UtilFecha> uf = Mockito.mockStatic(UtilFecha.class)) {
+            uf.when(UtilFecha::calcularCursoAcademico).thenReturn("2025/2026");
+
+            String aviso = service.darDeAlta(1L);
+
+            assertNotNull(aviso);
+            assertEquals(2, alumno.getMatriculas().size());
+            assertEquals("1º Infantil", alumno.getMatriculas().get(1).getCurso());
+        }
+    }
+
+    // ---- Auxiliares ----
 
     private Alumno alumnoConFecha(LocalDate fecha) {
         return new Alumno("Test", "Apellido", "Calle 1", fecha);
+    }
+
+    private Alumno alumnoConMatricula(String anyo, String curso) {
+        Alumno alumno = alumnoConFecha(LocalDate.of(2010, 1, 1));
+        Matricula m = new Matricula();
+        m.setAnyoAcademico(anyo);
+        m.setCurso(curso);
+        alumno.addMatricula(m);
+        return alumno;
     }
 }
