@@ -2,7 +2,9 @@ package com.practicasalma.proyectoalma.service;
 
 import com.practicasalma.proyectoalma.dao.AlumnoDAO;
 import com.practicasalma.proyectoalma.util.config.GestorConfig;
+import com.practicasalma.proyectoalma.util.UtilFecha;
 import com.practicasalma.proyectoalma.dao.MatriculaDAO;
+import com.practicasalma.proyectoalma.exception.ConfiguracionException;
 import com.practicasalma.proyectoalma.exception.PersistenciaException;
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.model.Matricula;
@@ -11,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -51,13 +54,16 @@ public class GestorMatriculas {
         public final MatriculaDAO matriculaDAO;
         public final AlumnoDAO alumnoDAO;
         public final Properties postponed;
+        public final List<String> errores;
 
         DatosDialogo(List<Alumno> alumnosSexto, String anyoAcademico,
-                     MatriculaDAO matriculaDAO, AlumnoDAO alumnoDAO, Properties postponed) {
+                     MatriculaDAO matriculaDAO, AlumnoDAO alumnoDAO, Properties postponed,
+                     List<String> errores) {
             this.alumnosSexto = alumnosSexto;
             this.anyoAcademico = anyoAcademico;
             this.matriculaDAO = matriculaDAO;
             this.alumnoDAO = alumnoDAO;
+            this.errores = errores;
             this.postponed = postponed;
         }
 
@@ -74,7 +80,7 @@ public class GestorMatriculas {
     public static DatosDialogo ejecutar() {
         if (!esPeriodoGeneracion()) return null;
 
-        String anyoActual = calcularAnyoAcademico();
+        String anyoActual = UtilFecha.calcularCursoAcademico();
         AlumnoDAO alumnoDAO = new AlumnoDAO();
         MatriculaDAO matriculaDAO = new MatriculaDAO();
 
@@ -107,6 +113,7 @@ public class GestorMatriculas {
                 .filter(a -> !"6º Primaria".equals(obtenerUltimoCurso(a)))
                 .collect(Collectors.toList());
 
+        List<String> errores = new ArrayList<>();
         for (Alumno a : resto) {
             String cursoActual = obtenerUltimoCurso(a);
             String nuevoCurso = cursoActual == null ? CURSOS.get(0) : siguienteCurso(cursoActual);
@@ -116,12 +123,13 @@ public class GestorMatriculas {
                 m.setAnyoAcademico(anyoActual);
                 matriculaDAO.guardar(m);
             } catch (PersistenciaException e) {
-                // Continuar con el resto si una matrícula individual falla
+                errores.add((a.getNombre() != null ? a.getNombre() : "") + " " +
+                        (a.getApellidos() != null ? a.getApellidos() : ""));
             }
         }
 
-        if (enSexto.isEmpty()) return null;
-        return new DatosDialogo(enSexto, anyoActual, matriculaDAO, alumnoDAO, postponed);
+        if (enSexto.isEmpty() && errores.isEmpty()) return null;
+        return new DatosDialogo(enSexto, anyoActual, matriculaDAO, alumnoDAO, postponed, errores);
     }
 
     /**
@@ -137,16 +145,6 @@ public class GestorMatriculas {
         LocalDate inicio = LocalDate.of(hoy.getYear(), mesInicio, diaInicio);
         LocalDate fin = LocalDate.of(hoy.getYear(), 9, 10);
         return !hoy.isBefore(inicio) && !hoy.isAfter(fin);
-    }
-
-    public static String calcularAnyoAcademico() {
-        LocalDate hoy = LocalDate.now();
-        int anyo = hoy.getYear();
-        int mes = hoy.getMonthValue();
-        if (mes >= 4) {
-            return anyo + "/" + (anyo + 1);
-        }
-        return (anyo - 1) + "/" + anyo;
     }
 
     /**
@@ -179,8 +177,8 @@ public class GestorMatriculas {
     }
 
     private static String obtenerUltimoCurso(Alumno alumno) {
-        if (alumno.getMatriculas() == null || alumno.getMatriculas().isEmpty()) return null;
-        return alumno.getMatriculas().get(alumno.getMatriculas().size() - 1).getCurso();
+        Matricula ultima = alumno.getUltimaMatricula();
+        return ultima != null ? ultima.getCurso() : null;
     }
 
     public static Properties cargarPostponed() {
@@ -189,7 +187,9 @@ public class GestorMatriculas {
         if (f.exists()) {
             try (FileInputStream fis = new FileInputStream(f)) {
                 props.load(fis);
-            } catch (Exception ignored) {}
+            } catch (Exception e) {
+                throw new ConfiguracionException("No se pudo leer el fichero de renovaciones aplazadas: " + e.getMessage(), e);
+            }
         }
         return props;
     }
@@ -200,6 +200,8 @@ public class GestorMatriculas {
             try (FileOutputStream fos = new FileOutputStream(RUTA_POSTPONED)) {
                 props.store(fos, null);
             }
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            throw new ConfiguracionException("No se pudo guardar el fichero de renovaciones aplazadas: " + e.getMessage(), e);
+        }
     }
 }

@@ -9,6 +9,7 @@ import com.practicasalma.proyectoalma.model.Docente;
 import com.practicasalma.proyectoalma.util.UtilFecha;
 import com.practicasalma.proyectoalma.util.validacion.Validador;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -22,6 +23,7 @@ import java.util.List;
 public class DocenteService {
 
     private final DocenteDAO docenteDAO = new DocenteDAO();
+    private final AsignacionPersonalDAO asignacionDAO = new AsignacionPersonalDAO();
 
     private void validarDocente(Docente docente) {
         if (docente.getFechaNacimiento() != null && !Validador.esFechaNacimientoValida(docente.getFechaNacimiento())) {
@@ -99,12 +101,23 @@ public class DocenteService {
      * @param anyoAcademico año académico en formato {@code "AAAA/AAAA+1"}
      */
     public void registrarContinuacion(Docente docente, String anyoAcademico) {
-        AsignacionPersonalDAO asignacionDAO = new AsignacionPersonalDAO();
         asignacionDAO.guardar(new AsignacionPersonal(docente, anyoAcademico));
     }
 
     public void darDeBaja(Long id) {
-        docenteDAO.actualizarActivo(id, false);
+        int mes = LocalDate.now().getMonthValue();
+        if (mes >= 7 && mes < 10) {
+            Docente docente = docenteDAO.obtenerCompleto(id);
+            docente.setActivo(false);
+            int year = LocalDate.now().getYear();
+            String anyoNuevo = year + "/" + (year + 1);
+            String anyoNuevoAlt = year + "-" + (year + 1);
+            docente.getHistorialAsignaciones().removeIf(a ->
+                    anyoNuevo.equals(a.getAnyoAcademico()) || anyoNuevoAlt.equals(a.getAnyoAcademico()));
+            docenteDAO.actualizar(docente);
+        } else {
+            docenteDAO.actualizarActivo(id, false);
+        }
     }
 
     public void darDeAlta(Long id) {

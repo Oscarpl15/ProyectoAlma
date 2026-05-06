@@ -6,6 +6,7 @@ import com.practicasalma.proyectoalma.model.AsignacionPersonal;
 import com.practicasalma.proyectoalma.model.Docente;
 import com.practicasalma.proyectoalma.model.Voluntario;
 
+import com.practicasalma.proyectoalma.exception.ConfiguracionException;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -130,7 +131,9 @@ public class GestorAsignaciones {
         if (f.exists()) {
             try (InputStream is = new FileInputStream(f)) {
                 props.load(is);
-            } catch (IOException ignored) {}
+            } catch (IOException e) {
+                throw new ConfiguracionException("No se pudo leer el fichero de asignaciones aplazadas: " + e.getMessage(), e);
+            }
         }
         return props;
     }
@@ -138,6 +141,8 @@ public class GestorAsignaciones {
     public static void guardarPostponed(Properties props) {
         try (OutputStream os = new FileOutputStream(RUTA_POSTPONED)) {
             props.store(os, null);
-        } catch (IOException ignored) {}
+        } catch (IOException e) {
+            throw new ConfiguracionException("No se pudo guardar el fichero de asignaciones aplazadas: " + e.getMessage(), e);
+        }
     }
 }

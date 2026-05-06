@@ -5,9 +5,13 @@ import com.practicasalma.proyectoalma.exception.EntidadDuplicadaException;
 import com.practicasalma.proyectoalma.exception.ValidacionException;
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.model.Matricula;
+import com.practicasalma.proyectoalma.model.PersonaAutorizada;
+import com.practicasalma.proyectoalma.model.Tutor;
 import com.practicasalma.proyectoalma.util.UtilFecha;
+import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import com.practicasalma.proyectoalma.util.validacion.Validador;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -48,6 +52,10 @@ public class AlumnoService {
         if (telefono != null && !telefono.isBlank() && !Validador.esTelefonoValido(telefono)) {
             throw new ValidacionException("El teléfono no es válido. Debe tener 9 dígitos.");
         }
+        String cp = alumno.getCodigoPostal();
+        if (cp != null && !cp.isBlank() && !Validador.esCodigoPostalValido(cp)) {
+            throw new ValidacionException("El código postal no es válido. Debe tener exactamente 5 dígitos.");
+        }
     }
 
     /**
@@ -87,6 +95,26 @@ public class AlumnoService {
         alumnoDAO.actualizar(alumno);
     }
 
+    public void vincularTutor(Alumno alumno, Tutor tutor) {
+        alumno.addTutor(tutor);
+        alumnoDAO.actualizar(alumno);
+    }
+
+    public void desvincularTutor(Alumno alumno, Tutor tutor) {
+        alumno.removeTutor(tutor);
+        alumnoDAO.actualizar(alumno);
+    }
+
+    public void vincularPersonaAutorizada(Alumno alumno, PersonaAutorizada pa) {
+        alumno.addPersonaAutorizada(pa);
+        alumnoDAO.actualizar(alumno);
+    }
+
+    public void desvincularPersonaAutorizada(Alumno alumno, PersonaAutorizada pa) {
+        alumno.removePersonaAutorizada(pa);
+        alumnoDAO.actualizar(alumno);
+    }
+
     public List<Alumno> obtenerTodos() {
         return alumnoDAO.obtenerTodos();
     }
@@ -103,6 +131,15 @@ public class AlumnoService {
     public void darDeBaja(Long id) {
         Alumno alumno = alumnoDAO.obtenerCompleto(id);
         alumno.setActivo(false);
+        int mes = LocalDate.now().getMonthValue();
+        int mesInicio = GestorConfig.getMatriculasMesInicio();
+        if (mes >= mesInicio && mes < 10) {
+            int year = LocalDate.now().getYear();
+            String anyoNuevo = year + "/" + (year + 1);
+            String anyoNuevoAlt = year + "-" + (year + 1);
+            alumno.getMatriculas().removeIf(m ->
+                    anyoNuevo.equals(m.getAnyoAcademico()) || anyoNuevoAlt.equals(m.getAnyoAcademico()));
+        }
         alumnoDAO.actualizar(alumno);
     }
 
@@ -112,33 +149,46 @@ public class AlumnoService {
      *
      * @param id identificador del alumno
      */
-    public void darDeAlta(Long id) {
+    public String darDeAlta(Long id) {
         Alumno alumno = alumnoDAO.obtenerCompleto(id);
         alumno.setActivo(true);
         String anyoNuevo = UtilFecha.calcularCursoAcademico();
         boolean yaMatriculado = alumno.getMatriculas().stream()
                 .anyMatch(m -> anyoNuevo.equals(m.getAnyoAcademico()));
+        String aviso = null;
         if (!yaMatriculado) {
+            Matricula ultima = alumno.getUltimaMatricula();
+            if (ultima != null && ultima.getCurso() == null) {
+                aviso = "No se pudo determinar el curso de " + alumno.getNombre() +
+                        " porque su última matrícula no tiene curso asignado. " +
+                        "Se ha asignado 1º Infantil. Revísalo manualmente.";
+            }
             Matricula nueva = new Matricula(calcularCursoParaAlta(alumno), alumno);
             nueva.setAnyoAcademico(anyoNuevo);
             alumno.addMatricula(nueva);
         }
         alumnoDAO.actualizar(alumno);
+        return aviso;
     }
 
     private String calcularCursoParaAlta(Alumno alumno) {
-        List<Matricula> matriculas = alumno.getMatriculas();
-        if (matriculas == null || matriculas.isEmpty()) {
+        Matricula ultima = alumno.getUltimaMatricula();
+        if (ultima == null) {
             return CURSOS_PRIMARIA.get(0);
         }
-        Matricula ultima = matriculas.get(matriculas.size() - 1);
         int indice = CURSOS_PRIMARIA.indexOf(ultima.getCurso());
         if (indice == -1) indice = 0;
-        try {
-            int anyoUltimo = Integer.parseInt(ultima.getAnyoAcademico().split("/")[0]);
-            int anyoActual = Integer.parseInt(UtilFecha.calcularCursoAcademico().split("/")[0]);
-            indice = Math.min(indice + Math.max(0, anyoActual - anyoUltimo), CURSOS_PRIMARIA.size() - 1);
-        } catch (NumberFormatException ignored) {
+
+        String anyoAcademicoUltimo = ultima.getAnyoAcademico();
+        if (anyoAcademicoUltimo != null && anyoAcademicoUltimo.contains("/")) {
+            try {
+                int anyoUltimo = Integer.parseInt(anyoAcademicoUltimo.split("/")[0]);
+                int anyoActual = Integer.parseInt(UtilFecha.calcularCursoAcademico().split("/")[0]);
+                indice = Math.min(indice + Math.max(0, anyoActual - anyoUltimo), CURSOS_PRIMARIA.size() - 1);
+            } catch (NumberFormatException ignored) {
+                indice = Math.min(indice + 1, CURSOS_PRIMARIA.size() - 1);
+            }
+        } else {
             indice = Math.min(indice + 1, CURSOS_PRIMARIA.size() - 1);
         }
         return CURSOS_PRIMARIA.get(indice);

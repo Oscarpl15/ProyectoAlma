@@ -225,8 +225,8 @@ public class FichaAlumnoController {
 
             // --- CARGAR CURSO Y GRUPO DESDE MATRÍCULA ---
             // Buscamos la última matrícula activa (asumimos la última de la lista)
-            if (alumnoActual.getMatriculas() != null && !alumnoActual.getMatriculas().isEmpty()) {
-                var ultimaMatricula = alumnoActual.getMatriculas().get(alumnoActual.getMatriculas().size() - 1);
+            Matricula ultimaMatricula = alumnoActual.getUltimaMatricula();
+            if (ultimaMatricula != null) {
                 txtCurso.setText(ultimaMatricula.getCurso() != null ? ultimaMatricula.getCurso() : "Sin curso");
                 comboCurso.setValue(ultimaMatricula.getCurso());
                 txtGrupoLectura.setText(ultimaMatricula.getGrupoAsignado() != null ? ultimaMatricula.getGrupoAsignado() : "Sin grupo");
@@ -439,10 +439,6 @@ public class FichaAlumnoController {
             alumnoActual.setGenero(comboGenero.getValue());
             alumnoActual.setCiudad(txtCiudad.getText().isBlank() ? null : txtCiudad.getText().trim());
             String cp = txtCodigoPostal.getText().trim();
-            if (!cp.isBlank() && !Validador.esCodigoPostalValido(cp)) {
-                FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Código postal inválido", "El código postal debe tener exactamente 5 dígitos.");
-                return;
-            }
             alumnoActual.setCodigoPostal(cp.isBlank() ? null : cp);
 
             // 2. Recoger Autorizaciones
@@ -468,8 +464,8 @@ public class FichaAlumnoController {
             }
 
             // 5. Actualizar la matrícula (Curso y Grupo)
-            if (alumnoActual.getMatriculas() != null && !alumnoActual.getMatriculas().isEmpty()) {
-                var ultimaMatricula = alumnoActual.getMatriculas().get(alumnoActual.getMatriculas().size() - 1);
+            Matricula ultimaMatricula = alumnoActual.getUltimaMatricula();
+            if (ultimaMatricula != null) {
                 if (comboCurso.getValue() != null) {
                     ultimaMatricula.setCurso(comboCurso.getValue());
                 }
@@ -563,7 +559,10 @@ public class FichaAlumnoController {
                     if (activo) {
                         alumnoService.darDeBaja(alumnoActual.getId());
                     } else {
-                        alumnoService.darDeAlta(alumnoActual.getId());
+                        String aviso = alumnoService.darDeAlta(alumnoActual.getId());
+                        if (aviso != null) {
+                            FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Curso no determinado", aviso);
+                        }
                     }
                     alumnoActual = alumnoService.obtenerCompleto(alumnoActual.getId());
                     cargarDatosEnVista();
@@ -661,8 +660,12 @@ public class FichaAlumnoController {
         });
 
         dialog.showAndWait().ifPresent(pa -> {
-            alumnoActual.addPersonaAutorizada(pa);
-            tablaAutorizados.getItems().add(pa);
+            try {
+                alumnoService.vincularPersonaAutorizada(alumnoActual, pa);
+                tablaAutorizados.getItems().add(pa);
+            } catch (Exception e) {
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo guardar la persona autorizada: " + e.getMessage());
+            }
         });
     }
 
@@ -670,8 +673,12 @@ public class FichaAlumnoController {
     private void eliminarAutorizado() {
         PersonaAutorizada seleccion = tablaAutorizados.getSelectionModel().getSelectedItem();
         if (seleccion != null) {
-            alumnoActual.removePersonaAutorizada(seleccion);
-            tablaAutorizados.getItems().remove(seleccion);
+            try {
+                alumnoService.desvincularPersonaAutorizada(alumnoActual, seleccion);
+                tablaAutorizados.getItems().remove(seleccion);
+            } catch (Exception e) {
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo eliminar la persona autorizada: " + e.getMessage());
+            }
         }
     }
 
@@ -715,8 +722,8 @@ public class FichaAlumnoController {
             // Refrescar tabla tras posibles cambios
             tablaMatriculas.refresh();
             // Actualizar el campo curso visible si la última matrícula cambió
-            if (alumnoActual.getMatriculas() != null && !alumnoActual.getMatriculas().isEmpty()) {
-                var ultima = alumnoActual.getMatriculas().get(alumnoActual.getMatriculas().size() - 1);
+            Matricula ultima = alumnoActual.getUltimaMatricula();
+            if (ultima != null) {
                 txtCurso.setText(ultima.getCurso() != null ? ultima.getCurso() : "Sin curso");
                 txtGrupoLectura.setText(ultima.getGrupoAsignado() != null ? ultima.getGrupoAsignado() : "Sin grupo");
                 comboGrupo.setValue(ultima.getGrupoAsignado());
@@ -787,15 +794,18 @@ public class FichaAlumnoController {
         });
 
         dialog.showAndWait().ifPresent(tutor -> {
-            alumnoActual.addTutor(tutor);
-            tablaTutores.getItems().add(tutor);
+            try {
+                alumnoService.vincularTutor(alumnoActual, tutor);
+                tablaTutores.getItems().add(tutor);
+            } catch (Exception e) {
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo guardar el tutor: " + e.getMessage());
+            }
         });
     }
 
     @FXML
     private void agregarTutorExistente() {
         java.util.List<Tutor> todos = tutorService.obtenerTodos();
-        // Filtramos los que ya están vinculados
         java.util.List<Tutor> disponibles = todos.stream()
                 .filter(t -> !alumnoActual.getTutores().stream()
                         .anyMatch(existing -> existing.getId().equals(t.getId())))
@@ -806,8 +816,12 @@ public class FichaAlumnoController {
                 "Buscar Tutor Existente", "Selecciona un tutor ya registrado:");
 
         if (seleccionado != null) {
-            alumnoActual.addTutor(seleccionado);
-            tablaTutores.getItems().add(seleccionado);
+            try {
+                alumnoService.vincularTutor(alumnoActual, seleccionado);
+                tablaTutores.getItems().add(seleccionado);
+            } catch (Exception e) {
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo vincular el tutor: " + e.getMessage());
+            }
         }
     }
 
@@ -815,8 +829,12 @@ public class FichaAlumnoController {
     private void eliminarTutor() {
         Tutor seleccion = tablaTutores.getSelectionModel().getSelectedItem();
         if (seleccion != null) {
-            alumnoActual.removeTutor(seleccion);
-            tablaTutores.getItems().remove(seleccion);
+            try {
+                alumnoService.desvincularTutor(alumnoActual, seleccion);
+                tablaTutores.getItems().remove(seleccion);
+            } catch (Exception e) {
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo eliminar el tutor: " + e.getMessage());
+            }
         }
     }
 
@@ -835,8 +853,12 @@ public class FichaAlumnoController {
                 "Buscar Persona Autorizada", "Selecciona una persona ya registrada:");
 
         if (seleccionada != null) {
-            alumnoActual.addPersonaAutorizada(seleccionada);
-            tablaAutorizados.getItems().add(seleccionada);
+            try {
+                alumnoService.vincularPersonaAutorizada(alumnoActual, seleccionada);
+                tablaAutorizados.getItems().add(seleccionada);
+            } catch (Exception e) {
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo vincular la persona autorizada: " + e.getMessage());
+            }
         }
     }
 

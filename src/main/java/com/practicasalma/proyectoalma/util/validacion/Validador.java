@@ -110,7 +110,8 @@ public class Validador {
         // Sustituir letras por números (A=10 … Z=35)
         StringBuilder sb = new StringBuilder();
         for (char c : reordenado.toCharArray()) {
-            sb.append(Character.isLetter(c) ? (c - 'A' + 10) : c);
+            if (Character.isLetter(c)) sb.append(c - 'A' + 10);
+            else sb.append(c);
         }
 
         java.math.BigInteger valor = new java.math.BigInteger(sb.toString());
@@ -127,6 +128,6 @@ public class Validador {
     public static boolean esFechaNacimientoValida(LocalDate fecha) {
         if (fecha == null) return false;
         LocalDate hoy = LocalDate.now();
-        return !fecha.isAfter(hoy) && fecha.isAfter(hoy.minusYears(120));
+        return fecha.isBefore(hoy) && fecha.isAfter(hoy.minusYears(120));
     }
 }

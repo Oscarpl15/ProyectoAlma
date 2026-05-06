@@ -13,7 +13,6 @@ import jakarta.mail.util.ByteArrayDataSource;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -68,10 +67,6 @@ public class GestorCorreo {
         }
     }
 
-    public static void limpiarCredenciales() {
-        // Las credenciales son persistentes; no se limpian entre envíos
-    }
-
     private static Session crearSesion() {
         if (!estaConfigurado()) {
             throw new IllegalStateException("Debes configurar correo y contraseña antes de enviar.");
@@ -92,67 +87,16 @@ public class GestorCorreo {
     }
 
     /**
-     * Envía un correo de texto plano.
+     * Envía un correo HTML con imagen inline y fichero adjunto.
      *
-     * @param destinatario dirección de destino
-     * @param asunto       asunto del mensaje
-     * @param cuerpo       cuerpo del mensaje en texto plano
+     * @param destinatario  dirección de destino
+     * @param asunto        asunto del mensaje
+     * @param cuerpoHtml    cuerpo del mensaje en HTML
+     * @param rutaAdjunto   ruta absoluta al fichero a adjuntar
+     * @param recursoImagen ruta de recurso classpath a la imagen inline (puede ser {@code null})
+     * @param contentId     Content-ID para referenciar la imagen desde el HTML
      * @throws com.practicasalma.proyectoalma.exception.AlmaException si el envío falla
      */
-    public static void mandarEmail(String destinatario, String asunto, String cuerpo) {
-        Session sesion = crearSesion();
-
-        try {
-            Message mensaje = new MimeMessage(sesion);
-            mensaje.setFrom(new InternetAddress(correoRemitente));
-            mensaje.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
-            mensaje.setSubject(asunto);
-            mensaje.setText(cuerpo);
-
-            Transport.send(mensaje);
-
-        } catch (MessagingException e) {
-            throw new com.practicasalma.proyectoalma.exception.AlmaException("Error al enviar el correo: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Envía un correo con un fichero adjunto (multipart MIME).
-     *
-     * @param destinatario dirección de destino
-     * @param asunto       asunto del mensaje
-     * @param cuerpo       cuerpo del mensaje en texto plano
-     * @param rutaAdjunto  ruta absoluta al fichero a adjuntar
-     * @throws com.practicasalma.proyectoalma.exception.AlmaException si el envío falla
-     */
-    public static void mandarEmailConAdjunto(String destinatario, String asunto, String cuerpo, String rutaAdjunto) {
-        Session sesion = crearSesion();
-
-        try {
-            Message mensaje = new MimeMessage(sesion);
-            mensaje.setFrom(new InternetAddress(correoRemitente));
-            mensaje.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
-            mensaje.setSubject(asunto);
-
-            MimeBodyPart cuerpoParte = new MimeBodyPart();
-            cuerpoParte.setText(cuerpo);
-
-            MimeBodyPart adjuntoParte = new MimeBodyPart();
-            File archivo = new File(rutaAdjunto);
-            adjuntoParte.attachFile(archivo);
-
-            MimeMultipart multipart = new MimeMultipart();
-            multipart.addBodyPart(cuerpoParte);
-            multipart.addBodyPart(adjuntoParte);
-
-            mensaje.setContent(multipart);
-
-            Transport.send(mensaje);
-        } catch (Exception e) {
-            throw new com.practicasalma.proyectoalma.exception.AlmaException("Error al enviar el correo con adjunto: " + e.getMessage(), e);
-        }
-    }
-
     public static void mandarEmailHtmlConAdjuntoImagen(
             String destinatario,
             String asunto,

@@ -81,12 +81,6 @@ public class SocioService {
         socioDAO.actualizar(socio);
     }
 
-    public void darDeAlta(Long id) {
-        Socio socio = socioDAO.obtenerCompleto(id);
-        socio.setActivo(true);
-        socioDAO.actualizar(socio);
-    }
-
     public List<Socio> obtenerTodos() {
         return socioDAO.obtenerTodos();
     }

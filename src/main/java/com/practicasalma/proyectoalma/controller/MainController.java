@@ -1,6 +1,7 @@
 package com.practicasalma.proyectoalma.controller;
 
 
+import com.practicasalma.proyectoalma.exception.ConfiguracionException;
 import com.practicasalma.proyectoalma.service.GestorAsignaciones;
 import com.practicasalma.proyectoalma.service.GestorCertificadosAnuales;
 import com.practicasalma.proyectoalma.service.GestorCorreo;
@@ -121,8 +122,25 @@ public class MainController {
             }
         });
 
-        GestorMatriculas.DatosDialogo datosSexto = GestorMatriculas.ejecutar();
-        GestorAsignaciones.DatosPersonal datosPersonal = GestorAsignaciones.prepararDatos();
+        GestorMatriculas.DatosDialogo datosSexto = null;
+        GestorAsignaciones.DatosPersonal datosPersonal = null;
+        try {
+            datosSexto = GestorMatriculas.ejecutar();
+        } catch (ConfiguracionException e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error de configuración",
+                    "No se pudo procesar las renovaciones de matrículas: " + e.getMessage());
+        }
+        try {
+            datosPersonal = GestorAsignaciones.prepararDatos();
+        } catch (ConfiguracionException e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error de configuración",
+                    "No se pudo procesar las asignaciones del personal: " + e.getMessage());
+        }
+        if (datosSexto != null && !datosSexto.errores.isEmpty()) {
+            FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Matrículas no renovadas",
+                    "No se pudieron renovar automáticamente las matrículas de:\n" +
+                    String.join("\n", datosSexto.errores));
+        }
         if (datosSexto != null || datosPersonal != null) {
             RenovacionController.mostrar(datosSexto, datosPersonal);
             alumnosController.cargarAlumnosEnTabla();

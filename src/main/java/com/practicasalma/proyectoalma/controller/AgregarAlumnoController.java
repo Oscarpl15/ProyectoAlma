@@ -152,13 +152,7 @@ public class AgregarAlumnoController {
         if (ciudad != null) alumno.setCiudad(ciudad);
 
         String cp = limpiarTexto(txtCodigoPostal.getText());
-        if (cp != null) {
-            if (!Validador.esCodigoPostalValido(cp)) {
-                mostrarMensaje("Código postal inválido", "El código postal debe tener exactamente 5 dígitos.", Alert.AlertType.WARNING);
-                return;
-            }
-            alumno.setCodigoPostal(cp);
-        }
+        if (cp != null) alumno.setCodigoPostal(cp);
 
         try {
             alumnoService.matricularNuevoAlumno(alumno, cursoNormalizado, grupo);

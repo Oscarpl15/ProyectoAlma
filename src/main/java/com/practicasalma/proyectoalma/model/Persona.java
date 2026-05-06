@@ -53,6 +53,7 @@ public abstract class Persona {
     @Column(name = "fecha_baja")
     private LocalDate fechaBaja;
 
+    @Column(name = "activo", nullable = false)
     private Boolean activo = true;
 
     public Persona() {

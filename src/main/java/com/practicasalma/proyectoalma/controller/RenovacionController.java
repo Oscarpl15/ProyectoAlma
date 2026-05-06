@@ -1,6 +1,7 @@
 package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.Launcher;
+import com.practicasalma.proyectoalma.exception.ConfiguracionException;
 import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import com.practicasalma.proyectoalma.model.Docente;
@@ -139,7 +140,12 @@ public class RenovacionController {
         btnPostponer.setOnAction(e -> {
             datosSexto.postponed.setProperty(
                     String.valueOf(alumno.getId()), LocalDate.now().plusDays(7).toString());
-            GestorMatriculas.guardarPostponed(datosSexto.postponed);
+            try {
+                GestorMatriculas.guardarPostponed(datosSexto.postponed);
+            } catch (ConfiguracionException ex) {
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error al posponer",
+                        "No se pudo guardar la decisión de posponer: " + ex.getMessage());
+            }
             quitarFila(fila);
         });
 
@@ -188,7 +194,12 @@ public class RenovacionController {
         btnPostponer.setOnAction(e -> {
             datosPersonal.postponed.setProperty(
                     "d_" + docente.getId(), LocalDate.now().plusWeeks(1).toString());
-            GestorAsignaciones.guardarPostponed(datosPersonal.postponed);
+            try {
+                GestorAsignaciones.guardarPostponed(datosPersonal.postponed);
+            } catch (ConfiguracionException ex) {
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error al posponer",
+                        "No se pudo guardar la decisión de posponer: " + ex.getMessage());
+            }
             quitarFila(fila);
         });
 
@@ -237,7 +248,12 @@ public class RenovacionController {
         btnPostponer.setOnAction(e -> {
             datosPersonal.postponed.setProperty(
                     "v_" + voluntario.getId(), LocalDate.now().plusWeeks(1).toString());
-            GestorAsignaciones.guardarPostponed(datosPersonal.postponed);
+            try {
+                GestorAsignaciones.guardarPostponed(datosPersonal.postponed);
+            } catch (ConfiguracionException ex) {
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error al posponer",
+                        "No se pudo guardar la decisión de posponer: " + ex.getMessage());
+            }
             quitarFila(fila);
         });
 

@@ -76,9 +76,6 @@ public class Alumno extends Persona {
     @Column(name = "derivado_por")
     private String derivadoPor;
 
-    @Column(name = "activo", nullable = false)
-    private Boolean activo = true;
-
     @Column(name = "num_repeticiones_previas", nullable = false)
     private Integer numRepeticionesPrevias = 0;
 
@@ -145,9 +142,6 @@ public class Alumno extends Persona {
     public String getRutaDocAutoriza() {return rutaDocAutoriza;}
     public void setRutaDocAutoriza(String rutaDocAutoriza) {this.rutaDocAutoriza = rutaDocAutoriza;}
 
-    public Boolean getActivo() {return activo;}
-    public void setActivo(Boolean activo) {this.activo = activo;}
-
     public Integer getNumRepeticionesPrevias() {return numRepeticionesPrevias;}
     public void setNumRepeticionesPrevias(Integer numRepeticionesPrevias) {this.numRepeticionesPrevias = numRepeticionesPrevias;}
 
@@ -155,6 +149,11 @@ public class Alumno extends Persona {
     public void setDetalleCursosRepetidos(String detalleCursosRepetidos) {this.detalleCursosRepetidos = detalleCursosRepetidos;}
 
     public List<Matricula> getMatriculas() { return matriculas; }
+
+    public Matricula getUltimaMatricula() {
+        if (matriculas == null || matriculas.isEmpty()) return null;
+        return matriculas.get(matriculas.size() - 1);
+    }
 
     public List<Tutor> getTutores() { return tutores; }
 

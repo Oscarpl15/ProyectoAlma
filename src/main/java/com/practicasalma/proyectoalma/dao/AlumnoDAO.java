@@ -82,7 +82,8 @@ public class AlumnoDAO {
             root.fetch("matriculas", JoinType.LEFT);
             query.select(root).distinct(true);
             List<Alumno> alumnos = em.createQuery(query).getResultList();
-            alumnos.forEach(a -> a.getTutores().size());
+            em.createQuery("SELECT DISTINCT a FROM Alumno a LEFT JOIN FETCH a.tutores", Alumno.class)
+              .getResultList();
             return alumnos;
         } catch (Exception e) {
             throw new PersistenciaException("Error al cargar los alumnos: " + e.getMessage(), e);

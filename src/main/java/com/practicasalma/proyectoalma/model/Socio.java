@@ -52,9 +52,6 @@ public class Socio extends Persona {
     @Column(name = "provincia")
     private String provincia;
 
-    @Column(name = "activo", nullable = false)
-    private Boolean activo = true;
-
     // Relación Uno a Muchos: Un socio puede tener un historial de muchas donaciones.
     // mappedBy = "socio" le dice a Hibernate que la relación la controla la clase Donacion.
     // Solo PERSIST y MERGE: las donaciones son registros contables y NO deben borrarse si se elimina el socio.
@@ -75,7 +72,7 @@ public class Socio extends Persona {
         this.setDocumentoIdentidad(dni);
         this.tipoEntidad = tipoEntidad;
         this.cuota = 0.0; 
-        this.periodicidad = "Ninguna";
+        this.periodicidad = "Puntual";
     }
 
     //Constructor para socios con cuota periodica
@@ -107,9 +104,6 @@ public class Socio extends Persona {
 
     public String getTipoBanco() {return tipoBanco;}
     public void setTipoBanco(String tipoBanco) {this.tipoBanco = tipoBanco;}
-
-    public Boolean getActivo() {return activo;}
-    public void setActivo(Boolean activo) {this.activo = activo;}
 
     public String getFormaPago() { return formaPago; }
     public void setFormaPago(String formaPago) { this.formaPago = formaPago; }
