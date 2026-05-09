@@ -293,10 +293,11 @@ public class FichaDocenteController {
     @FXML
     private void toggleBajaAlta() {
         boolean activo = Boolean.TRUE.equals(docenteActual.getActivo());
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle(activo ? "Dar de baja" : "Dar de alta");
-        confirm.setHeaderText((activo ? "¿Dar de baja a " : "¿Dar de alta a ") + docenteActual.getNombre() + "?");
-        confirm.showAndWait().ifPresent(r -> {
+        FxUtils.mostrarConfirmacion(
+                activo ? "Dar de baja" : "Dar de alta",
+                (activo ? "¿Dar de baja a " : "¿Dar de alta a ") + docenteActual.getNombre() + "?",
+                null
+        ).ifPresent(r -> {
             if (r == ButtonType.OK) {
                 try {
                     if (activo) {

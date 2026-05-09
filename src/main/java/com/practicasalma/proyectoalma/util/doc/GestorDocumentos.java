@@ -159,18 +159,12 @@ public class GestorDocumentos {
     }
 
     private static void mostrarError(String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
+        com.practicasalma.proyectoalma.util.ui.FxUtils.mostrarAlerta(
+                javafx.scene.control.Alert.AlertType.ERROR, "Error", mensaje);
     }
 
     private static void mostrarInfo(String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Documento añadido");
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
+        com.practicasalma.proyectoalma.util.ui.FxUtils.mostrarAlerta(
+                javafx.scene.control.Alert.AlertType.INFORMATION, "Documento añadido", mensaje);
     }
 }

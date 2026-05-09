@@ -142,6 +142,7 @@ public class SocioController {
             controller.setSocio(socio);
 
             Stage stage = new Stage();
+            FxUtils.aplicarIcono(stage);
             stage.setTitle("Ficha del Socio: " + socio.getNombre());
             stage.setScene(new Scene(root));
             stage.initModality(Modality.WINDOW_MODAL);

@@ -279,6 +279,7 @@ public class AlumnosController {
             controller.setAlumno(alumnoCompleto);
 
             Stage stage = new Stage();
+            FxUtils.aplicarIcono(stage);
             stage.setTitle("Ficha del Alumno: " + alumnoCompleto.getNombre());
             stage.setScene(new Scene(root));
             stage.initModality(Modality.WINDOW_MODAL);

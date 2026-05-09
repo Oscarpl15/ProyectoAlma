@@ -15,10 +15,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -92,12 +89,11 @@ public class MainController {
                         ConfirmacionCertificadosController ctrl = loader.getController();
                         ctrl.setDatos("Donaciones del año " + anoAnterior + " — socios con donaciones registradas", lineas);
                         Stage stage = new Stage();
+                        FxUtils.aplicarIcono(stage);
                         stage.setTitle("Certificados de donaciones " + anoAnterior);
                         stage.initModality(Modality.APPLICATION_MODAL);
                         stage.initOwner(rootPane.getScene().getWindow());
                         stage.setScene(new Scene(root));
-                        try { stage.getIcons().add(new Image(getClass().getResourceAsStream(
-                                "/com/practicasalma/proyectoalma/assets/logo.png"))); } catch (Exception ignored) {}
                         stage.showAndWait();
                         if (ctrl.isConfirmado()) {
                             if (!GestorCorreo.estaConfigurado()) {
@@ -192,11 +188,8 @@ public class MainController {
         ConfiguracionInicialController.mostrarCambioBBDD();
         String nuevaRuta = GestorConfig.getRutaBBDD();
         if (nuevaRuta != null && !nuevaRuta.isBlank()) {
-            Alert info = new Alert(Alert.AlertType.INFORMATION);
-            info.setTitle("Cambio pendiente");
-            info.setHeaderText(null);
-            info.setContentText("El cambio de base de datos se aplicará al reiniciar la aplicación.");
-            info.showAndWait();
+            FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Cambio pendiente",
+                    "El cambio de base de datos se aplicará al reiniciar la aplicación.");
         }
     }
 
@@ -214,26 +207,20 @@ public class MainController {
 
         if (dirActual != null && GestorDocumentos.tieneContenido(dirActual)
                 && !dirActual.getAbsolutePath().equals(dirNuevo.getAbsolutePath())) {
-            Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmacion.setTitle("Mover contenido");
-            confirmacion.setHeaderText("Se encontró contenido en el directorio actual.");
-            confirmacion.setContentText("¿Deseas mover todos los archivos al nuevo directorio?");
-            confirmacion.getButtonTypes().setAll(
-                    javafx.scene.control.ButtonType.YES,
-                    javafx.scene.control.ButtonType.NO);
-            confirmacion.showAndWait().ifPresent(respuesta -> {
-                if (respuesta == javafx.scene.control.ButtonType.YES) {
+            FxUtils.mostrarConfirmacionSiNo(
+                    "Mover contenido",
+                    "Se encontró contenido en el directorio actual.",
+                    "¿Deseas mover todos los archivos al nuevo directorio?"
+            ).ifPresent(respuesta -> {
+                if (respuesta == ButtonType.YES) {
                     GestorDocumentos.moverContenido(dirActual, dirNuevo);
                 }
             });
         }
 
         GestorConfig.setRutaDocumentos(dirNuevo.getAbsolutePath());
-        Alert ok = new Alert(Alert.AlertType.INFORMATION);
-        ok.setTitle("Directorio actualizado");
-        ok.setHeaderText(null);
-        ok.setContentText("Directorio de documentos actualizado correctamente.");
-        ok.showAndWait();
+        FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Directorio actualizado",
+                "Directorio de documentos actualizado correctamente.");
     }
 
     @FXML
@@ -243,17 +230,15 @@ public class MainController {
                     "/com/practicasalma/proyectoalma/view/gestionarGrupos-view.fxml"));
             Parent root = loader.load();
             Stage stage = new Stage();
+            FxUtils.aplicarIcono(stage);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Gestionar Grupos");
             stage.setScene(new Scene(root));
             stage.showAndWait();
             alumnosController.cargarAlumnosEnTabla();
         } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText(null);
-            alert.setContentText("No se pudo abrir la ventana de grupos: " + e.getMessage());
-            alert.showAndWait();
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                    "No se pudo abrir la ventana de grupos: " + e.getMessage());
         }
     }
 

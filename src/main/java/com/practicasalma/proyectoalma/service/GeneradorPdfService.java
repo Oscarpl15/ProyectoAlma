@@ -1,14 +1,20 @@
 package com.practicasalma.proyectoalma.service;
 
+import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
 import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.AcroFields;
 import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfDictionary;
 import com.lowagie.text.pdf.PdfName;
+import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.PRStream;
@@ -355,8 +361,6 @@ public class GeneradorPdfService {
             throw new IllegalArgumentException("El socio es obligatorio para generar el informe.");
         }
 
-        String rutaPlantilla = resolverRutaPlantillaCertificado();
-
         List<Donacion> donaciones = socio.getDonaciones();
         if (donaciones != null && ano > 0) {
             donaciones = donaciones.stream()
@@ -391,19 +395,187 @@ public class GeneradorPdfService {
         String cantidadNumero = formatearCantidad(cantidadInforme);
         String cantidadLetra = convertirImporteALetras(cantidadInforme);
 
-        generarCertificadoDonacion(
-                rutaPlantilla,
+        generarCertificadoDesdeZero(
                 rutaSalida,
                 String.valueOf(anoInicial),
                 nombreCompleto,
+                valorSeguro(socio.getTipoDocumento()),
                 valorSeguro(socio.getDocumentoIdentidad()),
                 domicilio,
-                cantidadNumero,
                 cantidadLetra,
+                cantidadNumero,
                 String.valueOf(hoy.getDayOfMonth()),
                 hoy.getMonth().getDisplayName(TextStyle.FULL, new Locale("es", "ES")).toUpperCase(Locale.ROOT),
                 String.valueOf(hoy.getYear())
         );
+    }
+
+    private void generarCertificadoDesdeZero(
+            String rutaSalida,
+            String anoInicial,
+            String nombre,
+            String tipoDocumento,
+            String dni,
+            String domicilio,
+            String cantidadLetra,
+            String cantidadNumero,
+            String dia,
+            String mes,
+            String anoFinal) {
+
+        Path rutaDestino = Paths.get(rutaSalida.trim());
+        try {
+            Path carpetaPadre = rutaDestino.getParent();
+            if (carpetaPadre != null) Files.createDirectories(carpetaPadre);
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo crear la carpeta de salida para el certificado.", e);
+        }
+
+        byte[] logoBytes = cargarRecursoBytes("/com/practicasalma/proyectoalma/assets/LogoCertificado.png");
+        byte[] selloBytes = cargarRecursoBytes("/com/practicasalma/proyectoalma/assets/SelloCertificado.png");
+        if (logoBytes == null) {
+            throw new com.practicasalma.proyectoalma.exception.AlmaException("No se encontró LogoCertificado.png en assets.", null);
+        }
+        if (selloBytes == null) {
+            throw new com.practicasalma.proyectoalma.exception.AlmaException("No se encontró SelloCertificado.png en assets.", null);
+        }
+
+        float margenLateral = 60f;
+        float margenSuperior = 100f;
+        float margenInferior = 100f;
+
+        Document document = new Document(PageSize.A4, margenLateral, margenLateral, margenSuperior, margenInferior);
+
+        try (FileOutputStream fos = new FileOutputStream(rutaDestino.toFile())) {
+            PdfWriter writer = PdfWriter.getInstance(document, fos);
+
+            BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.NOT_EMBEDDED);
+            BaseFont bfNegrita = BaseFont.createFont(BaseFont.HELVETICA_BOLD, BaseFont.WINANSI, BaseFont.NOT_EMBEDDED);
+
+            Font fNormal = new Font(bf, 12, Font.NORMAL);
+            Font fNegrita = new Font(bfNegrita, 12, Font.NORMAL);
+            Font fTitulo = new Font(bfNegrita, 14, Font.NORMAL);
+
+            Image logo = Image.getInstance(logoBytes);
+            Image sello = Image.getInstance(selloBytes);
+
+            writer.setPageEvent(new EventoPaginaCertificado(logo, bf, margenLateral, margenInferior));
+
+            document.open();
+
+            // ── PÁGINA 1 ──────────────────────────────────────────────
+            Paragraph titulo = new Paragraph("CERTIFICADO DE DONACIÓN", fTitulo);
+            titulo.setAlignment(Element.ALIGN_CENTER);
+            titulo.setSpacingAfter(22f);
+            document.add(titulo);
+
+            Paragraph intro = new Paragraph(
+                    "D. Ángel Cuevas López, con D.N.I 09043551-C, como Presidente de FUNDACIÓN " +
+                    "ALMA 2022, con N.I.F. G-67919654, con domicilio social en Calle Perú 39, 28806 de " +
+                    "Alacalá de Henares (Madrid), constituida ante el Notario de Madrid, D. Carlos de " +
+                    "Prada Guaita con fecha 14 de febrero de 2022 mediante escritura pública con protocolo " +
+                    "número 249, e inscrita el día 14 de junio de 2022 en el Registro de Fundaciones " +
+                    "de la Comunidad de Madrid con número 00249/2022, al Tomo CCXCVII, Folio 201-238, " +
+                    "inscripción 1ª, e incluida entre las reguladas en el Artículo 16 de la " +
+                    "Ley 49/2002, de 23 de diciembre, de régimen fiscal de las entidades sin fines " +
+                    "lucrativos y de los incentivos fiscales al mecenazgo,",
+                    fNormal);
+            intro.setAlignment(Element.ALIGN_JUSTIFIED);
+            intro.setSpacingAfter(22f);
+            document.add(intro);
+
+            Paragraph certifica = new Paragraph("CERTIFICA", fNegrita);
+            certifica.setAlignment(Element.ALIGN_CENTER);
+            certifica.setSpacingAfter(22f);
+            document.add(certifica);
+
+            Paragraph primero = new Paragraph();
+            primero.setAlignment(Element.ALIGN_JUSTIFIED);
+            primero.setSpacingAfter(18f);
+            primero.add(new Chunk("Primero.-", fNegrita));
+            primero.add(new Chunk(
+                    " Que FUNDACIÓN ALMA 2022 tiene como objetivo general fomentar y contribuir " +
+                    "a la educación y a la cultura, a través de la realización de actividades " +
+                    "tendentes a promover servicios de apoyo y atención educativa y social a menores " +
+                    "que se encuentren en riesgo por cuestiones económicas, familiares o sociales.",
+                    fNormal));
+            document.add(primero);
+
+            Paragraph segundo = new Paragraph();
+            segundo.setAlignment(Element.ALIGN_JUSTIFIED);
+            segundo.setSpacingAfter(18f);
+            segundo.add(new Chunk("Segundo.-", fNegrita));
+            segundo.add(new Chunk(" Que durante el año ", fNormal));
+            segundo.add(new Chunk(anoInicial, fNormal));
+            segundo.add(new Chunk(", ", fNormal));
+            segundo.add(new Chunk(nombre, fNormal));
+            segundo.add(new Chunk(" con " + formatearTipoDocumento(tipoDocumento) + " ", fNormal));
+            segundo.add(new Chunk(formatearDocumentoIdentidad(dni), fNormal));
+            segundo.add(new Chunk(" y domicilio en ", fNormal));
+            segundo.add(new Chunk(domicilio, fNormal));
+            segundo.add(new Chunk(", realizó una donación de ", fNormal));
+            segundo.add(new Chunk(cantidadLetra, fNormal));
+            segundo.add(new Chunk(" (" + cantidadNumero + "€) en concepto de donación dineraria.", fNormal));
+            document.add(segundo);
+
+            Paragraph tercero = new Paragraph();
+            tercero.setAlignment(Element.ALIGN_JUSTIFIED);
+            tercero.add(new Chunk("Tercero.-", fNegrita));
+            tercero.add(new Chunk(
+                    " Que los bienes/la cantidad donados se entregan con el carácter de donación " +
+                    "pura, simple e irrevocable, y se reciben con el fin de destinarlos a las actividades " +
+                    "que constituyen el objeto fundacional.",
+                    fNormal));
+            document.add(tercero);
+
+            // ── PÁGINA 2 ──────────────────────────────────────────────
+            document.newPage();
+
+            Paragraph cuarto = new Paragraph();
+            cuarto.setAlignment(Element.ALIGN_JUSTIFIED);
+            cuarto.setSpacingAfter(24f);
+            cuarto.add(new Chunk("Cuarto.-", fNegrita));
+            cuarto.add(new Chunk(
+                    " Que la FUNDACIÓN ALMA 2022 cumple con todos los requisitos exigidos por " +
+                    "el artículo 3 de la Ley 49/2002, de 23 de diciembre, de régimen fiscal de " +
+                    "las entidades sin fines lucrativos y de los incentivos fiscales al mecenazgo.",
+                    fNormal));
+            document.add(cuarto);
+
+            Paragraph constancia = new Paragraph(
+                    "Y para que así conste, se expide el presente certificado a los efectos de la " +
+                    "Ley 49/2002, de 23 de diciembre, de régimen fiscal de las entidades sin fines " +
+                    "lucrativos y de los incentivos fiscales al mecenazgo.",
+                    fNormal);
+            constancia.setAlignment(Element.ALIGN_JUSTIFIED);
+            constancia.setSpacingAfter(36f);
+            document.add(constancia);
+
+            Paragraph fecha = new Paragraph(
+                    "En Alacalá de Henares, " + dia + " de " + mes + " de " + anoFinal + ".",
+                    fNormal);
+            fecha.setAlignment(Element.ALIGN_CENTER);
+            fecha.setSpacingAfter(20f);
+            document.add(fecha);
+
+            sello.scaleToFit(120f, 120f);
+            sello.setAlignment(Image.ALIGN_RIGHT);
+            sello.setSpacingAfter(8f);
+            document.add(sello);
+
+            Paragraph firmaNombre = new Paragraph("Ángel Cuevas López", fNormal);
+            firmaNombre.setAlignment(Element.ALIGN_RIGHT);
+            document.add(firmaNombre);
+
+            Paragraph firmaCargo = new Paragraph("Presidente", fNormal);
+            firmaCargo.setAlignment(Element.ALIGN_RIGHT);
+            document.add(firmaCargo);
+
+            document.close();
+        } catch (Exception e) {
+            throw new com.practicasalma.proyectoalma.exception.AlmaException(
+                    "Error al generar el certificado de donaciones.", e);
+        }
     }
 
     public void generarCertificadoDonacion(
@@ -639,7 +811,7 @@ public class GeneradorPdfService {
             sb.append(cp);
         }
         if (!ciudad.isEmpty()) {
-            if (!sb.isEmpty()) sb.append(" ");
+            if (!sb.isEmpty()) sb.append(" de ");
             sb.append(ciudad);
         }
         if (!provincia.isEmpty()) {
@@ -883,6 +1055,35 @@ public class GeneradorPdfService {
         };
     }
 
+    private String formatearTipoDocumento(String tipo) {
+        if (tipo == null || tipo.isBlank() || "-".equals(tipo)) return tipo;
+        return switch (tipo.trim().toUpperCase()) {
+            case "DNI" -> "D.N.I";
+            case "NIE" -> "N.I.E";
+            default -> tipo.trim();
+        };
+    }
+
+    private String formatearDocumentoIdentidad(String documento) {
+        if (documento == null || documento.isBlank() || "-".equals(documento)) return documento;
+        String doc = documento.trim();
+        if (doc.length() > 1
+                && Character.isLetter(doc.charAt(doc.length() - 1))
+                && Character.isDigit(doc.charAt(doc.length() - 2))) {
+            return doc.substring(0, doc.length() - 1) + "-" + doc.charAt(doc.length() - 1);
+        }
+        return doc;
+    }
+
+    private static byte[] cargarRecursoBytes(String recurso) {
+        try (InputStream input = GeneradorPdfService.class.getResourceAsStream(recurso)) {
+            if (input == null) return null;
+            return input.readAllBytes();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private String escalaPlural(int indiceGrupo) {
         return switch (indiceGrupo) {
             case 2 -> "millones";
@@ -897,6 +1098,54 @@ public class GeneradorPdfService {
             case 20 -> "decillones";
             default -> "10^" + (indiceGrupo * 3);
         };
+    }
+
+    private static class EventoPaginaCertificado extends PdfPageEventHelper {
+        private final Image logo;
+        private final BaseFont bf;
+        private final float margenLateral;
+        private final float margenInferior;
+
+        EventoPaginaCertificado(Image logo, BaseFont bf, float margenLateral, float margenInferior) {
+            this.logo = logo;
+            this.bf = bf;
+            this.margenLateral = margenLateral;
+            this.margenInferior = margenInferior;
+        }
+
+        @Override
+        public void onEndPage(PdfWriter writer, Document document) {
+            PdfContentByte canvas = writer.getDirectContent();
+            Rectangle pageSize = document.getPageSize();
+
+            float logoAlto = 55f;
+            float logoAncho = logo.getWidth() / logo.getHeight() * logoAlto;
+            float xLogo = pageSize.getWidth() - margenLateral - logoAncho;
+            float yLogo = pageSize.getHeight() - 35f - logoAlto;
+            try {
+                canvas.addImage(logo, logoAncho, 0, 0, logoAlto, xLogo, yLogo);
+            } catch (DocumentException e) {
+                // no interrumpir la generación por el logo
+            }
+
+            String[] lineasFooter = {
+                "FUNDACIÓN ALMA 2022",
+                "Calle Perú 39, 28806 de Alcalá de Henares (Madrid)",
+                "Tlfno: 620432574",
+                "info@fundacionalma2022.org",
+                "www.fundacionalma2022.org"
+            };
+            float yBase = margenInferior - 3f;
+            float alturaLinea = 13f;
+
+            canvas.beginText();
+            canvas.setFontAndSize(bf, 11f);
+            for (int i = 0; i < lineasFooter.length; i++) {
+                canvas.showTextAligned(Element.ALIGN_LEFT, lineasFooter[i],
+                        margenLateral, yBase - i * alturaLinea, 0);
+            }
+            canvas.endText();
+        }
     }
 
     private String resolverRutaPlantillaCertificado() {

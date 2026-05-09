@@ -3,9 +3,11 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.dao.AlumnoDAO;
 import com.practicasalma.proyectoalma.util.UtilFecha;
 import com.practicasalma.proyectoalma.util.config.GestorConfig;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -71,12 +73,19 @@ public class GestionarGruposController {
     private void eliminarSeleccionado() {
         int idx = listaGrupos.getSelectionModel().getSelectedIndex();
         if (idx < 0) return;
-        String original = originales.get(idx);
-        if (original != null) {
-            eliminados.add(original);
-        }
-        items.remove(idx);
-        originales.remove(idx);
+        String nombre = items.get(idx);
+        FxUtils.mostrarConfirmacion("Eliminar grupo",
+                "¿Eliminar el grupo \"" + nombre + "\"?", null)
+                .ifPresent(r -> {
+                    if (r == ButtonType.OK) {
+                        String original = originales.get(idx);
+                        if (original != null) {
+                            eliminados.add(original);
+                        }
+                        items.remove(idx);
+                        originales.remove(idx);
+                    }
+                });
     }
 
     @FXML

@@ -144,9 +144,17 @@ public class GestorCorreo {
             mensaje.setContent(mixed);
 
             Transport.send(mensaje);
-        } catch (Exception e) {
+        } catch (jakarta.mail.AuthenticationFailedException e) {
             throw new com.practicasalma.proyectoalma.exception.AlmaException(
-                    "Error al enviar el correo con adjunto: " + e.getMessage(), e);
+                    "Correo o contraseña de aplicación incorrectos. Verifica las credenciales en Ajustes.", e);
+        } catch (Exception e) {
+            String mensaje = e.getMessage();
+            if (mensaje != null && (mensaje.contains("535") || mensaje.contains("Authentication") || mensaje.contains("credentials"))) {
+                throw new com.practicasalma.proyectoalma.exception.AlmaException(
+                        "Correo o contraseña de aplicación incorrectos. Verifica las credenciales en Ajustes.", e);
+            }
+            throw new com.practicasalma.proyectoalma.exception.AlmaException(
+                    "Error al enviar el correo: " + mensaje, e);
         }
     }
 

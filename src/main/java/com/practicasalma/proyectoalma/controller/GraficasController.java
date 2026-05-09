@@ -3,6 +3,7 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.service.GraficasService;
 import com.practicasalma.proyectoalma.service.GeneradorPdfService;
 import com.practicasalma.proyectoalma.util.config.GestorConfig;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.SnapshotParameters;
@@ -309,11 +310,7 @@ public class GraficasController {
     }
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alert = new Alert(tipo);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
+        FxUtils.mostrarAlerta(tipo, titulo, mensaje);
     }
 
     public void refrescar() {

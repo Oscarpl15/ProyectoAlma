@@ -150,6 +150,7 @@ public class VoluntariosController {
             controller.setVoluntario(voluntario);
 
             Stage stage = new Stage();
+            FxUtils.aplicarIcono(stage);
             stage.setTitle("Ficha del Voluntario: " + voluntario.getNombre());
             stage.setScene(new javafx.scene.Scene(root));
             stage.initModality(Modality.WINDOW_MODAL);

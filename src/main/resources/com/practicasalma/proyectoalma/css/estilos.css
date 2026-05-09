@@ -542,3 +542,20 @@
     -fx-padding: 4 8 4 8;
     -fx-font-size: 13px;
 }
+
+/* Botones de diálogos de alerta/confirmación */
+.dialog-pane .button {
+    -fx-background-color: #2E5374;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 15px;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: #3C4248;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}

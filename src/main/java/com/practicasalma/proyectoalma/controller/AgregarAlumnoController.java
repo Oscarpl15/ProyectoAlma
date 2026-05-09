@@ -4,6 +4,7 @@ import com.practicasalma.proyectoalma.model.Alumno;
 import com.practicasalma.proyectoalma.service.AlumnoService;
 import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import com.practicasalma.proyectoalma.util.doc.GestorDocumentos;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import com.practicasalma.proyectoalma.util.validacion.Validador;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -207,10 +208,6 @@ public class AgregarAlumnoController {
     }
 
     private void mostrarMensaje(String titulo, String contenido, Alert.AlertType tipo) {
-        Alert alert = new Alert(tipo);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(contenido);
-        alert.showAndWait();
+        FxUtils.mostrarAlerta(tipo, titulo, contenido);
     }
 }

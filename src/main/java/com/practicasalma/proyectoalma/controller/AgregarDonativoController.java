@@ -3,6 +3,7 @@ package com.practicasalma.proyectoalma.controller;
 import com.practicasalma.proyectoalma.model.Donacion;
 import com.practicasalma.proyectoalma.model.Socio;
 import com.practicasalma.proyectoalma.service.SocioService;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -79,10 +80,6 @@ public class AgregarDonativoController {
     }
 
     private void mostrarError(String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
+        FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", mensaje);
     }
 }

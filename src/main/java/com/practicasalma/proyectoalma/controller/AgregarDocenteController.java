@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Docente;
 import com.practicasalma.proyectoalma.service.DocenteService;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import com.practicasalma.proyectoalma.util.validacion.Validador;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -100,11 +101,7 @@ public class AgregarDocenteController {
     }
 
     private void mostrarError(String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
+        FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", mensaje);
     }
 
     @FXML

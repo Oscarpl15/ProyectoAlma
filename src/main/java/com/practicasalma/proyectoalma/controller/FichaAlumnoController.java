@@ -547,13 +547,11 @@ public class FichaAlumnoController {
     @FXML
     private void toggleBajaAlta() {
         boolean activo = Boolean.TRUE.equals(alumnoActual.getActivo());
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle(activo ? "Dar de baja" : "Dar de alta");
-        confirm.setHeaderText((activo ? "¿Dar de baja a " : "¿Dar de alta a ") + alumnoActual.getNombre() + "?");
-        if (!activo) {
-            confirm.setContentText("Se generará una nueva matrícula para el curso actual.");
-        }
-        confirm.showAndWait().ifPresent(r -> {
+        FxUtils.mostrarConfirmacion(
+                activo ? "Dar de baja" : "Dar de alta",
+                (activo ? "¿Dar de baja a " : "¿Dar de alta a ") + alumnoActual.getNombre() + "?",
+                activo ? null : "Se generará una nueva matrícula para el curso actual."
+        ).ifPresent(r -> {
             if (r == ButtonType.OK) {
                 try {
                     if (activo) {
@@ -672,14 +670,19 @@ public class FichaAlumnoController {
     @FXML
     private void eliminarAutorizado() {
         PersonaAutorizada seleccion = tablaAutorizados.getSelectionModel().getSelectedItem();
-        if (seleccion != null) {
-            try {
-                alumnoService.desvincularPersonaAutorizada(alumnoActual, seleccion);
-                tablaAutorizados.getItems().remove(seleccion);
-            } catch (Exception e) {
-                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo eliminar la persona autorizada: " + e.getMessage());
-            }
-        }
+        if (seleccion == null) return;
+        FxUtils.mostrarConfirmacion("Eliminar persona autorizada",
+                "¿Eliminar a " + seleccion.getNombre() + " de las personas autorizadas?", null)
+                .ifPresent(r -> {
+                    if (r == ButtonType.OK) {
+                        try {
+                            alumnoService.desvincularPersonaAutorizada(alumnoActual, seleccion);
+                            tablaAutorizados.getItems().remove(seleccion);
+                        } catch (Exception e) {
+                            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo eliminar la persona autorizada: " + e.getMessage());
+                        }
+                    }
+                });
     }
 
     @FXML
@@ -714,6 +717,7 @@ public class FichaAlumnoController {
             controller.setMatricula(matricula, nombreAlumno.trim());
 
             Stage stage = new Stage();
+            FxUtils.aplicarIcono(stage);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Ficha de Matrícula");
             stage.setScene(new Scene(root));
@@ -828,14 +832,19 @@ public class FichaAlumnoController {
     @FXML
     private void eliminarTutor() {
         Tutor seleccion = tablaTutores.getSelectionModel().getSelectedItem();
-        if (seleccion != null) {
-            try {
-                alumnoService.desvincularTutor(alumnoActual, seleccion);
-                tablaTutores.getItems().remove(seleccion);
-            } catch (Exception e) {
-                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo eliminar el tutor: " + e.getMessage());
-            }
-        }
+        if (seleccion == null) return;
+        FxUtils.mostrarConfirmacion("Eliminar tutor",
+                "¿Desvincular a " + seleccion.getNombre() + " como tutor del alumno?", null)
+                .ifPresent(r -> {
+                    if (r == ButtonType.OK) {
+                        try {
+                            alumnoService.desvincularTutor(alumnoActual, seleccion);
+                            tablaTutores.getItems().remove(seleccion);
+                        } catch (Exception e) {
+                            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo eliminar el tutor: " + e.getMessage());
+                        }
+                    }
+                });
     }
 
     // ── PERSONAS AUTORIZADAS (BUSCAR EXISTENTE) ───────────────────────────────
@@ -870,11 +879,7 @@ public class FichaAlumnoController {
             String titulo, String cabecera) {
 
         if (lista.isEmpty()) {
-            Alert info = new Alert(Alert.AlertType.INFORMATION);
-            info.setTitle(titulo);
-            info.setHeaderText(null);
-            info.setContentText("No hay personas disponibles para añadir.");
-            info.showAndWait();
+            FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION, titulo, "No hay personas disponibles para añadir.");
             return null;
         }
 

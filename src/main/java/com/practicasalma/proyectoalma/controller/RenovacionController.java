@@ -290,16 +290,11 @@ public class RenovacionController {
                     : datosSexto != null ? datosSexto.anyoAcademico : "nuevo curso";
 
             Stage stage = new Stage();
+            FxUtils.aplicarIcono(stage);
             stage.setTitle("Inicio de curso " + anyo);
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.centerOnScreen();
-
-            try {
-                stage.getIcons().add(new Image(
-                        RenovacionController.class.getResourceAsStream(
-                                "/com/practicasalma/proyectoalma/assets/logo.png")));
-            } catch (Exception ignored) {}
 
             ctrl.inicializar(datosSexto, datosPersonal, stage);
             stage.showAndWait();

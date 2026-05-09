@@ -2,6 +2,7 @@ package com.practicasalma.proyectoalma.controller;
 
 import com.practicasalma.proyectoalma.model.Voluntario;
 import com.practicasalma.proyectoalma.service.VoluntarioService;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import com.practicasalma.proyectoalma.util.validacion.Validador;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -99,10 +100,6 @@ public class AgregarVoluntarioController {
     }
 
     private void mostrarError(String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
+        FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", mensaje);
     }
 }

@@ -4,11 +4,11 @@ import atlantafx.base.theme.PrimerLight;
 import com.practicasalma.proyectoalma.controller.ConfiguracionInicialController;
 import com.practicasalma.proyectoalma.util.config.GestorBBDD;
 import com.practicasalma.proyectoalma.util.config.GestorConfig;
+import com.practicasalma.proyectoalma.util.ui.FxUtils;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -67,9 +67,7 @@ public class Launcher extends Application {
 
         stage.setTitle("Gestion Fundacion - Panel de Control");
 
-        try {
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/com/practicasalma/proyectoalma/assets/logo.png")));
-        } catch (Exception ignored) {}
+        FxUtils.aplicarIcono(stage);
 
         stage.setScene(scene);
 

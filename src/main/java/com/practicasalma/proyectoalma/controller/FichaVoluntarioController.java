@@ -288,10 +288,11 @@ public class FichaVoluntarioController {
     @FXML
     private void toggleBajaAlta() {
         boolean activo = Boolean.TRUE.equals(voluntarioActual.getActivo());
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle(activo ? "Dar de baja" : "Dar de alta");
-        confirm.setHeaderText((activo ? "¿Dar de baja a " : "¿Dar de alta a ") + voluntarioActual.getNombre() + "?");
-        confirm.showAndWait().ifPresent(r -> {
+        FxUtils.mostrarConfirmacion(
+                activo ? "Dar de baja" : "Dar de alta",
+                (activo ? "¿Dar de baja a " : "¿Dar de alta a ") + voluntarioActual.getNombre() + "?",
+                null
+        ).ifPresent(r -> {
             if (r == ButtonType.OK) {
                 try {
                     if (activo) {

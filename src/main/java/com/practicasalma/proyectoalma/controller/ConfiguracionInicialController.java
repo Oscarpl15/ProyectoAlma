@@ -184,11 +184,7 @@ public class ConfiguracionInicialController {
     }
 
     private void mostrarError(String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
+        FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", mensaje);
     }
 
     void setStage(Stage stage) {
@@ -211,18 +207,13 @@ public class ConfiguracionInicialController {
             ConfiguracionInicialController ctrl = loader.getController();
 
             Stage stage = new Stage();
+            FxUtils.aplicarIcono(stage);
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setResizable(true);
             stage.setMinWidth(600);
             stage.setMinHeight(420);
             stage.centerOnScreen();
-
-            try {
-                stage.getIcons().add(new Image(
-                        ConfiguracionInicialController.class.getResourceAsStream(
-                                "/com/practicasalma/proyectoalma/assets/logo.png")));
-            } catch (Exception ignored) {}
 
             ctrl.setStage(stage);
             if (modoCambio) {

@@ -6,8 +6,10 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import java.util.Optional;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
@@ -28,9 +30,15 @@ import java.io.IOException;
  */
 public class FxUtils {
 
-    private static final String RUTA_ICONO = "/com/practicasalma/proyectoalma/assets/logo.png";
+    private static final String RUTA_ICONO = "/com/practicasalma/proyectoalma/assets/LogoCertificado.png";
 
     private FxUtils() {}
+
+    public static void aplicarIcono(Stage stage) {
+        try {
+            stage.getIcons().add(new Image(FxUtils.class.getResourceAsStream(RUTA_ICONO)));
+        } catch (Exception ignored) {}
+    }
 
     /**
      * Abre una ventana modal (bloqueante) cargando el FXML indicado.
@@ -102,6 +110,40 @@ public class FxUtils {
         alert.setTitle(titulo);
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
+        aplicarEstilos(alert);
         alert.showAndWait();
+    }
+
+    public static Optional<ButtonType> mostrarConfirmacion(String titulo, String cabecera, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(cabecera);
+        alert.setContentText(mensaje);
+        aplicarEstilos(alert);
+        return alert.showAndWait();
+    }
+
+    public static Optional<ButtonType> mostrarConfirmacionSiNo(String titulo, String cabecera, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(cabecera);
+        alert.setContentText(mensaje);
+        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        aplicarEstilos(alert);
+        return alert.showAndWait();
+    }
+
+    private static void aplicarEstilos(Alert alert) {
+        try {
+            String css = FxUtils.class.getResource(
+                    "/com/practicasalma/proyectoalma/css/estilos.css").toExternalForm();
+            alert.getDialogPane().getStylesheets().add(css);
+        } catch (Exception ignored) {}
+        alert.setOnShowing(e -> {
+            try {
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                aplicarIcono(stage);
+            } catch (Exception ignored) {}
+        });
     }
 }

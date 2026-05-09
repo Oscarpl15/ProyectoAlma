@@ -431,11 +431,11 @@ public class FichaSocioController {
 
     @FXML
     private void toggleBajaAlta() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Dar de baja");
-        confirm.setHeaderText("¿Dar de baja a " + socioActual.getNombre() + "?");
-        confirm.setContentText("El socio pasará a inactivo, su periodicidad será Puntual y la cuota quedará a 0.");
-        confirm.showAndWait().ifPresent(r -> {
+        FxUtils.mostrarConfirmacion(
+                "Dar de baja",
+                "¿Dar de baja a " + socioActual.getNombre() + "?",
+                "El socio pasará a inactivo, su periodicidad será Puntual y la cuota quedará a 0."
+        ).ifPresent(r -> {
             if (r == ButtonType.OK) {
                 try {
                     socioService.darDeBaja(socioActual.getId());
@@ -457,6 +457,7 @@ public class FichaSocioController {
             AgregarDonativoController controller = loader.getController();
             controller.setSocio(socioActual);
             Stage stage = new Stage();
+            FxUtils.aplicarIcono(stage);
             stage.setTitle("Añadir Donativo");
             stage.initModality(Modality.WINDOW_MODAL);
             stage.initOwner(btnCerrar.getScene().getWindow());
@@ -521,8 +522,14 @@ public class FichaSocioController {
             }
 
             int anoActual = LocalDate.now().getYear();
+            String nombreSocio = (socioActual.getNombre() != null ? socioActual.getNombre().trim() : "");
+            String apellidosSocio = (socioActual.getApellidos() != null ? socioActual.getApellidos().trim() : "");
+            String nombreCompleto = (nombreSocio + " " + apellidosSocio).trim();
+            String carpetaSocio = nombreCompleto.replaceAll("[/\\\\:*?\"<>|]", "").trim();
+            String nombreArchivo = nombreCompleto.replaceAll("[/\\\\:*?\"<>|\\s]", "");
             Path rutaInforme = Paths.get(rutaDocumentos, "Informes", "socios",
-                    "informe_socio_" + (socioActual.getId() != null ? socioActual.getId() : "sin_id") + ".pdf");
+                    carpetaSocio,
+                    "CertificadoDonaciones" + anoActual + "_" + nombreArchivo + ".pdf");
 
             generadorPdfService.generarInformeSocioConPlantilla(rutaInforme.toString(), socioActual, anoActual);
 

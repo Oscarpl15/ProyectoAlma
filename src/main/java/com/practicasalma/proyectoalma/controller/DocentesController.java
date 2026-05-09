@@ -160,6 +160,7 @@ public class DocentesController {
             controller.setDocente(docente);
 
             Stage stage = new Stage();
+            FxUtils.aplicarIcono(stage);
             stage.setTitle("Ficha del Docente: " + docente.getNombre());
             stage.setScene(new javafx.scene.Scene(root));
             stage.initModality(Modality.WINDOW_MODAL);
