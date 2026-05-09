@@ -50,4 +50,42 @@ public class TutorDAO {
             throw new PersistenciaException("Error al cargar los tutores: " + e.getMessage(), e);
         }
     }
+
+    public Tutor buscarPorDocumento(String documento) {
+        try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
+            List<Tutor> result = em.createQuery(
+                    "SELECT t FROM Tutor t WHERE t.documentoIdentidad = :doc", Tutor.class)
+                    .setParameter("doc", documento)
+                    .getResultList();
+            return result.isEmpty() ? null : result.get(0);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public long contarAlumnos(Long tutorId) {
+        try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
+            return em.createQuery(
+                    "SELECT COUNT(a) FROM Alumno a JOIN a.tutores t WHERE t.id = :id", Long.class)
+                    .setParameter("id", tutorId)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return 1;
+        }
+    }
+
+    public void eliminar(Tutor tutor) {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+            Tutor managed = em.find(Tutor.class, tutor.getId());
+            if (managed != null) em.remove(managed);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+        } finally {
+            if (em != null) em.close();
+        }
+    }
 }

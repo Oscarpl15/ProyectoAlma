@@ -1,6 +1,8 @@
 package com.practicasalma.proyectoalma.service;
 
 import com.practicasalma.proyectoalma.dao.AlumnoDAO;
+import com.practicasalma.proyectoalma.dao.PersonaAutorizadaDAO;
+import com.practicasalma.proyectoalma.dao.TutorDAO;
 import com.practicasalma.proyectoalma.exception.EntidadDuplicadaException;
 import com.practicasalma.proyectoalma.exception.ValidacionException;
 import com.practicasalma.proyectoalma.model.Alumno;
@@ -32,6 +34,8 @@ public class AlumnoService {
     );
 
     private final AlumnoDAO alumnoDAO = new AlumnoDAO();
+    private final PersonaAutorizadaDAO paDAO = new PersonaAutorizadaDAO();
+    private final TutorDAO tutorDAO = new TutorDAO();
 
     private void validarAlumno(Alumno alumno) {
         if (alumno.getFechaNacimiento() != null && !Validador.esFechaNacimientoValida(alumno.getFechaNacimiento())) {
@@ -68,6 +72,7 @@ public class AlumnoService {
      * @throws com.practicasalma.proyectoalma.exception.EntidadDuplicadaException si ya existe un alumno con ese DNI
      */
     public void matricularNuevoAlumno(Alumno alumno, String curso, String grupo) {
+        normalizarDocumento(alumno);
         validarAlumno(alumno);
 
         String dni = alumno.getDocumentoIdentidad();
@@ -87,32 +92,61 @@ public class AlumnoService {
     }
 
     public void actualizarAlumno(Alumno alumno) {
+        normalizarDocumento(alumno);
         validarAlumno(alumno);
         String dni = alumno.getDocumentoIdentidad();
         if (dni != null && !dni.isBlank() && alumnoDAO.existeDniParaOtro(dni, alumno.getId())) {
             throw new EntidadDuplicadaException("Ya existe otro alumno registrado con ese DNI/NIE.");
         }
-        alumnoDAO.actualizar(alumno);
+        alumnoDAO.actualizarDatosPersonales(alumno);
     }
 
     public void vincularTutor(Alumno alumno, Tutor tutor) {
-        alumno.addTutor(tutor);
-        alumnoDAO.actualizar(alumno);
+        if (tutor.getId() == null) {
+            String doc = tutor.getDocumentoIdentidad();
+            if (doc != null && !doc.isBlank()) {
+                Tutor existente = tutorDAO.buscarPorDocumento(doc);
+                if (existente != null) {
+                    tutor = existente;
+                } else {
+                    tutorDAO.guardar(tutor);
+                }
+            } else {
+                tutorDAO.guardar(tutor);
+            }
+        }
+        alumnoDAO.vincularTutor(alumno.getId(), tutor.getId());
     }
 
     public void desvincularTutor(Alumno alumno, Tutor tutor) {
-        alumno.removeTutor(tutor);
-        alumnoDAO.actualizar(alumno);
+        alumnoDAO.desvincularTutor(alumno.getId(), tutor.getId());
+        if (tutor.getId() != null && tutorDAO.contarAlumnos(tutor.getId()) == 0) {
+            tutorDAO.eliminar(tutor);
+        }
     }
 
     public void vincularPersonaAutorizada(Alumno alumno, PersonaAutorizada pa) {
-        alumno.addPersonaAutorizada(pa);
-        alumnoDAO.actualizar(alumno);
+        if (pa.getId() == null) {
+            String doc = pa.getDocumentoIdentidad();
+            if (doc != null && !doc.isBlank()) {
+                PersonaAutorizada existente = paDAO.buscarPorDocumento(doc);
+                if (existente != null) {
+                    pa = existente;
+                } else {
+                    paDAO.guardar(pa);
+                }
+            } else {
+                paDAO.guardar(pa);
+            }
+        }
+        alumnoDAO.vincularPersonaAutorizada(alumno.getId(), pa.getId());
     }
 
     public void desvincularPersonaAutorizada(Alumno alumno, PersonaAutorizada pa) {
-        alumno.removePersonaAutorizada(pa);
-        alumnoDAO.actualizar(alumno);
+        alumnoDAO.desvincularPersonaAutorizada(alumno.getId(), pa.getId());
+        if (pa.getId() != null && paDAO.contarAlumnos(pa.getId()) == 0) {
+            paDAO.eliminar(pa);
+        }
     }
 
     public List<Alumno> obtenerTodos() {
@@ -169,6 +203,13 @@ public class AlumnoService {
         }
         alumnoDAO.actualizar(alumno);
         return aviso;
+    }
+
+    private void normalizarDocumento(Alumno alumno) {
+        String doc = alumno.getDocumentoIdentidad();
+        if (doc != null && doc.isBlank()) {
+            alumno.setDocumentoIdentidad(null);
+        }
     }
 
     private String calcularCursoParaAlta(Alumno alumno) {

@@ -225,4 +225,71 @@ class ValidadorTest {
     void esFecha_nulRetornaFalse() {
         assertFalse(Validador.esFechaNacimientoValida(null));
     }
+
+    // -----------------------------------------------------------------------
+    // esNifValido
+    // -----------------------------------------------------------------------
+
+    @Test
+    void esNif_nifAsociacionValidoConLetraControlRetornaTrue() {
+        // G1234567 → suma=26 → control=4 → letra=D (G ∉ ABEH/KPQS → acepta ambos)
+        assertTrue(Validador.esNifValido("G1234567D"));
+    }
+
+    @Test
+    void esNif_nifAsociacionConDigitoControlRetornaTrue() {
+        assertTrue(Validador.esNifValido("G12345674"));
+    }
+
+    @Test
+    void esNif_nifEnMinusculasRetornaTrue() {
+        assertTrue(Validador.esNifValido("g1234567d"));
+    }
+
+    @Test
+    void esNif_primeraLetraAControlDebeSerDigito() {
+        // A ∈ ABEH → control debe ser dígito, no letra
+        // A1234567 → suma=26 → control=4
+        assertTrue(Validador.esNifValido("A12345674"));
+        assertFalse(Validador.esNifValido("A1234567D"));
+    }
+
+    @Test
+    void esNif_primeraLetraQControlDebeSerLetra() {
+        // Q ∈ KPQS → control debe ser letra
+        // Q1234567 → suma=26 → control=4 → letra=D
+        assertTrue(Validador.esNifValido("Q1234567D"));
+        assertFalse(Validador.esNifValido("Q12345674"));
+    }
+
+    @Test
+    void esNif_caracterControlIncorrecto_retornaFalse() {
+        assertFalse(Validador.esNifValido("G1234567Z"));
+    }
+
+    @Test
+    void esNif_formatoSinLetraInicial_retornaFalse() {
+        assertFalse(Validador.esNifValido("12345678A"));
+    }
+
+    @Test
+    void esNif_longitudIncorrecta_retornaFalse() {
+        assertFalse(Validador.esNifValido("G123456D"));
+    }
+
+    @Test
+    void esNif_nulRetornaFalse() {
+        assertFalse(Validador.esNifValido(null));
+    }
+
+    @Test
+    void esNif_cadenaVaciaRetornaFalse() {
+        assertFalse(Validador.esNifValido(""));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"G1234567D", "G12345674", "A12345674", "B12345674", "Q1234567D"})
+    void esNif_variosNifsValidosRetornaTrue(String nif) {
+        assertTrue(Validador.esNifValido(nif));
+    }
 }

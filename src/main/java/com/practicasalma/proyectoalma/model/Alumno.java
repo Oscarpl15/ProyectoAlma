@@ -85,7 +85,7 @@ public class Alumno extends Persona {
     @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Matricula> matriculas = new ArrayList<>();
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(
             name = "alumno_tutor",
             joinColumns = @JoinColumn(name = "alumno_id"),
@@ -104,7 +104,7 @@ public class Alumno extends Persona {
     @OneToMany(mappedBy = "alumno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PeriodoActividad> periodosActividad = new ArrayList<>();
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(
             name = "alumno_persona_autorizada",
             joinColumns = @JoinColumn(name = "alumno_id"),
@@ -192,15 +192,13 @@ public class Alumno extends Persona {
     public List<PersonaAutorizada> getAutorizadaRecoger() {return autorizadaRecoger;}
 
     public void addPersonaAutorizada(PersonaAutorizada pa) {
-        this.autorizadaRecoger.add(pa);
-        if (!pa.getAlumnos().contains(this)) {
-            pa.getAlumnos().add(this);
+        if (!this.autorizadaRecoger.contains(pa)) {
+            this.autorizadaRecoger.add(pa);
         }
     }
 
     public void removePersonaAutorizada(PersonaAutorizada pa) {
         this.autorizadaRecoger.remove(pa);
-        pa.getAlumnos().remove(this);
     }
 
     public void addTutor(Tutor tutor) {

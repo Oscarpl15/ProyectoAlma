@@ -660,7 +660,8 @@ public class FichaAlumnoController {
         dialog.showAndWait().ifPresent(pa -> {
             try {
                 alumnoService.vincularPersonaAutorizada(alumnoActual, pa);
-                tablaAutorizados.getItems().add(pa);
+                alumnoActual = alumnoService.obtenerCompleto(alumnoActual.getId());
+                tablaAutorizados.setItems(javafx.collections.FXCollections.observableArrayList(alumnoActual.getAutorizadaRecoger()));
             } catch (Exception e) {
                 FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo guardar la persona autorizada: " + e.getMessage());
             }
@@ -677,7 +678,8 @@ public class FichaAlumnoController {
                     if (r == ButtonType.OK) {
                         try {
                             alumnoService.desvincularPersonaAutorizada(alumnoActual, seleccion);
-                            tablaAutorizados.getItems().remove(seleccion);
+                            alumnoActual = alumnoService.obtenerCompleto(alumnoActual.getId());
+                            tablaAutorizados.setItems(javafx.collections.FXCollections.observableArrayList(alumnoActual.getAutorizadaRecoger()));
                         } catch (Exception e) {
                             FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo eliminar la persona autorizada: " + e.getMessage());
                         }
@@ -800,7 +802,8 @@ public class FichaAlumnoController {
         dialog.showAndWait().ifPresent(tutor -> {
             try {
                 alumnoService.vincularTutor(alumnoActual, tutor);
-                tablaTutores.getItems().add(tutor);
+                alumnoActual = alumnoService.obtenerCompleto(alumnoActual.getId());
+                tablaTutores.setItems(javafx.collections.FXCollections.observableArrayList(alumnoActual.getTutores()));
             } catch (Exception e) {
                 FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo guardar el tutor: " + e.getMessage());
             }
@@ -822,7 +825,8 @@ public class FichaAlumnoController {
         if (seleccionado != null) {
             try {
                 alumnoService.vincularTutor(alumnoActual, seleccionado);
-                tablaTutores.getItems().add(seleccionado);
+                alumnoActual = alumnoService.obtenerCompleto(alumnoActual.getId());
+                tablaTutores.setItems(javafx.collections.FXCollections.observableArrayList(alumnoActual.getTutores()));
             } catch (Exception e) {
                 FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo vincular el tutor: " + e.getMessage());
             }
@@ -839,7 +843,8 @@ public class FichaAlumnoController {
                     if (r == ButtonType.OK) {
                         try {
                             alumnoService.desvincularTutor(alumnoActual, seleccion);
-                            tablaTutores.getItems().remove(seleccion);
+                            alumnoActual = alumnoService.obtenerCompleto(alumnoActual.getId());
+                            tablaTutores.setItems(javafx.collections.FXCollections.observableArrayList(alumnoActual.getTutores()));
                         } catch (Exception e) {
                             FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo eliminar el tutor: " + e.getMessage());
                         }
@@ -864,7 +869,8 @@ public class FichaAlumnoController {
         if (seleccionada != null) {
             try {
                 alumnoService.vincularPersonaAutorizada(alumnoActual, seleccionada);
-                tablaAutorizados.getItems().add(seleccionada);
+                alumnoActual = alumnoService.obtenerCompleto(alumnoActual.getId());
+                tablaAutorizados.setItems(javafx.collections.FXCollections.observableArrayList(alumnoActual.getAutorizadaRecoger()));
             } catch (Exception e) {
                 FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo vincular la persona autorizada: " + e.getMessage());
             }

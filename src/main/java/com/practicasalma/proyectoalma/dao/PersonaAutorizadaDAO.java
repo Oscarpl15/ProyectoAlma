@@ -51,4 +51,42 @@ public class PersonaAutorizadaDAO {
             throw new PersistenciaException("Error al cargar las personas autorizadas: " + e.getMessage(), e);
         }
     }
+
+    public void eliminar(PersonaAutorizada pa) {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+            PersonaAutorizada managed = em.find(PersonaAutorizada.class, pa.getId());
+            if (managed != null) em.remove(managed);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+        } finally {
+            if (em != null) em.close();
+        }
+    }
+
+    public long contarAlumnos(Long paId) {
+        try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
+            return em.createQuery(
+                    "SELECT COUNT(a) FROM Alumno a JOIN a.autorizadaRecoger p WHERE p.id = :id", Long.class)
+                    .setParameter("id", paId)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return 1;
+        }
+    }
+
+    public PersonaAutorizada buscarPorDocumento(String documento) {
+        try (EntityManager em = GestorBBDD.getEntityManagerFactory().createEntityManager()) {
+            List<PersonaAutorizada> result = em.createQuery(
+                    "SELECT p FROM PersonaAutorizada p WHERE p.documentoIdentidad = :doc", PersonaAutorizada.class)
+                    .setParameter("doc", documento)
+                    .getResultList();
+            return result.isEmpty() ? null : result.get(0);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

@@ -93,7 +93,7 @@ public class FichaSocioController {
     @FXML
     public void initialize() {
         comboGenero.getItems().addAll("Masculino", "Femenino", "No binario", "Prefiero no especificar");
-        comboTipoDocumento.getItems().addAll("DNI", "NIE", "Pasaporte");
+        comboTipoDocumento.getItems().addAll("DNI", "NIE", "Pasaporte", "NIF");
         comboTipoEntidad.getItems().addAll("Física", "Empresa", "Asociación");
         comboPeriodicidad.getItems().addAll("Mensual", "Trimestral", "Anual", "Puntual");
         comboFormaPago.getItems().addAll("Domiciliación", "Transferencia", "Efectivo");
@@ -302,6 +302,10 @@ public class FichaSocioController {
         if (valNombre.isEmpty())    { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Campo obligatorio", "El nombre es obligatorio."); return; }
         if (valApellidos.isEmpty()) { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Campo obligatorio", "Los apellidos son obligatorios."); return; }
         if (valDni.isEmpty())       { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Campo obligatorio", "El documento de identidad es obligatorio."); return; }
+        String tipoDoc = comboTipoDocumento.getValue();
+        if ("DNI".equals(tipoDoc) && !Validador.esDni(valDni)) { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "DNI inválido", "El DNI introducido no es válido."); return; }
+        if ("NIE".equals(tipoDoc) && !Validador.esNie(valDni)) { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "NIE inválido", "El NIE introducido no es válido."); return; }
+        if ("NIF".equals(tipoDoc) && !Validador.esNifValido(valDni)) { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "NIF inválido", "El NIF introducido no es válido."); return; }
         if (valCorreo.isEmpty())    { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Campo obligatorio", "El correo electrónico es obligatorio."); return; }
         if (!Validador.esEmailValido(valCorreo)) { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Correo inválido", "El correo electrónico no tiene un formato válido."); return; }
         if (valDireccion.isEmpty()) { FxUtils.mostrarAlerta(Alert.AlertType.WARNING, "Campo obligatorio", "La dirección es obligatoria."); return; }

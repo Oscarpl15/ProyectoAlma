@@ -227,7 +227,8 @@ public class GeneradorPdfService {
                         Matricula matricula = obtenerMatriculaParaCurso(alumno, cursoEscolar);
                         String curso = obtenerCursoTexto(matricula);
 
-                        document.add(new Paragraph("Alumno: " + nombreCompleto));
+                        String etiquetaIrseSolo = Boolean.TRUE.equals(alumno.getAutorizaIrseSolo()) ? " (Puede irse solo)" : "";
+                        document.add(new Paragraph("Alumno: " + nombreCompleto + etiquetaIrseSolo));
                         document.add(new Paragraph("Curso: " + curso));
                         document.add(new Paragraph("Autorizados a recoger: " + obtenerAutorizadosTexto(alumno)));
                         document.add(new Paragraph(" "));
@@ -1060,17 +1061,17 @@ public class GeneradorPdfService {
         return switch (tipo.trim().toUpperCase()) {
             case "DNI" -> "D.N.I";
             case "NIE" -> "N.I.E";
+            case "NIF" -> "N.I.F";
             default -> tipo.trim();
         };
     }
 
     private String formatearDocumentoIdentidad(String documento) {
         if (documento == null || documento.isBlank() || "-".equals(documento)) return documento;
-        String doc = documento.trim();
-        if (doc.length() > 1
-                && Character.isLetter(doc.charAt(doc.length() - 1))
-                && Character.isDigit(doc.charAt(doc.length() - 2))) {
-            return doc.substring(0, doc.length() - 1) + "-" + doc.charAt(doc.length() - 1);
+        String doc = documento.trim().toUpperCase();
+        // Solo el DNI (8 dígitos + letra) lleva guión antes de la letra de control
+        if (doc.matches("\\d{8}[A-Z]")) {
+            return doc.substring(0, 8) + "-" + doc.charAt(8);
         }
         return doc;
     }

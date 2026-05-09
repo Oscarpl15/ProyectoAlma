@@ -3,6 +3,7 @@ package com.practicasalma.proyectoalma.dao;
 import com.practicasalma.proyectoalma.exception.EntidadNoEncontradaException;
 import com.practicasalma.proyectoalma.exception.PersistenciaException;
 import com.practicasalma.proyectoalma.model.Alumno;
+import com.practicasalma.proyectoalma.model.Matricula;
 import com.practicasalma.proyectoalma.util.config.GestorBBDD;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -49,7 +50,82 @@ public class AlumnoDAO {
     }
 
     /**
+     * Actualiza únicamente los campos escalares de un alumno y los campos escalares
+     * de sus matrículas existentes. No toca las colecciones ManyToMany
+     * (autorizadaRecoger, tutores, familiares) para evitar problemas de merge
+     * con entidades detached del PersistentBag de Hibernate.
+     * Usar para el guardado de la ficha del alumno; los vínculos de personas
+     * autorizadas y tutores se gestionan por sus propios métodos.
+     */
+    public void actualizarDatosPersonales(Alumno alumno) {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+            Alumno managed = em.find(Alumno.class, alumno.getId());
+            if (managed == null) throw new EntidadNoEncontradaException("Alumno con id " + alumno.getId() + " no encontrado.");
+
+            managed.setNombre(alumno.getNombre());
+            managed.setApellidos(alumno.getApellidos());
+            managed.setDocumentoIdentidad(alumno.getDocumentoIdentidad());
+            managed.setTipoDocumento(alumno.getTipoDocumento());
+            managed.setDireccion(alumno.getDireccion());
+            managed.setTelefono(alumno.getTelefono());
+            managed.setCorreo(alumno.getCorreo());
+            managed.setActivo(alumno.getActivo());
+            managed.setCiudad(alumno.getCiudad());
+            managed.setCodigoPostal(alumno.getCodigoPostal());
+            managed.setNacionalidad(alumno.getNacionalidad());
+            managed.setGenero(alumno.getGenero());
+            managed.setRutaFotoPerfil(alumno.getRutaFotoPerfil());
+
+            managed.setFechaNacimiento(alumno.getFechaNacimiento());
+            managed.setAutorizaUsoDatos(alumno.getAutorizaUsoDatos());
+            managed.setAutorizaImagen(alumno.getAutorizaImagen());
+            managed.setAutorizaActividades(alumno.getAutorizaActividades());
+            managed.setAutorizaComunicaciones(alumno.getAutorizaComunicaciones());
+            managed.setAutorizaIrseSolo(alumno.getAutorizaIrseSolo());
+            managed.setRutaDocAutoriza(alumno.getRutaDocAutoriza());
+            managed.setColegio(alumno.getColegio());
+            managed.setSeguimientoServiciosSociales(alumno.getSeguimientoServiciosSociales());
+            managed.setSeguimientoSaf(alumno.getSeguimientoSaf());
+            managed.setDerivacionSS(alumno.getDerivacionSS());
+            managed.setDerivacionSaf(alumno.getDerivacionSaf());
+            managed.setDerivacionEoep(alumno.getDerivacionEoep());
+            managed.setDerivacionColegio(alumno.getDerivacionColegio());
+            managed.setDerivacionOtro(alumno.getDerivacionOtro());
+            managed.setDerivadoPor(alumno.getDerivadoPor());
+            managed.setNumRepeticionesPrevias(alumno.getNumRepeticionesPrevias());
+            managed.setDetalleCursosRepetidos(alumno.getDetalleCursosRepetidos());
+
+            for (Matricula detachedM : alumno.getMatriculas()) {
+                if (detachedM.getId() != null) {
+                    Matricula managedM = em.find(Matricula.class, detachedM.getId());
+                    if (managedM != null) {
+                        managedM.setCurso(detachedM.getCurso());
+                        managedM.setGrupoAsignado(detachedM.getGrupoAsignado());
+                        managedM.setEsRepeticion(detachedM.getEsRepeticion());
+                        managedM.setAnyoAcademico(detachedM.getAnyoAcademico());
+                    }
+                }
+            }
+
+            em.getTransaction().commit();
+        } catch (EntidadNoEncontradaException e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw e;
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw new PersistenciaException("Error al actualizar el alumno: " + e.getMessage(), e);
+        } finally {
+            if (em != null) em.close();
+        }
+    }
+
+    /**
      * Actualiza un alumno existente (merge JPA).
+     * Usar solo cuando se necesite sincronizar colecciones (darDeBaja, darDeAlta,
+     * vincular/desvincular tutores y personas autorizadas).
      *
      * @param alumno entidad con los campos modificados y el ID ya asignado
      */
@@ -133,6 +209,8 @@ public class AlumnoDAO {
             alumno.getMatriculas().size();
             alumno.getAutorizadaRecoger().size();
             alumno.getTutores().size();
+            alumno.getFamiliares().size();
+            alumno.getPeriodosActividad().size();
             return alumno;
         } catch (EntidadNoEncontradaException e) {
             throw e;
@@ -232,6 +310,82 @@ public class AlumnoDAO {
             return count > 0;
         } catch (Exception e) {
             throw new PersistenciaException("Error al verificar DNI del alumno: " + e.getMessage(), e);
+        }
+    }
+
+    public void vincularPersonaAutorizada(Long alumnoId, Long paId) {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+            em.createNativeQuery(
+                    "INSERT OR IGNORE INTO alumno_persona_autorizada (alumno_id, persona_autorizada_id) VALUES (?, ?)")
+                    .setParameter(1, alumnoId)
+                    .setParameter(2, paId)
+                    .executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw new PersistenciaException("Error al vincular persona autorizada: " + e.getMessage(), e);
+        } finally {
+            if (em != null) em.close();
+        }
+    }
+
+    public void desvincularPersonaAutorizada(Long alumnoId, Long paId) {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+            em.createNativeQuery(
+                    "DELETE FROM alumno_persona_autorizada WHERE alumno_id = ? AND persona_autorizada_id = ?")
+                    .setParameter(1, alumnoId)
+                    .setParameter(2, paId)
+                    .executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw new PersistenciaException("Error al desvincular persona autorizada: " + e.getMessage(), e);
+        } finally {
+            if (em != null) em.close();
+        }
+    }
+
+    public void vincularTutor(Long alumnoId, Long tutorId) {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+            em.createNativeQuery(
+                    "INSERT OR IGNORE INTO alumno_tutor (alumno_id, tutor_id) VALUES (?, ?)")
+                    .setParameter(1, alumnoId)
+                    .setParameter(2, tutorId)
+                    .executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw new PersistenciaException("Error al vincular tutor: " + e.getMessage(), e);
+        } finally {
+            if (em != null) em.close();
+        }
+    }
+
+    public void desvincularTutor(Long alumnoId, Long tutorId) {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+            em.createNativeQuery(
+                    "DELETE FROM alumno_tutor WHERE alumno_id = ? AND tutor_id = ?")
+                    .setParameter(1, alumnoId)
+                    .setParameter(2, tutorId)
+                    .executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw new PersistenciaException("Error al desvincular tutor: " + e.getMessage(), e);
+        } finally {
+            if (em != null) em.close();
         }
     }
 }

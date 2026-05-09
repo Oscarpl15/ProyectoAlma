@@ -53,6 +53,45 @@ public class Validador {
     }
 
     /**
+     * Valida un NIF español de persona jurídica (empresas, asociaciones, fundaciones…).
+     * <p>
+     * Formato: letra de entidad + 7 dígitos + carácter de control (letra o dígito).
+     * El carácter de control se calcula sumando los dígitos en posiciones impares y
+     * el doble de los dígitos en posiciones pares (restando 9 si el doble ≥ 10),
+     * y aplicando módulo 10 al total. Según la letra inicial, el control es siempre
+     * dígito (A, B, E, H), siempre letra (K, P, Q, S) o cualquiera de los dos.
+     * </p>
+     *
+     * @param nif NIF a validar (admite espacios iniciales/finales y minúsculas)
+     * @return {@code true} si el formato y el carácter de control son correctos
+     */
+    public static boolean esNifValido(String nif) {
+        if (nif == null) return false;
+        String n = nif.trim().toUpperCase();
+        if (!n.matches("^[A-Z]\\d{7}[A-Z0-9]$")) return false;
+
+        String digitos = n.substring(1, 8);
+        int suma = 0;
+        for (int i = 0; i < digitos.length(); i++) {
+            int d = digitos.charAt(i) - '0';
+            if (i % 2 == 0) {
+                int doble = d * 2;
+                suma += doble >= 10 ? doble - 9 : doble;
+            } else {
+                suma += d;
+            }
+        }
+        int digitoControl = (10 - (suma % 10)) % 10;
+        char letraControl = "JABCDEFGHI".charAt(digitoControl);
+        char ultimo = n.charAt(8);
+
+        char primera = n.charAt(0);
+        if ("ABEH".indexOf(primera) >= 0) return ultimo == ('0' + digitoControl);
+        if ("KPQS".indexOf(primera) >= 0) return ultimo == letraControl;
+        return ultimo == ('0' + digitoControl) || ultimo == letraControl;
+    }
+
+    /**
      * Valida un número de teléfono español (9 dígitos, se ignoran los espacios internos).
      *
      * @param telefono teléfono a validar

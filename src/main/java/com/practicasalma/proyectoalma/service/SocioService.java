@@ -28,6 +28,8 @@ public class SocioService {
                 if (!Validador.esDni(dni)) throw new ValidacionException("El DNI introducido no es válido. Revisa el número y la letra.");
             } else if ("NIE".equals(tipo)) {
                 if (!Validador.esNie(dni)) throw new ValidacionException("El NIE introducido no es válido. Revisa el número y la letra.");
+            } else if ("NIF".equals(tipo)) {
+                if (!Validador.esNifValido(dni)) throw new ValidacionException("El NIF introducido no es válido. Revisa las letras y números.");
             } else if (!"Pasaporte".equals(tipo) && !Validador.esDni(dni) && !Validador.esNie(dni)) {
                 throw new ValidacionException("El DNI/NIE introducido no es válido. Revisa las letras y números.");
             }

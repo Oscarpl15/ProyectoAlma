@@ -42,7 +42,7 @@ public class AgregarSocioController {
 
     @FXML
     public void initialize() {
-        comboTipoDocumento.getItems().addAll("DNI", "NIE", "Pasaporte");
+        comboTipoDocumento.getItems().addAll("DNI", "NIE", "Pasaporte", "NIF");
         comboTipoDocumento.setValue("DNI");
     }
 
@@ -63,6 +63,10 @@ public class AgregarSocioController {
         if (nombre.isEmpty()) { mostrarError("El nombre es obligatorio."); return; }
         if (apellidos.isEmpty()) { mostrarError("Los apellidos son obligatorios."); return; }
         if (dni.isEmpty()) { mostrarError("El documento de identidad es obligatorio."); return; }
+        String tipoDoc = comboTipoDocumento.getValue();
+        if ("DNI".equals(tipoDoc) && !Validador.esDni(dni)) { mostrarError("El DNI introducido no es válido."); return; }
+        if ("NIE".equals(tipoDoc) && !Validador.esNie(dni)) { mostrarError("El NIE introducido no es válido."); return; }
+        if ("NIF".equals(tipoDoc) && !Validador.esNifValido(dni)) { mostrarError("El NIF introducido no es válido."); return; }
         if (tipoEntidad == null) { mostrarError("El tipo de entidad es obligatorio."); return; }
         if (correo.isEmpty()) { mostrarError("El correo electrónico es obligatorio."); return; }
         if (!Validador.esEmailValido(correo)) { mostrarError("El correo electrónico no tiene un formato válido."); return; }
