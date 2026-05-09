@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.practicasalma.proyectoalma.controller.CopiaSeguridadController"
+            styleClass="fondo-blanco"
+            stylesheets="@../css/estilos.css"
+            prefWidth="500">
+
+    <top>
+        <VBox spacing="5" styleClass="padding-cabecera-ficha">
+            <Label text="Copia de seguridad" styleClass="titulo-ventana"/>
+            <Label text="Ha llegado el momento de realizar la copia de seguridad configurada."
+                   styleClass="subtitulo-ventana" wrapText="true"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="12" styleClass="padding-cuerpo-ficha">
+            <Label text="Destino" styleClass="etiqueta-campo"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label fx:id="lblRutaActual" styleClass="subtitulo-ventana" wrapText="true"
+                       maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                <Button text="Cambiar" onAction="#cambiarDestino" styleClass="boton-secundario"/>
+            </HBox>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="15" alignment="CENTER_RIGHT" styleClass="padding-pie-ficha">
+            <Button text="Posponer" onAction="#posponer" styleClass="boton-cancelar"/>
+            <Button text="Aceptar" onAction="#aceptar" styleClass="boton-accion"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

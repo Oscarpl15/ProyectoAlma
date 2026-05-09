@@ -34,8 +34,11 @@ public class GestorConfig {
     private static final String CONFIG_FILE = CONFIG_DIR + "/config.properties";
 
     // Claves del fichero de propiedades (solo arranque)
-    private static final String CLAVE_BBDD       = "ruta.bbdd";
-    private static final String CLAVE_DOCUMENTOS = "ruta.documentos";
+    private static final String CLAVE_BBDD               = "ruta.bbdd";
+    private static final String CLAVE_DOCUMENTOS         = "ruta.documentos";
+    private static final String CLAVE_BACKUP_FRECUENCIA  = "backup.frecuencia";
+    private static final String CLAVE_BACKUP_RUTA        = "backup.ruta";
+    private static final String CLAVE_BACKUP_ULTIMA_FECHA = "backup.ultima.fecha";
 
     // Claves de la tabla configuracion en BD
     private static final String CLAVE_CORREO_REMITENTE        = "correo.remitente";
@@ -224,6 +227,33 @@ public class GestorConfig {
     /** Persiste el año en que se han enviado los certificados anuales. */
     public static void setCertificadosUltimoAno(String ano) {
         configuracionDAO.set(CLAVE_CERTIFICADOS_ULTIMO_ANO, ano);
+    }
+
+    // ── BACKUP (fichero de propiedades) ──────────────────────────────────────
+
+    public static int getBackupFrecuencia() {
+        String v = leerPropiedad(CLAVE_BACKUP_FRECUENCIA);
+        try { return (v != null && !v.isBlank()) ? Integer.parseInt(v) : 0; } catch (NumberFormatException e) { return 0; }
+    }
+
+    public static void setBackupFrecuencia(int dias) {
+        guardarPropiedad(CLAVE_BACKUP_FRECUENCIA, String.valueOf(dias));
+    }
+
+    public static String getBackupRuta() {
+        return leerPropiedad(CLAVE_BACKUP_RUTA);
+    }
+
+    public static void setBackupRuta(String ruta) {
+        guardarPropiedad(CLAVE_BACKUP_RUTA, ruta != null ? ruta : "");
+    }
+
+    public static String getBackupUltimaFecha() {
+        return leerPropiedad(CLAVE_BACKUP_ULTIMA_FECHA);
+    }
+
+    public static void setBackupUltimaFecha(String fecha) {
+        guardarPropiedad(CLAVE_BACKUP_ULTIMA_FECHA, fecha != null ? fecha : "");
     }
 
     // ── ACCESO AL FICHERO DE PROPIEDADES (privado) ────────────────────────────

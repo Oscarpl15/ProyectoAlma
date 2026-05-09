@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.practicasalma.proyectoalma.controller.AjustesBackupController"
+            styleClass="fondo-blanco"
+            stylesheets="@../css/estilos.css"
+            prefWidth="400">
+
+    <top>
+        <VBox spacing="5" styleClass="padding-cabecera-ficha">
+            <Label text="Regularidad de copia de seguridad" styleClass="titulo-ventana"/>
+            <Label text="Introduce cada cuántos días se realizará la copia automática. Escribe 0 para desactivarla."
+                   styleClass="subtitulo-ventana" wrapText="true"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="12" styleClass="padding-cuerpo-ficha">
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <Label text="Días entre copias:" styleClass="etiqueta-campo"/>
+                <Spinner fx:id="spinnerDias" prefWidth="90" editable="true"/>
+            </HBox>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="15" alignment="CENTER_RIGHT" styleClass="padding-pie-ficha">
+            <Button text="Cancelar" onAction="#cancelar" styleClass="boton-cancelar"/>
+            <Button text="Guardar" onAction="#guardar" styleClass="boton-accion"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

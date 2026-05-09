@@ -552,7 +552,7 @@ public class GeneradorPdfService {
             document.add(constancia);
 
             Paragraph fecha = new Paragraph(
-                    "En Alacalá de Henares, " + dia + " de " + mes + " de " + anoFinal + ".",
+                    "En Alcalá de Henares, " + dia + " de " + mes + " de " + anoFinal + ".",
                     fNormal);
             fecha.setAlignment(Element.ALIGN_CENTER);
             fecha.setSpacingAfter(20f);

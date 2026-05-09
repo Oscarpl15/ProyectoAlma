@@ -68,6 +68,8 @@ public class MainController {
         }
 
         Platform.runLater(() -> {
+            comprobarBackup();
+
             // Aviso de credenciales no configuradas (a partir del 1 de diciembre)
             if (LocalDate.now().getMonthValue() == 12 && !GestorCorreo.estaConfigurado()) {
                 FxUtils.mostrarAlerta(Alert.AlertType.WARNING,
@@ -257,6 +259,36 @@ public class MainController {
             FxUtils.abrirModal("ajustesFechas-view.fxml", "Fechas automáticas");
         } catch (IOException e) {
             FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir el ajuste de fechas: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void abrirAjustesBackup() {
+        try {
+            FxUtils.abrirModal("ajustesBackup-view.fxml", "Regularidad de copia de seguridad");
+        } catch (IOException e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir los ajustes de copia de seguridad: " + e.getMessage());
+        }
+    }
+
+    private void comprobarBackup() {
+        com.practicasalma.proyectoalma.service.BackupService backupService =
+                new com.practicasalma.proyectoalma.service.BackupService();
+        if (!backupService.esCopiaDebida()) return;
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/practicasalma/proyectoalma/view/copiaSeguridad-view.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            FxUtils.aplicarIcono(stage);
+            stage.setTitle("Copia de seguridad");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(rootPane.getScene().getWindow());
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        } catch (IOException e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                    "No se pudo abrir la ventana de copia de seguridad: " + e.getMessage());
         }
     }
 }

@@ -62,6 +62,8 @@
                                 <MenuItem text="Gestionar grupos" onAction="#gestionarGrupos"/>
                                 <SeparatorMenuItem/>
                                 <MenuItem text="Fechas automáticas" onAction="#abrirAjustesFechas"/>
+                                <SeparatorMenuItem/>
+                                <MenuItem text="Regularidad de copia de seguridad" onAction="#abrirAjustesBackup"/>
                             </items>
                         </ContextMenu>
                     </fx:define>
