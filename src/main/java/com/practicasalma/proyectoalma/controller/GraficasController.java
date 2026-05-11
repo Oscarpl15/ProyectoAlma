@@ -4,6 +4,7 @@ import com.practicasalma.proyectoalma.service.GraficasService;
 import com.practicasalma.proyectoalma.service.GeneradorPdfService;
 import com.practicasalma.proyectoalma.util.config.GestorConfig;
 import com.practicasalma.proyectoalma.util.ui.FxUtils;
+import com.practicasalma.proyectoalma.util.UtilFecha;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.SnapshotParameters;
@@ -250,8 +251,11 @@ public class GraficasController {
                 return;
             }
 
-            Path rutaSalida = Paths.get(rutaDocumentos, "Informes", "graficas", "grafica_" + marcaTiempo + ".pdf");
-            Path rutaImagen = Paths.get(rutaDocumentos, "Informes", "graficas", "grafica_" + marcaTiempo + ".png");
+            String entidad = comboEntidad.getValue();
+            String carpetaBase = "SOCIOS".equals(entidad) ? "Socios" : "Alumnos";
+            String carpetaAnyo = UtilFecha.calcularCursoAcademico().replace("/", "-");
+            Path rutaSalida = Paths.get(rutaDocumentos, carpetaBase, carpetaAnyo, "grafica_" + marcaTiempo + ".pdf");
+            Path rutaImagen = Paths.get(rutaDocumentos, carpetaBase, carpetaAnyo, "grafica_" + marcaTiempo + ".png");
 
             guardarImagenGrafica(graficaImagen, rutaImagen);
             generadorPdfService.generarPdfGrafica(rutaSalida.toString(), titulo, graficaImagen, resumen);

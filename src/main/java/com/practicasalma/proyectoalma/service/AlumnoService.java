@@ -101,6 +101,14 @@ public class AlumnoService {
         alumnoDAO.actualizarDatosPersonales(alumno);
     }
 
+    public void vincularFamiliar(Alumno alumno, Alumno familiar) {
+        alumnoDAO.vincularFamiliar(alumno.getId(), familiar.getId());
+    }
+
+    public void desvincularFamiliar(Alumno alumno, Alumno familiar) {
+        alumnoDAO.desvincularFamiliar(alumno.getId(), familiar.getId());
+    }
+
     public void vincularTutor(Alumno alumno, Tutor tutor) {
         if (tutor.getId() == null) {
             String doc = tutor.getDocumentoIdentidad();

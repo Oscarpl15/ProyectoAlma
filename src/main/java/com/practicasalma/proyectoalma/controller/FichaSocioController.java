@@ -531,7 +531,7 @@ public class FichaSocioController {
             String nombreCompleto = (nombreSocio + " " + apellidosSocio).trim();
             String carpetaSocio = nombreCompleto.replaceAll("[/\\\\:*?\"<>|]", "").trim();
             String nombreArchivo = nombreCompleto.replaceAll("[/\\\\:*?\"<>|\\s]", "");
-            Path rutaInforme = Paths.get(rutaDocumentos, "Informes", "socios",
+            Path rutaInforme = Paths.get(rutaDocumentos, "Socios",
                     carpetaSocio,
                     "CertificadoDonaciones" + anoActual + "_" + nombreArchivo + ".pdf");
 

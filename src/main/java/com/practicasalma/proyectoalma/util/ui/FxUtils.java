@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import java.util.Optional;
@@ -38,6 +39,15 @@ public class FxUtils {
         try {
             stage.getIcons().add(new Image(FxUtils.class.getResourceAsStream(RUTA_ICONO)));
         } catch (Exception ignored) {}
+    }
+
+    public static void aplicarIconoADialog(Dialog<?> dialog) {
+        dialog.setOnShowing(e -> {
+            try {
+                Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+                aplicarIcono(stage);
+            } catch (Exception ignored) {}
+        });
     }
 
     /**

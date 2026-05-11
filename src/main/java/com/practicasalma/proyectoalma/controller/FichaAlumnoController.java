@@ -121,6 +121,16 @@ public class FichaAlumnoController {
     @FXML private TableColumn<PersonaAutorizada, String> colAutoRelacion;
     @FXML private HBox boxBotonesAutorizados;
 
+    // Familiares
+    @FXML private HBox boxFamiliaresLectura;
+    @FXML private Label lblFamiliares;
+    @FXML private VBox boxFamiliaresEdicion;
+    @FXML private ListView<Alumno> listaFamiliares;
+
+    // Cursos repetidos
+    @FXML private Label lblCursosRepetidos;
+    @FXML private ComboBox<String> comboCursosRepetidos;
+
     private Alumno alumnoActual;
     private String rutaFotoSeleccionada = null;
 
@@ -185,6 +195,29 @@ public class FichaAlumnoController {
         itemEliminar.setOnAction(e -> eliminarAutorizado());
         menuContextual.getItems().add(itemEliminar);
         tablaAutorizados.setContextMenu(menuContextual);
+
+        // Configurar combo de cursos repetidos
+        comboCursosRepetidos.getItems().addAll(
+                "1º Infantil", "2º Infantil", "3º Infantil",
+                "1º Primaria", "2º Primaria", "3º Primaria",
+                "4º Primaria", "5º Primaria", "6º Primaria"
+        );
+
+        // Configurar lista de familiares
+        listaFamiliares.setCellFactory(lv -> new javafx.scene.control.ListCell<>() {
+            @Override
+            protected void updateItem(Alumno item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.getApellidos() + ", " + item.getNombre());
+            }
+        });
+        listaFamiliares.setPlaceholder(new Label("Ninguno"));
+        listaFamiliares.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                Alumno seleccionado = listaFamiliares.getSelectionModel().getSelectedItem();
+                if (seleccionado != null) abrirFichaFamiliar(seleccionado);
+            }
+        });
     }
 
     public void setAlumno(Alumno alumno) {
@@ -251,6 +284,12 @@ public class FichaAlumnoController {
             tablaMatriculas.setItems(FXCollections.observableArrayList(alumnoActual.getMatriculas()));
             tablaTutores.setItems(FXCollections.observableArrayList(alumnoActual.getTutores()));
             tablaAutorizados.setItems(FXCollections.observableArrayList(alumnoActual.getAutorizadaRecoger()));
+            listaFamiliares.setItems(FXCollections.observableArrayList(alumnoActual.getFamiliares()));
+            actualizarTextoFamiliares();
+
+            String detalleCursos = alumnoActual.getDetalleCursosRepetidos();
+            comboCursosRepetidos.setValue(detalleCursos != null && !detalleCursos.isBlank() ? detalleCursos.trim() : null);
+            actualizarTextoCursosRepetidos();
 
             // Generar el texto bonito para el Modo Lectura
             actualizarTextosSeguimiento();
@@ -369,9 +408,22 @@ public class FichaAlumnoController {
             tablaAutorizados.getContextMenu().getItems().get(0).setVisible(editable);
         }
 
+        // Familiares
+        boxFamiliaresLectura.setVisible(!editable);
+        boxFamiliaresLectura.setManaged(!editable);
+        boxFamiliaresEdicion.setVisible(editable);
+        boxFamiliaresEdicion.setManaged(editable);
+
+        // Cursos repetidos
+        lblCursosRepetidos.setVisible(!editable);
+        lblCursosRepetidos.setManaged(!editable);
+        comboCursosRepetidos.setVisible(editable);
+        comboCursosRepetidos.setManaged(editable);
+
         if (!editable) {
             // Al volver a modo lectura, actualizamos los textos resumen por si ha cambiado algún check
             actualizarTextosSeguimiento();
+            actualizarTextoCursosRepetidos();
 
             // Sincronizamos el texto de lectura del curso
             if (comboCurso.getValue() != null) {
@@ -474,9 +526,15 @@ public class FichaAlumnoController {
                 }
             }
 
+            // 6. Cursos repetidos antes de entrar
+            String cursoRepetido = comboCursosRepetidos.getValue();
+            alumnoActual.setDetalleCursosRepetidos(cursoRepetido != null && !cursoRepetido.isBlank() ? cursoRepetido : null);
+            alumnoActual.setNumRepeticionesPrevias(cursoRepetido != null && !cursoRepetido.isBlank() ? 1 : 0);
+
             // --- ¡GUARDAMOS EN BASE DE DATOS! ---
             alumnoService.actualizarAlumno(alumnoActual);
 
+            tablaMatriculas.refresh();
             cambiarModoEdicion(false);
             FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                     "Los datos de " + alumnoActual.getNombre() + " se han actualizado correctamente.");
@@ -608,9 +666,9 @@ public class FichaAlumnoController {
         Dialog<PersonaAutorizada> dialog = new Dialog<>();
         dialog.setTitle("Nueva Persona Autorizada");
         dialog.setHeaderText("Añadir autorización de recogida");
-
         dialog.getDialogPane().getStylesheets().add(getClass().getResource("/com/practicasalma/proyectoalma/css/estilos.css").toExternalForm());
         dialog.getDialogPane().getStyleClass().add("fondo-blanco");
+        FxUtils.aplicarIconoADialog(dialog);
 
         ButtonType btnGuardarType = new ButtonType("Añadir", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(btnGuardarType, ButtonType.CANCEL);
@@ -725,15 +783,16 @@ public class FichaAlumnoController {
             stage.setScene(new Scene(root));
             stage.showAndWait();
 
-            // Refrescar tabla tras posibles cambios
+            // Refrescar tabla y campos tras posibles cambios en la matrícula
             tablaMatriculas.refresh();
-            // Actualizar el campo curso visible si la última matrícula cambió
             Matricula ultima = alumnoActual.getUltimaMatricula();
             if (ultima != null) {
                 txtCurso.setText(ultima.getCurso() != null ? ultima.getCurso() : "Sin curso");
+                comboCurso.setValue(ultima.getCurso());
                 txtGrupoLectura.setText(ultima.getGrupoAsignado() != null ? ultima.getGrupoAsignado() : "Sin grupo");
                 comboGrupo.setValue(ultima.getGrupoAsignado());
             }
+            actualizarTextoCursosRepetidos();
         } catch (Exception e) {
             FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ficha de matrícula: " + e.getMessage());
         }
@@ -748,6 +807,7 @@ public class FichaAlumnoController {
         dialog.setHeaderText("Crear nueva persona tutora");
         dialog.getDialogPane().getStylesheets().add(getClass().getResource("/com/practicasalma/proyectoalma/css/estilos.css").toExternalForm());
         dialog.getDialogPane().getStyleClass().add("fondo-blanco");
+        FxUtils.aplicarIconoADialog(dialog);
 
         ButtonType btnOk = new ButtonType("Añadir", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(btnOk, ButtonType.CANCEL);
@@ -877,6 +937,109 @@ public class FichaAlumnoController {
         }
     }
 
+    // ── FAMILIARES ────────────────────────────────────────────────────────────
+
+    private void actualizarTextoCursosRepetidos() {
+        java.util.Set<String> cursos = new java.util.LinkedHashSet<>();
+        String detalle = alumnoActual.getDetalleCursosRepetidos();
+        if (detalle != null && !detalle.isBlank()) cursos.add(detalle.trim());
+        for (Matricula m : alumnoActual.getMatriculas()) {
+            if (Boolean.TRUE.equals(m.getEsRepeticion()) && m.getCurso() != null) cursos.add(m.getCurso());
+        }
+        lblCursosRepetidos.setText(cursos.isEmpty() ? "Ninguno" : String.join(", ", cursos));
+    }
+
+    private void actualizarTextoFamiliares() {
+        java.util.List<Alumno> familiares = alumnoActual.getFamiliares();
+        if (familiares.isEmpty()) {
+            lblFamiliares.setText("Ninguno");
+        } else {
+            lblFamiliares.setText(familiares.stream()
+                    .map(f -> f.getNombre() + " " + f.getApellidos())
+                    .collect(java.util.stream.Collectors.joining(" / ")));
+        }
+    }
+
+    @FXML
+    private void abrirFichaFamiliarDesdeLabel() {
+        java.util.List<Alumno> familiares = alumnoActual.getFamiliares();
+        if (familiares.isEmpty()) return;
+        if (familiares.size() == 1) {
+            abrirFichaFamiliar(familiares.get(0));
+        } else {
+            Alumno seleccionado = mostrarDialogoSeleccionPersona(
+                    familiares.stream().map(a -> (com.practicasalma.proyectoalma.model.Persona) a).toList(),
+                    "Seleccionar familiar", "¿Qué ficha quieres abrir?");
+            if (seleccionado != null) abrirFichaFamiliar(seleccionado);
+        }
+    }
+
+    @FXML
+    private void agregarFamiliar() {
+        java.util.List<Alumno> todos = alumnoService.obtenerTodos();
+        java.util.List<com.practicasalma.proyectoalma.model.Persona> disponibles = todos.stream()
+                .filter(a -> !a.getId().equals(alumnoActual.getId()))
+                .filter(a -> alumnoActual.getFamiliares().stream().noneMatch(f -> f.getId().equals(a.getId())))
+                .map(a -> (com.practicasalma.proyectoalma.model.Persona) a)
+                .toList();
+
+        Alumno seleccionado = mostrarDialogoSeleccionPersona(
+                disponibles, "Añadir familiar", "Selecciona el alumno familiar:");
+
+        if (seleccionado != null) {
+            try {
+                alumnoService.vincularFamiliar(alumnoActual, seleccionado);
+                alumnoActual = alumnoService.obtenerCompleto(alumnoActual.getId());
+                listaFamiliares.setItems(FXCollections.observableArrayList(alumnoActual.getFamiliares()));
+                actualizarTextoFamiliares();
+            } catch (Exception e) {
+                FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo añadir el familiar: " + e.getMessage());
+            }
+        }
+    }
+
+    @FXML
+    private void eliminarFamiliar() {
+        Alumno seleccion = listaFamiliares.getSelectionModel().getSelectedItem();
+        if (seleccion == null) return;
+        FxUtils.mostrarConfirmacion("Eliminar familiar",
+                "¿Desvincular a " + seleccion.getNombre() + " como familiar?", null)
+                .ifPresent(r -> {
+                    if (r == ButtonType.OK) {
+                        try {
+                            alumnoService.desvincularFamiliar(alumnoActual, seleccion);
+                            alumnoActual = alumnoService.obtenerCompleto(alumnoActual.getId());
+                            listaFamiliares.setItems(FXCollections.observableArrayList(alumnoActual.getFamiliares()));
+                            actualizarTextoFamiliares();
+                        } catch (Exception e) {
+                            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo eliminar el familiar: " + e.getMessage());
+                        }
+                    }
+                });
+    }
+
+    private void abrirFichaFamiliar(Alumno familiar) {
+        try {
+            Alumno familiarCompleto = alumnoService.obtenerCompleto(familiar.getId());
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/practicasalma/proyectoalma/view/ficha-alumno.fxml"));
+            Parent root = loader.load();
+            FichaAlumnoController controller = loader.getController();
+            controller.setAlumno(familiarCompleto);
+            Stage stage = new Stage();
+            FxUtils.aplicarIcono(stage);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Ficha del Alumno — " + familiarCompleto.getNombre() + " " + familiarCompleto.getApellidos());
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+            alumnoActual = alumnoService.obtenerCompleto(alumnoActual.getId());
+            listaFamiliares.setItems(FXCollections.observableArrayList(alumnoActual.getFamiliares()));
+            actualizarTextoFamiliares();
+        } catch (Exception e) {
+            FxUtils.mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ficha del familiar: " + e.getMessage());
+        }
+    }
+
     // ── HELPER: DIÁLOGO DE SELECCIÓN GENÉRICO ────────────────────────────────
 
     @SuppressWarnings("unchecked")
@@ -894,6 +1057,7 @@ public class FichaAlumnoController {
         dialog.setHeaderText(cabecera);
         dialog.getDialogPane().getStylesheets().add(getClass().getResource("/com/practicasalma/proyectoalma/css/estilos.css").toExternalForm());
         dialog.getDialogPane().getStyleClass().add("fondo-blanco");
+        FxUtils.aplicarIconoADialog(dialog);
 
         ButtonType btnOk = new ButtonType("Seleccionar", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(btnOk, ButtonType.CANCEL);

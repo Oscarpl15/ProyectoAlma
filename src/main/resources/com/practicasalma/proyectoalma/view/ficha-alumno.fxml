@@ -140,6 +140,26 @@
                     </VBox>
                 </StackPane>
 
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Cursos repetidos:" styleClass="etiqueta-campo"/>
+                    <Label fx:id="lblCursosRepetidos" styleClass="texto-lectura-simple"/>
+                    <ComboBox fx:id="comboCursosRepetidos" visible="false" managed="false"/>
+                </HBox>
+
+                <StackPane alignment="CENTER_LEFT">
+                    <HBox fx:id="boxFamiliaresLectura" spacing="10" alignment="CENTER_LEFT" onMouseClicked="#abrirFichaFamiliarDesdeLabel">
+                        <Label text="Alumnos familiares:" styleClass="etiqueta-campo"/>
+                        <Label fx:id="lblFamiliares" styleClass="texto-lectura-simple"/>
+                    </HBox>
+                    <VBox fx:id="boxFamiliaresEdicion" spacing="5" visible="false" managed="false">
+                        <Label text="Alumnos familiares:" styleClass="etiqueta-campo"/>
+                        <ListView fx:id="listaFamiliares" prefHeight="80" maxHeight="120"/>
+                        <HBox spacing="10" alignment="CENTER_RIGHT">
+                            <Button text="Eliminar Seleccionado" onAction="#eliminarFamiliar" styleClass="boton-cancelar"/>
+                            <Button text="+ Añadir familiar" onAction="#agregarFamiliar" styleClass="boton-secundario"/>
+                        </HBox>
+                    </VBox>
+                </StackPane>
 
                 <VBox spacing="10">
                     <Accordion>

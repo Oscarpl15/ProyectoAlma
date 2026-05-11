@@ -255,7 +255,8 @@ public class AlumnosController {
 
         try {
             String marcaTiempo = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
-            Path rutaSalida = Paths.get(rutaDocumentos, "Informes", "alumnos", "grupos_alumnos_" + marcaTiempo + ".pdf");
+            String carpetaAnyo = cursoEscolar.replace("/", "-");
+            Path rutaSalida = Paths.get(rutaDocumentos, "Alumnos", carpetaAnyo, "grupos_alumnos_" + marcaTiempo + ".pdf");
             generadorPdfService.generarPdfGruposAlumnos(rutaSalida.toString(), alumnosCompletos, "Listado de alumnos por grupos", cursoEscolar);
 
             FxUtils.mostrarAlerta(Alert.AlertType.INFORMATION,

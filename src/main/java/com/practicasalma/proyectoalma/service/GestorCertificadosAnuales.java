@@ -112,8 +112,10 @@ public class GestorCertificadosAnuales {
         for (Socio socio : socios) {
             String correoSocio = socio.getCorreo();
             if (correoSocio == null || correoSocio.isBlank()) continue;
-            Path rutaInforme = Paths.get(rutaDocumentos, "Informes", "socios",
-                    "certificado_" + ano + "_" + (socio.getId() != null ? socio.getId() : "sin_id") + ".pdf");
+            String nombreCarpeta = (socio.getNombre() + " " + socio.getApellidos()).replaceAll("[/\\\\:*?\"<>|]", "").trim();
+            String nombreArchivoCert = nombreCarpeta.replaceAll("\\s", "");
+            Path rutaInforme = Paths.get(rutaDocumentos, "Socios", nombreCarpeta,
+                    "certificado_" + ano + "_" + nombreArchivoCert + ".pdf");
             pdfService.generarInformeSocioConPlantilla(rutaInforme.toString(), socio, ano);
             GestorCorreo.mandarEmailHtmlConAdjuntoImagen(
                     correoSocio,

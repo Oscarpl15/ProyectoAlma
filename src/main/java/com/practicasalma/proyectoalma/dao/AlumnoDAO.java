@@ -351,6 +351,45 @@ public class AlumnoDAO {
         }
     }
 
+    public void vincularFamiliar(Long alumnoId, Long familiarId) {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+            em.createNativeQuery(
+                    "INSERT OR IGNORE INTO alumno_familiar (alumno_id, familiar_id) VALUES (?, ?)")
+                    .setParameter(1, alumnoId).setParameter(2, familiarId).executeUpdate();
+            em.createNativeQuery(
+                    "INSERT OR IGNORE INTO alumno_familiar (alumno_id, familiar_id) VALUES (?, ?)")
+                    .setParameter(1, familiarId).setParameter(2, alumnoId).executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw new PersistenciaException("Error al vincular familiar: " + e.getMessage(), e);
+        } finally {
+            if (em != null) em.close();
+        }
+    }
+
+    public void desvincularFamiliar(Long alumnoId, Long familiarId) {
+        EntityManager em = null;
+        try {
+            em = GestorBBDD.getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
+            em.createNativeQuery(
+                    "DELETE FROM alumno_familiar WHERE (alumno_id = ? AND familiar_id = ?) OR (alumno_id = ? AND familiar_id = ?)")
+                    .setParameter(1, alumnoId).setParameter(2, familiarId)
+                    .setParameter(3, familiarId).setParameter(4, alumnoId)
+                    .executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw new PersistenciaException("Error al desvincular familiar: " + e.getMessage(), e);
+        } finally {
+            if (em != null) em.close();
+        }
+    }
+
     public void vincularTutor(Long alumnoId, Long tutorId) {
         EntityManager em = null;
         try {
